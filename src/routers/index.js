@@ -17,10 +17,19 @@ const routes = [
   },
 ];
 
-// Tạo Router
+// Tạo Router với scrollBehavior
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    // Nếu có savedPosition (như khi dùng nút back/forward) thì khôi phục vị trí đó
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      // Với các chuyển hướng khác, cuộn về đầu trang
+      return { top: 0 };
+    }
+  },
 });
 
 // Xử lý Route Guard (nếu cần)

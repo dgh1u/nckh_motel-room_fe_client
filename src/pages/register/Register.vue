@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import * as authService from "@/apis/authService";
 import Verify from "../verify/Verify.vue";
+import { Eye, EyeOff } from "lucide-vue-next";
 
 const email = ref("");
 const password = ref("");
@@ -74,6 +75,10 @@ const handleRegister = async () => {
   }
 };
 
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value;
+};
+
 const handleVerified = () => {
   showVerifyPopup.value = false;
   showSuccessAlert.value = true;
@@ -92,168 +97,256 @@ const clearError = (field) => {
 
 <template>
   <div class="relative">
-    <!-- Nội dung chính -->
+    <!-- Alert Xác thực thành công -->
     <div
-      class="flex items-center justify-center min-h-screen bg-gradient-to-t from-sky-200 to-sky-100"
+      v-if="showSuccessAlert"
+      class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-lg z-50"
     >
       <div
-        v-if="showSuccessAlert"
-        class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-lg z-50"
+        class="bg-green-200 p-12 rounded-2xl shadow-2xl text-center flex flex-col items-center gap-6 opacity-0 animate-fade-in scale-150"
       >
-        <div
-          class="bg-green-200 p-12 rounded-2xl shadow-2xl text-center flex flex-col items-center gap-6 opacity-0 animate-fade-in scale-150"
+        <!-- SVG dấu tick -->
+        <svg
+          class="w-24 h-24 text-green-800 animate-draw"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          <!-- SVG dấu tick với hiệu ứng vẽ dần nhưng giữ nét đã vẽ -->
-          <svg
-            class="w-24 h-24 text-green-800 animate-draw"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="4"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path class="tick-path" d="M5 13l4 4L19 7"></path>
-          </svg>
-
-          <p class="text-4xl font-extrabold text-green-900">
-            Xác thực thành công!
-          </p>
-        </div>
-      </div>
-
-      <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-2xl">
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">
-          ĐĂNG KÝ
-        </h2>
-        <form @submit.prevent="handleRegister">
-          <!-- Email -->
-          <div class="mb-4">
-            <label for="email" class="block text-gray-700 font-medium mb-2"
-              >Email</label
-            >
-            <input
-              v-model="email"
-              type="email"
-              id="email"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300"
-              @input="clearError('email')"
-              required
-            />
-            <p v-if="errors.email" class="text-red-500 text-sm mt-1">
-              {{ errors.email }}
-            </p>
-          </div>
-
-          <!-- Email -->
-          <div class="mb-4">
-            <label for="password" class="block text-gray-700 font-medium mb-2"
-              >Mật khẩu</label
-            >
-            <input
-              v-model="password"
-              type="password"
-              id="password"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300"
-              @input="clearError('password')"
-              required
-            />
-            <p v-if="errors.password" class="text-red-500 text-sm mt-1">
-              {{ errors.password }}
-            </p>
-          </div>
-
-          <!-- Email -->
-          <div class="mb-4">
-            <label for="fullName" class="block text-gray-700 font-medium mb-2"
-              >Họ tên</label
-            >
-            <input
-              v-model="fullName"
-              type="fullName"
-              id="fullName"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300"
-              @input="clearError('fullName')"
-              required
-            />
-            <p v-if="errors.fullName" class="text-red-500 text-sm mt-1">
-              {{ errors.fullName }}
-            </p>
-          </div>
-
-          <!-- Email -->
-          <div class="mb-4">
-            <label for="address" class="block text-gray-700 font-medium mb-2"
-              >Địa chỉ</label
-            >
-            <input
-              v-model="address"
-              type="address"
-              id="address"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300"
-              @input="clearError('address')"
-              required
-            />
-            <p v-if="errors.address" class="text-red-500 text-sm mt-1">
-              {{ errors.address }}
-            </p>
-          </div>
-
-          <!-- Email -->
-          <div class="mb-4">
-            <label for="phone" class="block text-gray-700 font-medium mb-2"
-              >Số điện thoại</label
-            >
-            <input
-              v-model="phone"
-              type="phone"
-              id="phone"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300"
-              @input="clearError('phone')"
-              required
-            />
-            <p v-if="errors.phone" class="text-red-500 text-sm mt-1">
-              {{ errors.phone }}
-            </p>
-          </div>
-          <!-- General Error -->
-          <p v-if="generalError" class="text-red-500 text-center text-sm mb-4">
-            {{ generalError }}
-          </p>
-          <!-- Button -->
-          <div class="mt-6">
-            <button
-              type="submit"
-              :disabled="loading"
-              class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center"
-            >
-              <span v-if="loading" class="loader"></span>
-              Đăng ký
-            </button>
-          </div>
-        </form>
-        <!-- Links -->
-        <div class="mt-4 text-center">
-          <p class="text-sm text-gray-600">
-            Đã có tài khoản?
-            <router-link to="/login" class="text-blue-500 hover:underline"
-              >Đăng nhập ngay</router-link
-            >
-          </p>
-        </div>
+          <path class="tick-path" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <p class="text-4xl font-extrabold text-green-900">
+          Xác thực thành công!
+        </p>
       </div>
     </div>
 
-    <!-- Popup xác thực -->
-    <transition name="fade">
+    <!-- Layout 2 cột -->
+    <div class="min-h-screen flex">
+      <!-- Cột trái: Form đăng ký -->
       <div
-        v-if="showVerifyPopup"
-        class="fixed inset-0 flex items-center backdrop-blur-md justify-center"
+        class="w-full xl:w-1/2 flex flex-col items-center px-8 py-8 bg-white relative"
       >
-        <Verify :email="email" @verified="handleVerified" />
+        <div class="flex-grow flex flex-col items-center justify-center w-full">
+          <div class="max-w-lg w-full text-center md:text-left">
+            <!-- Tiêu đề + Link đăng nhập -->
+            <div class="mb-12">
+              <h1 class="text-3xl md:text-4xl font-bold mb-4">Tạo tài khoản</h1>
+              <p class="text-gray-600 text-base md:text-base">
+                Đã có tài khoản?
+                <router-link to="/login" class="text-blue-500 hover:font-bold">
+                  Đăng nhập.
+                </router-link>
+              </p>
+            </div>
+
+            <!-- Form đăng ký -->
+            <form @submit.prevent="handleRegister" class="space-y-5">
+              <!-- Họ tên và Email trên cùng 1 dòng -->
+              <div class="flex flex-col md:flex-row md:gap-4">
+                <!-- Họ tên -->
+                <div class="md:w-1/2">
+                  <label
+                    for="fullName"
+                    class="block text-gray-700 font-medium mb-2 text-base md:text-base"
+                  >
+                    Họ tên
+                  </label>
+                  <input
+                    v-model="fullName"
+                    type="text"
+                    id="fullName"
+                    placeholder="Họ tên"
+                    required
+                    @input="clearError('fullName')"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300 text-base"
+                  />
+                  <p v-if="errors.fullName" class="text-red-500 text-base mt-1">
+                    {{ errors.fullName }}
+                  </p>
+                </div>
+
+                <!-- Email -->
+                <div class="md:w-1/2">
+                  <label
+                    for="email"
+                    class="block text-gray-700 font-medium mb-2 text-base md:text-base"
+                  >
+                    Email
+                  </label>
+                  <input
+                    v-model="email"
+                    type="email"
+                    id="email"
+                    placeholder="Email"
+                    required
+                    @input="clearError('email')"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-blue-50 focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300 text-base"
+                  />
+                  <p v-if="errors.email" class="text-red-500 text-base mt-1">
+                    {{ errors.email }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Mật khẩu -->
+              <div>
+                <label
+                  for="password"
+                  class="block text-gray-700 font-medium mb-2 text-base md:text-base"
+                >
+                  Mật khẩu
+                </label>
+                <div class="relative">
+                  <input
+                    v-model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    id="password"
+                    required
+                    @input="clearError('password')"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300 text-base"
+                  />
+                  <!-- Toggle hiển thị mật khẩu -->
+                  <button
+                    type="button"
+                    class="absolute inset-y-0 right-4 flex items-center"
+                    @click="togglePasswordVisibility"
+                  >
+                    <EyeOff v-if="showPassword" class="w-4 h-4" />
+                    <Eye v-else class="w-4 h-4" />
+                  </button>
+                </div>
+                <p v-if="errors.password" class="text-red-500 text-base mt-1">
+                  {{ errors.password }}
+                </p>
+              </div>
+
+              <!-- Địa chỉ -->
+              <div>
+                <label
+                  for="address"
+                  class="block text-gray-700 font-medium mb-2 text-base md:text-base"
+                >
+                  Địa chỉ
+                </label>
+                <input
+                  v-model="address"
+                  type="text"
+                  id="address"
+                  required
+                  @input="clearError('address')"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300 text-base"
+                />
+                <p v-if="errors.address" class="text-red-500 text-base mt-1">
+                  {{ errors.address }}
+                </p>
+              </div>
+
+              <!-- Số điện thoại -->
+              <div>
+                <label
+                  for="phone"
+                  class="block text-gray-700 font-medium mb-2 text-base md:text-base"
+                >
+                  Số điện thoại
+                </label>
+                <input
+                  v-model="phone"
+                  type="tel"
+                  id="phone"
+                  required
+                  @input="clearError('phone')"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300 text-base"
+                />
+                <p v-if="errors.phone" class="text-red-500 text-base mt-1">
+                  {{ errors.phone }}
+                </p>
+              </div>
+
+              <!-- Checkbox Điều khoản & Điều kiện -->
+              <div class="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  v-model="agreeTerms"
+                  class="w-4 h-4 accent-blue-500 cursor-pointer"
+                />
+                <label for="terms" class="text-gray-700 text-base">
+                  Tôi đồng ý với
+                  <a
+                    href="#"
+                    class="text-blue-500 hover:underline"
+                    target="_blank"
+                  >
+                    Điều khoản & Điều kiện
+                  </a>
+                </label>
+              </div>
+
+              <!-- Lỗi chung -->
+              <p
+                v-if="generalError"
+                class="text-red-500 text-center text-base mb-4"
+              >
+                {{ generalError }}
+              </p>
+
+              <!-- Nút đăng ký  -->
+              <div>
+                <button
+                  type="submit"
+                  class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg flex items-center justify-center disabled:opacity-75 disabled:cursor-not-allowed text-base"
+                >
+                  <span v-if="loading" class="loader mr-2"></span>
+                  Đăng ký
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-sm text-gray-500 text-center">
+          &copy; All rights reserved. Made by
+          <router-link to="/home" class="text-blue-500 text-sm hover:font-bold">
+            HieuDM
+          </router-link>
+        </div>
       </div>
-    </transition>
+
+      <!-- Cột phải: Nền gradient -->
+      <div
+        class="hidden xl:flex w-1/2 bg-gradient-to-br from-purple-500 to-blue-500 items-center justify-center"
+      >
+        <!-- Tuỳ ý chèn hình nền -->
+      </div>
+
+      <!-- Nút Zalo cố định -->
+      <a
+        href="https://zalo.me/0981266403"
+        target="_blank"
+        class="fixed bottom-4 right-4 z-50"
+      >
+        <img
+          src="@/assets/zalo-icon.svg"
+          alt="Zalo contact"
+          class="w-15 h-15"
+        />
+      </a>
+    </div>
   </div>
+
+  <!-- Popup xác thực -->
+  <transition name="fade">
+    <div
+      v-if="showVerifyPopup"
+      class="fixed inset-0 flex items-center backdrop-blur-md justify-center"
+    >
+      <Verify :email="email" @verified="handleVerified" />
+    </div>
+  </transition>
 </template>
 
 <style scoped>

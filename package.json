@@ -10,7 +10,13 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.6",
+    "@vueform/slider": "^2.1.10",
+    "ant-design-vue": "^4.0.0-rc.6",
+    "aos": "^2.3.4",
     "axios": "^1.7.9",
+    "lucide-vue-next": "^0.477.0",
+    "pinia": "^3.0.1",
+    "pinia-plugin-persistedstate": "^4.2.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },

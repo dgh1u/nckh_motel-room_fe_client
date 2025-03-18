@@ -1,41 +1,24 @@
-import axios from "@/http";
+import axios from "@/axios";
 
-// Đăng nhập
-export const login = (email, password) => {
-  return axios.post("login", { email, password }).then((response) => {
-    console.log("response: ", response);
-    if (response?.success) {
-      // Lưu thông tin người dùng vào localStorage nếu success
-      const userData = response.data;
-      localStorage.setItem("user", JSON.stringify(userData));
-      return userData; // Trả về thông tin người dùng
-    }
-    throw response.error; // Ném lỗi từ backend để frontend xử lý
-  });
+//Đăng nhập
+export const loginUser = async (email, password) => {
+  return axios({
+    url: "/auth/login",
+    method: "POST",
+    data: { email, password },
+  }).then((response) => response.data);
 };
 
-// Đăng ký
-export const register = (email, password, fullName, address, phone) => {
-  return axios
-    .post("register", {
-      email,
-      password,
-      fullName,
-      address,
-      phone,
-    }) // Gửi dữ liệu đăng ký
-    .then((response) => {
-      if (response?.success) {
-        return response.data; // Trả về dữ liệu phản hồi từ server nếu success là true
-      } else {
-        throw response.error; // Ném lỗi nếu success là false
-      }
-    });
-};
+//Đăng xuất
+export const logoutUser = async () => {};
 
-// Xác thực tài khoản
-export const verifyAccount = (email, otp) => {
-  return axios.put("verify-account", { email, otp }).then((response) => {
+//Đăng ký
+export const register = async (email, password, fullName, address, phone) => {
+  return axios({
+    url: "/auth/register",
+    method: "POST",
+    data: { email, password, fullName, address, phone },
+  }).then((response) => {
     if (response?.success) {
       return response.data;
     }
@@ -43,9 +26,27 @@ export const verifyAccount = (email, otp) => {
   });
 };
 
-// Gửi lại OTP
-export const regenerateOTP = (email) => {
-  return axios.put("regenerate-otp", { email }).then((response) => {
+//Xác thực tài khoản
+export const verifyAccount = async (email, otp) => {
+  return axios({
+    url: "/auth/verify-account",
+    method: "PUT",
+    data: { email, otp },
+  }).then((response) => {
+    if (response?.success) {
+      return response.data;
+    }
+    throw response.error;
+  });
+};
+
+//Gửi lại OTP
+export const regenerateOTP = async (email) => {
+  return axios({
+    url: "/auth/regenerate-otp",
+    method: "PUT",
+    data: { email },
+  }).then((response) => {
     if (response?.success) {
       return response.data;
     }
@@ -54,36 +55,74 @@ export const regenerateOTP = (email) => {
 };
 
 //Quên mật khẩu
-export const forgotPassword = (email, password, otp) => {
-  return axios
-    .put("forgot-password", { email, password, otp })
-    .then((response) => {
-      if (response?.success) {
-        return response.data;
-      }
-      throw response.error;
-    });
+export const forgotPassword = async (email, password, otp) => {
+  return axios({
+    url: "/auth/forgot-password",
+    method: "PUT",
+    data: { email, password, otp },
+  }).then((response) => {
+    if (response?.success) {
+      return response.data;
+    }
+    throw response.error;
+  });
 };
 
-// Đăng xuất: Xóa thông tin người dùng khỏi localStorage
-export const logout = () => {
-  localStorage.removeItem("user"); // Xóa thông tin người dùng trong localStorage
+// Lấy token từ localStorage (key = "auth")
+const getToken = () => {
+  const authData = localStorage.getItem("auth");
+  return authData ? JSON.parse(authData)?.user?.token : null;
 };
 
-// Lấy thông tin người dùng hiện tại từ localStorage
-export const getCurrentUser = () => {
-  const user = localStorage.getItem("user"); // Lấy dữ liệu từ localStorage
-  return user ? JSON.parse(user) : null;
+// Lấy thông tin hồ sơ
+export const getProfile = async () => {
+  const token = getToken();
+  return axios({
+    url: "/auth/profile",
+    method: "GET",
+  });
 };
 
-// Lấy vai trò người dùng hiện tại từ thông tin BE trả về
-export const getCurrentUserRole = () => {
-  const user = this.getCurrentUser();
-  return user ? user.role : null; // Trả về role nếu tồn tại
+// Cập nhật hồ sơ
+export const updateProfile = async (data) => {
+  const token = getToken();
+  return axios({
+    url: "/auth/profile",
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data,
+  });
 };
 
-// Tạo header Authorization (JWT token) để gửi cùng với yêu cầu API
-export const authHeader = () => {
-  const user = this.getCurrentUser();
-  return user && user.token ? { Authorization: "Bearer " + user.token } : {};
+// Lấy avatar
+export const getAvatar = async (id) => {
+  if (!id) {
+    const profileRes = await getProfile();
+    id = profileRes.data.id;
+  }
+  return axios({
+    url: `/user/${id}/avatar`,
+    method: "GET",
+  });
+};
+
+// Cập nhật avatar
+export const postAvatar = async (id, avatarFile) => {
+  if (!id) {
+    const profileRes = await getProfile();
+    id = profileRes.data.id;
+  }
+  const formData = new FormData();
+  formData.append("avatar", avatarFile);
+
+  return axios({
+    url: `/user/${id}/avatar`,
+    method: "POST",
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };

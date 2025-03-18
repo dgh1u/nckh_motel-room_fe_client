@@ -1,175 +1,150 @@
 <template>
-  <div
-    class="flex items-center justify-center min-h-screen bg-gradient-to-t from-sky-200 to-sky-100"
-  >
-    <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-2xl">
-      <!-- Logo -->
-      <div class="flex justify-center mb-4 gap-x-4">
-        <img
-          src="@/assets/login-logo.png"
-          alt="Logo"
-          class="w-15 h-15 object-contain"
-        />
-        <img
-          src="@/assets/vnua-logo.png"
-          alt="Logo"
-          class="w-14 h-14 object-contain"
-        />
+  <div class="min-h-screen flex">
+    <!-- Cột trái: Form đăng nhập -->
+    <div
+      class="w-full xl:w-1/2 flex flex-col items-center px-8 py-8 bg-white relative"
+    >
+      <div class="flex-grow flex flex-col items-center justify-center w-full">
+        <div class="max-w-lg w-full text-center md:text-left">
+          <!-- Tiêu đề + Link đăng ký -->
+          <div class="mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4">Đăng nhập</h1>
+            <p class="text-gray-600 text-base md:text-base">
+              Chưa có tài khoản?
+              <router-link to="/register" class="text-blue-500 hover:font-bold">
+                Đăng ký tại đây.
+              </router-link>
+            </p>
+          </div>
+
+          <!-- Form đăng nhập -->
+          <form @submit.prevent="handleLogin" class="space-y-7">
+            <!-- Email -->
+            <div>
+              <label
+                for="email"
+                class="block text-gray-700 font-medium mb-2 text-sm md:text-base"
+              >
+                Email
+              </label>
+              <input
+                v-model="email"
+                type="email"
+                id="email"
+                required
+                @input="clearError('email')"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300 text-base"
+              />
+              <p v-if="errors.email" class="text-red-500 text-base mt-1">
+                {{ errors.email }}
+              </p>
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label
+                for="password"
+                class="block text-gray-700 font-medium mb-2 text-sm md:text-base"
+              >
+                Mật khẩu
+              </label>
+              <div class="relative">
+                <input
+                  v-model="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  id="password"
+                  required
+                  @input="clearError('password')"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300 text-base"
+                />
+                <!-- Nút toggle hiển thị mật khẩu dùng lucide-vue-next -->
+                <button
+                  type="button"
+                  class="absolute inset-y-0 right-4 flex items-center"
+                  @click="togglePasswordVisibility"
+                >
+                  <EyeOff v-if="showPassword" class="w-4 h-4" />
+                  <Eye v-else class="w-4 h-4" />
+                </button>
+              </div>
+              <p v-if="errors.password" class="text-red-500 text-base mt-1">
+                {{ errors.password }}
+              </p>
+            </div>
+            <!-- Thông báo lỗi chung (nếu có) -->
+            <p
+              v-if="generalError"
+              class="text-red-500 text-center md:text-center text-base mb-4"
+            >
+              {{ generalError }}
+            </p>
+
+            <!-- Nút đăng nhập -->
+            <div>
+              <button
+                type="submit"
+                :disabled="loading"
+                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg flex items-center justify-center disabled:opacity-75 disabled:cursor-not-allowed text-base"
+              >
+                <span v-if="loading" class="loader mr-2"></span>
+                Đăng nhập
+              </button>
+            </div>
+
+            <!-- Quên mật khẩu -->
+            <div>
+              <router-link
+                to="/forgot-password"
+                class="text-blue-500 text-base flex items-center justify-center hover:font-bold"
+              >
+                Quên mật khẩu?
+              </router-link>
+            </div>
+          </form>
+        </div>
       </div>
 
-      <!-- Title -->
-      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">
-        ĐĂNG NHẬP
-      </h2>
-      <form @submit.prevent="handleLogin">
-        <!-- Email -->
-        <div class="mb-4">
-          <label for="email" class="block text-gray-700 font-medium mb-2"
-            >Email</label
-          >
-          <input
-            v-model="email"
-            type="email"
-            id="email"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300"
-            @input="clearError('email')"
-            required
-          />
-          <p v-if="errors.email" class="text-red-500 text-sm mt-1">
-            {{ errors.email }}
-          </p>
-        </div>
-
-        <!-- Password -->
-        <div class="mb-4 relative">
-          <label for="password" class="block text-gray-700 font-medium mb-2"
-            >Mật khẩu</label
-          >
-          <div class="relative w-full">
-            <input
-              v-model="password"
-              :type="showPassword ? 'text' : 'password'"
-              id="password"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300"
-              @input="clearError('password')"
-              required
-            />
-            <button
-              type="button"
-              class="absolute inset-y-0 right-3 flex items-center"
-              @click="togglePasswordVisibility"
-            >
-              <svg
-                v-if="showPassword"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                class="w-5 h-5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13.875 18.825A9.956 9.956 0 0112 19c-5.523 0-10-4.477-10-10 0-1.482.319-2.885.875-4.125M21.125 9.175A9.956 9.956 0 0122 12c0 5.523-4.477 10-10 10a9.956 9.956 0 01-4.125-.875M3 3l18 18"
-                />
-              </svg>
-              <svg
-                v-else
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                class="w-5 h-5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z"
-                />
-              </svg>
-            </button>
-          </div>
-          <p v-if="errors.password" class="text-red-500 text-sm mt-1">
-            {{ errors.password }}
-          </p>
-        </div>
-
-        <!-- Remember Me & Forgot Password -->
-        <div class="flex justify-between items-center mb-4">
-          <div class="flex items-center">
-            <input
-              v-model="rememberMe"
-              type="checkbox"
-              id="rememberMe"
-              class="mr-2 cursor-pointer"
-            />
-            <label
-              for="rememberMe"
-              class="text-gray-700 text-sm cursor-pointer"
-            >
-              Ghi nhớ đăng nhập
-            </label>
-          </div>
-          <router-link
-            to="/forgot-password"
-            class="text-blue-500 text-sm hover:underline"
-          >
-            Quên mật khẩu?
-          </router-link>
-        </div>
-
-        <!-- General Error -->
-        <p v-if="generalError" class="text-red-500 text-center text-sm mb-4">
-          {{ generalError }}
-        </p>
-
-        <!-- Button -->
-        <div class="mt-6">
-          <button
-            type="submit"
-            :disabled="loading"
-            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center"
-          >
-            <span v-if="loading" class="loader"></span>
-            Đăng nhập
-          </button>
-        </div>
-      </form>
-
-      <!-- Links -->
-      <div class="mt-4 text-center">
-        <p class="text-sm text-gray-600">
-          Chưa có tài khoản?
-          <router-link to="/register" class="text-blue-500 hover:underline">
-            Đăng ký ngay
-          </router-link>
-        </p>
+      <!-- Footer -->
+      <div class="text-sm text-gray-500 text-center">
+        &copy; All rights reserved. Made by
+        <router-link to="/home" class="text-blue-500 text-sm hover:font-bold">
+          HieuDM
+        </router-link>
       </div>
     </div>
+
+    <!-- Cột phải: Nền gradient (chỉ hiển thị trên màn hình lớn) -->
+    <div
+      class="hidden xl:flex w-1/2 bg-gradient-to-br from-purple-500 to-blue-500 items-center justify-center"
+    >
+      <!-- Thay bằng hình nền hoặc hoạ tiết tùy ý -->
+    </div>
+
+    <!-- Nút Zalo cố định -->
+    <a
+      href="https://zalo.me/0981266403"
+      target="_blank"
+      class="fixed bottom-4 right-4 z-50"
+    >
+      <img src="@/assets/zalo-icon.svg" alt="Zalo contact" class="w-15 h-15" />
+    </a>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import * as authService from "@/apis/authService.js";
+import { useAuthStore } from "../../stores/store";
+import { Eye, EyeOff } from "lucide-vue-next";
 
 const email = ref("");
 const password = ref("");
-const rememberMe = ref(false);
 const showPassword = ref(false);
 const loading = ref(false);
 const errors = ref({});
 const generalError = ref("");
 const router = useRouter();
+const authStore = useAuthStore();
 
 const validateInput = () => {
   errors.value = {};
@@ -210,24 +185,15 @@ const handleLogin = async () => {
   }
 
   try {
-    const user = await authService.login(email.value, password.value);
-    if (user && user.token) {
-      if (rememberMe.value) {
-        localStorage.setItem("authToken", user.token);
-      } else {
-        sessionStorage.setItem("authToken", user.token);
-      }
-      router.push("/home");
-    }
-  } catch (error) {
-    generalError.value =
-      error?.message || "Sai thông tin tài khoản hoặc mật khẩu!";
+    await authStore.login(email.value, password.value);
+    router.push("/home");
+  } catch (err) {
+    generalError.value = err?.message || "Đăng nhập thất bại!";
   } finally {
     loading.value = false;
   }
 };
 </script>
-
 <style scoped>
 @import "@/style.css";
 </style>

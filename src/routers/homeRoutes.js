@@ -1,6 +1,13 @@
 // Import các component cần thiết
+import Profile from "../pages/dropdown-menu/profile/Profile.vue";
 import Home from "../pages/home/Home.vue";
 import NotFound from "../pages/not-found/NotFound.vue";
+import Contact from "../pages/contact/Contact.vue";
+import MotelList from "../pages/motel-room/MotelList.vue";
+import MotelDetail from "../pages/motel-room/MotelDetail.vue";
+import MyPostList from "../pages/dropdown-menu/my-posts/MyPostList.vue";
+import RoommateFindList from "../pages/roommate-find/RoommateFindList.vue";
+import RoommateFindDetail from "../pages/roommate-find/RoommateFindDetail.vue";
 
 export default [
   {
@@ -15,6 +22,66 @@ export default [
     path: "/not-found",
     name: "NotFound",
     component: NotFound,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/contact",
+    name: "Contact",
+    component: Contact,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/post/motel",
+    name: "MotelList",
+    component: MotelList,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/post/motel/:id",
+    name: "MotelDetail",
+    component: MotelDetail,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/post/roommate",
+    name: "RoommateFindList",
+    component: RoommateFindList,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/post/roommate/:id",
+    name: "RoommateFindDetail",
+    component: RoommateFindDetail,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/my-posts",
+    name: "MyPostList",
+    component: MyPostList,
     meta: {
       requiresAuth: false,
     },
