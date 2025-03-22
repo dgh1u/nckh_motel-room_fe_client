@@ -66,11 +66,11 @@
         <span>Thông tin</span>
       </a>
       <a
-        href="/order-history"
+        href="/my-posts"
         class="block px-4 py-1.5 ml-2 text-base hover:text-teal-500 transition duration-150 flex items-center space-x-2"
       >
-        <Bookmark size="18" />
-        <span>Tin đã lưu</span>
+        <Folder size="18" />
+        <span>Danh sách tin đăng</span>
       </a>
       <a
         href="/order-history"
@@ -99,7 +99,14 @@
 import { ref, computed, onMounted } from "vue";
 import { useAuthStore } from "@/stores/store";
 import { useRouter } from "vue-router";
-import { Clock, User, Bookmark, LogOut, CreditCard } from "lucide-vue-next";
+import {
+  Clock,
+  User,
+  Bookmark,
+  LogOut,
+  CreditCard,
+  Folder,
+} from "lucide-vue-next";
 import { getProfile } from "@/apis/authService";
 
 const authStore = useAuthStore();

@@ -8,6 +8,8 @@ import MotelDetail from "../pages/motel-room/MotelDetail.vue";
 import MyPostList from "../pages/dropdown-menu/my-posts/MyPostList.vue";
 import RoommateFindList from "../pages/roommate-find/RoommateFindList.vue";
 import RoommateFindDetail from "../pages/roommate-find/RoommateFindDetail.vue";
+import CreatePost from "../pages/create-post/CreatePost.vue";
+import UpdatePost from "../pages/update-post/UpdatePost.vue";
 
 export default [
   {
@@ -82,6 +84,24 @@ export default [
     path: "/my-posts",
     name: "MyPostList",
     component: MyPostList,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/create-post",
+    name: "CreatePost",
+    component: CreatePost,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/update-post/:id",
+    name: "UpdatePost",
+    component: UpdatePost,
     meta: {
       requiresAuth: false,
     },

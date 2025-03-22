@@ -1,7 +1,7 @@
 <template>
   <!-- Container chính: flex ngang -->
   <div
-    class="bg-white rounded-md shadow p-4 hover:shadow-lg transition flex gap-4"
+    class="bg-white rounded-lg shadow p-4 hover:shadow-lg transition flex gap-4"
   >
     <!-- (1) Cột trái: luôn tạo mảng 3 ảnh (1 ảnh lớn + 2 ảnh nhỏ) -->
     <div class="w-1/3 flex flex-col gap-2">
@@ -73,7 +73,7 @@
 
       <!-- Mô tả tóm tắt -->
       <p
-        class="text-sm text-gray-600 mb-2 leading-relaxed line-clamp-2 text-left flex-1"
+        class="line-clamp-2 text-sm text-gray-600 mb-2 leading-relaxed text-left flex-1"
       >
         {{ post.content }}
       </p>
@@ -218,5 +218,6 @@ const finalAvatar = computed(() => {
   -webkit-line-clamp: 2; /* số dòng hiển thị */
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
 }
 </style>

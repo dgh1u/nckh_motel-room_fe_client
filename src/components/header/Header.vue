@@ -90,7 +90,7 @@ const hideMenu = () => {
             </router-link>
             <router-link
               to="/post/roommate"
-              class="block px-4 py-2 text-gray-700 hover:text-teal-500 transition duration-150"
+              class="block px-4 py-2 pb-4 text-gray-700 hover:text-teal-500 transition duration-150"
             >
               Tìm người ở ghép
             </router-link>
@@ -133,7 +133,7 @@ const hideMenu = () => {
         <div v-if="authStore.isAuthenticated" class="flex items-center">
           <!-- Đăng tin -->
           <router-link
-            to="/post"
+            to="/create-post"
             data-aos="zoom-out"
             data-aos-duration="800"
             exact-active-class="bg-red-600"

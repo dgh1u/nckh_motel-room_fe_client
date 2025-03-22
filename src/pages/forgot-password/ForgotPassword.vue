@@ -72,6 +72,8 @@ const clearError = (field) => {
     <!-- Cột trái: Form đăng nhập -->
     <div
       class="w-full xl:w-1/2 flex flex-col items-center px-8 py-8 bg-white relative"
+      data-aos="fade-left"
+      data-aos-duration="800"
     >
       <div class="flex-grow flex flex-col items-center justify-center w-full">
         <div class="max-w-lg w-full text-center md:text-left">

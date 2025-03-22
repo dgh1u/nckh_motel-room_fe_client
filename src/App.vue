@@ -12,5 +12,8 @@
 body {
   margin: 0;
   font-family: "system-ui", sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  color: rgb(33, 37, 41);
 }
 </style>

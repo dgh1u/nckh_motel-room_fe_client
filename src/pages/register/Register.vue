@@ -125,9 +125,17 @@ const clearError = (field) => {
 
     <!-- Layout 2 cột -->
     <div class="min-h-screen flex">
+      <!-- Cột phải: Nền gradient -->
+      <div
+        class="hidden xl:flex w-1/2 bg-gradient-to-br from-purple-500 to-blue-500 items-center justify-center"
+      >
+        <!-- Tuỳ ý chèn hình nền -->
+      </div>
       <!-- Cột trái: Form đăng ký -->
       <div
         class="w-full xl:w-1/2 flex flex-col items-center px-8 py-8 bg-white relative"
+        data-aos="fade-right"
+        data-aos-duration="800"
       >
         <div class="flex-grow flex flex-col items-center justify-center w-full">
           <div class="max-w-lg w-full text-center md:text-left">
@@ -314,13 +322,6 @@ const clearError = (field) => {
             HieuDM
           </router-link>
         </div>
-      </div>
-
-      <!-- Cột phải: Nền gradient -->
-      <div
-        class="hidden xl:flex w-1/2 bg-gradient-to-br from-purple-500 to-blue-500 items-center justify-center"
-      >
-        <!-- Tuỳ ý chèn hình nền -->
       </div>
 
       <!-- Nút Zalo cố định -->

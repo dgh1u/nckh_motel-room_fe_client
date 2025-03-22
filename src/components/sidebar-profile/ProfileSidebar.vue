@@ -81,6 +81,14 @@
         Thông tin tài khoản
       </router-link>
       <router-link
+        to="/create-post"
+        class="flex items-center block py-2 px-10 rounded hover:text-teal-500 font-medium text-gray-700"
+        active-class="bg-teal-400 text-white"
+      >
+        <FolderPen class="inline-block w-5 h-5 mr-2" />
+        Đăng tin
+      </router-link>
+      <router-link
         to="/my-posts"
         class="flex items-center block py-2 px-10 rounded hover:text-teal-500 font-medium text-gray-700"
         active-class="bg-teal-400 text-white"
@@ -121,6 +129,7 @@ import {
   Bookmark,
   CreditCard,
   Folder,
+  FolderPen,
 } from "lucide-vue-next";
 import { message } from "ant-design-vue";
 import { postAvatar, getProfile } from "@/apis/authService";

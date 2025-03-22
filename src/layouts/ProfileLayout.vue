@@ -4,7 +4,7 @@
     <Header class="bg-gray-300 p-2" />
 
     <!-- Main Content Area -->
-    <div class="grid grid-cols-12 min-h-screen bg-white">
+    <div class="grid grid-cols-12 min-h-screen">
       <!-- Sidebar -->
       <div class="col-span-3">
         <ProfileSidebar />

@@ -20,7 +20,7 @@
               type="text"
               v-model="profileData.email"
               placeholder="Email của bạn"
-              class="w-full border border-gray-300 h-12 p-3 rounded focus:outline-none focus:border-blue-500"
+              class="w-full border border-gray-200 h-12 p-3 rounded focus:outline-none focus:border-blue-500 bg-gray-50"
               disabled
             />
           </div>
@@ -30,7 +30,7 @@
               type="text"
               v-model="profileData.fullName"
               placeholder="Họ và tên của bạn"
-              class="w-full border border-gray-300 h-12 p-3 rounded focus:outline-none focus:border-blue-500"
+              class="w-full border border-gray-300 h-12 p-3 rounded focus:outline-none focus:border-blue-500 bg-white"
             />
           </div>
         </div>
@@ -42,7 +42,7 @@
             type="text"
             v-model="profileData.address"
             placeholder="Địa chỉ của bạn"
-            class="w-full border border-gray-300 h-12 p-3 rounded focus:outline-none focus:border-blue-500"
+            class="w-full border border-gray-300 h-12 p-3 rounded focus:outline-none focus:border-blue-500 bg-white"
           />
         </div>
 
@@ -53,7 +53,7 @@
             type="text"
             v-model="profileData.phone"
             placeholder="Số điện thoại của bạn"
-            class="w-full border border-gray-300 h-12 p-3 rounded focus:outline-none focus:border-blue-500"
+            class="w-full border border-gray-300 h-12 p-3 rounded focus:outline-none focus:border-blue-500 bg-white"
           />
         </div>
       </form>

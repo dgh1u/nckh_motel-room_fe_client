@@ -1,7 +1,12 @@
 <template>
   <DefaultLayout>
     <!-- KHỐI BREADCRUMB TRÊN CÙNG -->
-    <div class="pt-4 px-6" v-if="post">
+    <div
+      class="pt-4 px-6"
+      v-if="post"
+      data-aos="zoom-out"
+      data-aos-duration="800"
+    >
       <div class="text-sm text-gray-500 flex items-center flex-wrap space-x-1">
         <router-link to="/post/motel" class="text-teal-500 hover:underline">
           Cho thuê phòng trọ
@@ -20,7 +25,11 @@
       <div class="flex-1 p-4 bg-gray-100">
         <!-- GALLERY Ở ĐẦU TRANG -->
         <!-- Vùng ảnh chính, có mũi tên trái/phải -->
-        <div class="bg-white rounded-xl p-4 text-4xl">
+        <div
+          class="bg-white rounded-xl p-4 text-4xl shadow-lg"
+          data-aos="zoom-out"
+          data-aos-duration="800"
+        >
           <div
             class="relative w-full h-96 bg-black text-white flex items-center justify-center mb-4 rounded-xl"
           >
@@ -70,8 +79,13 @@
         <div v-if="errorMsg" class="text-red-600">{{ errorMsg }}</div>
 
         <!-- Hiển thị chi tiết bài đăng nếu có dữ liệu -->
-        <div v-else-if="post" class="pt-4">
-          <div class="bg-white rounded-xl p-4 text-left">
+        <div
+          v-else-if="post"
+          class="pt-4"
+          data-aos="zoom-out-right"
+          data-aos-duration="800"
+        >
+          <div class="bg-white rounded-xl p-4 text-left shadow-lg">
             <div>
               <div>
                 <div
@@ -159,7 +173,7 @@
               <!-- Thông tin chi tiết-->
               <div class="py-2">
                 <span class="text-lg font-semibold">Thông tin chi tiết</span>
-                <span class="block py-2">{{ post.content }}</span>
+                <span class="block py-2 break-words">{{ post.content }}</span>
               </div>
               <hr class="my-3 mx-6 border-gray-100" />
 
@@ -190,8 +204,8 @@
                       Hình thức:
                       {{
                         post.accomodationDTO.owner
-                          ? "Chung chủ"
-                          : "Không chung chủ"
+                          ? "Không Chung chủ"
+                          : "Chung chủ"
                       }}
                     </span>
                   </div>
@@ -294,6 +308,8 @@
         <div
           v-if="post && post.userDTO"
           class="rounded-md p-4 shadow-md text-center bg-white"
+          data-aos="zoom-out-left"
+          data-aos-duration="800"
         >
           <!-- Ảnh đại diện -->
           <div
@@ -306,33 +322,28 @@
               class="object-cover w-full h-full"
             />
           </div>
-
           <!-- Tên + Trạng thái -->
           <span class="text-lg font-semibold">
             {{ post.userDTO.fullName }}
           </span>
           <span class="text-xs flex items-center justify-center">
-            <!-- Chấm xanh lá -->
             <span
               class="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"
             ></span>
             Đang hoạt động
           </span>
-
           <div class="flex pt-2 items-center justify-center">
             <MapPin class="w-4 h-4 mr-2" />
             <span class="text-sm text-gray-500">
               {{ post.userDTO.address }}
             </span>
           </div>
-
           <div class="flex pb-3 items-center justify-center">
             <Mail class="w-4 h-4 mr-2" />
             <span class="text-sm text-gray-500">
               {{ post.userDTO.email }}
             </span>
           </div>
-
           <!-- Nút gọi điện -->
           <div class="text-white">
             <button
@@ -342,9 +353,7 @@
               <span class="font-medium">{{ post.userDTO.phone }}</span>
             </button>
           </div>
-
           <!-- Nút zalo -->
-
           <div class="text-white">
             <a
               :href="`https://zalo.me/${post.userDTO.phone}`"
@@ -360,6 +369,40 @@
             </a>
           </div>
         </div>
+        <!-- 2 nút mới chỉ hiển thị khi người đăng trùng với người xem -->
+        <div class="py-8">
+          <div
+            v-if="isOwner"
+            class="p-4 bg-white rounded-xl shadow-xl"
+            data-aos="zoom-out-left"
+            data-aos-duration="800"
+          >
+            <div><span class="font-semibold text-lg">Thao tác</span></div>
+            <div class="py-4">
+              <router-link
+                :to="`/update-post/${post.id}`"
+                class="bg-yellow-500 hover:bg-yellow-600 w-full py-2 rounded-xl mt-2 flex items-center justify-center text-white"
+              >
+                <span class="font-medium">Cập nhật</span>
+              </router-link>
+            </div>
+            <div class="text-white">
+              <button
+                @click="toggleHidePost"
+                :class="
+                  post.del === false
+                    ? 'bg-red-400 hover:bg-red-500'
+                    : 'bg-green-400 hover:bg-green-500'
+                "
+                class="w-full py-2 rounded-xl mt-2 flex items-center justify-center text-white"
+              >
+                <span class="font-medium">
+                  {{ post.del === false ? "Ẩn tin đăng" : "Hiện tin đăng" }}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </DefaultLayout>
@@ -369,8 +412,10 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import DefaultLayout from "../../layouts/DefaultLayout.vue";
-import { getDetailPost } from "@/apis/postService.js";
-import { Phone, MessageCircle, MapPin, Mail, Toilet } from "lucide-vue-next";
+import { getDetailPost, hidePost } from "@/apis/postService.js";
+import { getProfile } from "@/apis/authService.js";
+import { message } from "ant-design-vue";
+import { Phone, MapPin, Mail, Toilet } from "lucide-vue-next";
 import {
   MapPin as MapPinIcon,
   Scan as ScanIcon,
@@ -387,11 +432,13 @@ import {
   Clock as ClockIcon,
   Car as CarIcon,
 } from "lucide-vue-next";
+
 const route = useRoute();
 const router = useRouter();
 
 const post = ref(null);
 const errorMsg = ref("");
+const currentUser = ref(null);
 
 // Hàm định dạng ngày
 function formatDate(dateStr) {
@@ -435,17 +482,14 @@ const galleryImages = ref([
   "https://via.placeholder.com/600x400?text=Demo+5",
 ]);
 
-// Vị trí ảnh hiện tại
 const currentImageIndex = ref(0);
 
 function formatPrice(price) {
   if (!price) return "";
   if (price >= 1000000) {
-    // Nếu giá từ 1 triệu trở lên: chia cho 1 triệu và hiển thị với 1 chữ số thập phân
     const millionPrice = (price / 1000000).toFixed(1);
     return `${millionPrice} triệu/tháng`;
   } else {
-    // Nếu giá dưới 1 triệu: định dạng số theo kiểu phân cách hàng nghìn
     const formattedPrice = new Intl.NumberFormat("vi-VN", {
       style: "decimal",
       maximumFractionDigits: 0,
@@ -454,21 +498,19 @@ function formatPrice(price) {
   }
 }
 
-// Chuyển ảnh sang trái
 function prevImage() {
   currentImageIndex.value =
     (currentImageIndex.value - 1 + galleryImages.value.length) %
     galleryImages.value.length;
 }
 
-// Chuyển ảnh sang phải
 function nextImage() {
   currentImageIndex.value =
     (currentImageIndex.value + 1) % galleryImages.value.length;
 }
 // ====================== END GALLERY CODE ======================
 
-// Gọi API lấy chi tiết bài đăng
+// API: Lấy chi tiết bài đăng
 async function fetchPost() {
   const id = route.params.id;
   try {
@@ -484,11 +526,46 @@ async function fetchPost() {
   }
 }
 
+// API: Lấy thông tin hồ sơ người dùng hiện tại
+async function fetchProfile() {
+  try {
+    const response = await getProfile();
+    currentUser.value = response.data;
+  } catch (error) {
+    console.error("Lỗi khi tải thông tin hồ sơ", error);
+  }
+}
+
+// Computed kiểm tra xem người xem có phải là chủ bài đăng không
+const isOwner = computed(() => {
+  return (
+    currentUser.value &&
+    post.value &&
+    post.value.userDTO &&
+    currentUser.value.id === post.value.userDTO.id
+  );
+});
+
+// Hàm xử lý Ẩn/Hiện tin đăng
+async function toggleHidePost() {
+  try {
+    const response = await hidePost(post.value.id);
+    message.success(response.data.message);
+    // Cập nhật trạng thái post.del: nếu 0 chuyển thành 1, nếu 1 chuyển thành 0
+    post.value.del = post.value.del === false ? true : false;
+  } catch (error) {
+    message.error("Có lỗi xảy ra khi ẩn/hiện tin đăng");
+  }
+}
+
 onMounted(() => {
   fetchPost();
+  fetchProfile();
 });
 </script>
 
 <style scoped>
-/* Tuỳ chỉnh style nếu cần */
+.break-words {
+  word-break: break-word;
+}
 </style>

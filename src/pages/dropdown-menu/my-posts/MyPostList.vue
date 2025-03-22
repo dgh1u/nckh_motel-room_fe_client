@@ -11,7 +11,7 @@
           >
             <!-- Tab "Đã duyệt" -->
             <button
-              @click="(selectedStatus = 'APPROVED'), fetchPosts()"
+              @click="(selectedStatus = 'APPROVED'), resetPage(), fetchPosts()"
               :class="
                 selectedStatus === 'APPROVED'
                   ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
@@ -20,10 +20,9 @@
             >
               Đã duyệt
             </button>
-
             <!-- Tab "Đã khoá" -->
             <button
-              @click="(selectedStatus = 'BLOCKED'), fetchPosts()"
+              @click="(selectedStatus = 'BLOCKED'), resetPage(), fetchPosts()"
               :class="
                 selectedStatus === 'BLOCKED'
                   ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
@@ -32,10 +31,9 @@
             >
               Đã khoá
             </button>
-
             <!-- Tab "Chờ duyệt" -->
             <button
-              @click="(selectedStatus = 'PENDING'), fetchPosts()"
+              @click="(selectedStatus = 'PENDING'), resetPage(), fetchPosts()"
               :class="
                 selectedStatus === 'PENDING'
                   ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
@@ -55,7 +53,9 @@
           >
             <!-- Tab "Phòng trọ" -->
             <button
-              @click="(selectedMotelType = 'PHONG_TRO'), fetchPosts()"
+              @click="
+                (selectedMotelType = 'PHONG_TRO'), resetPage(), fetchPosts()
+              "
               :class="
                 selectedMotelType === 'PHONG_TRO'
                   ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
@@ -64,10 +64,9 @@
             >
               Phòng trọ
             </button>
-
             <!-- Tab "Ở ghép" -->
             <button
-              @click="(selectedMotelType = 'O_GHEP'), fetchPosts()"
+              @click="(selectedMotelType = 'O_GHEP'), resetPage(), fetchPosts()"
               :class="
                 selectedMotelType === 'O_GHEP'
                   ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
@@ -87,7 +86,7 @@
           >
             <!-- Tab "Hiển thị" (del=false) -->
             <button
-              @click="(selectedDel = false), fetchPosts()"
+              @click="(selectedDel = false), resetPage(), fetchPosts()"
               :class="
                 selectedDel === false
                   ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
@@ -96,10 +95,9 @@
             >
               Hiển thị
             </button>
-
             <!-- Tab "Bị ẩn" (del=true) -->
             <button
-              @click="(selectedDel = true), fetchPosts()"
+              @click="(selectedDel = true), resetPage(), fetchPosts()"
               :class="
                 selectedDel === true
                   ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
@@ -126,36 +124,57 @@
           }"
           class="block"
         >
-          <Card :post="post" data-aos="fade-left" data-aos-duration="800" />
+          <div class="py-2">
+            <Card :post="post" data-aos="fade-left" data-aos-duration="800" />
+          </div>
         </router-link>
+
+        <!-- Component phân trang (Ant Design Vue) -->
+        <div class="pt-10 flex items-center justify-center">
+          <a-pagination
+            :current="pagination.current"
+            :pageSize="pagination.pageSize"
+            :total="pagination.total"
+            show-quick-jumper
+            @change="handlePageChange"
+          />
+        </div>
       </div>
-      <div v-else>
-        <p>No posts available</p>
+      <div v-else class="text-center font-semibold my-30">
+        <a-empty description="Không tìm thấy tin đăng nào" />
       </div>
     </div>
   </ProfileLayout>
 </template>
+
 <script setup>
 import { ref, onMounted } from "vue";
 import ProfileLayout from "../../../layouts/ProfileLayout.vue";
 import Card from "@/components/card/Card.vue";
 import { getProfile } from "@/apis/authService";
-import { getPostsByUser } from "@/apis/postService";
+import { getPostsByUserId } from "@/apis/postService";
+import { Empty, Pagination } from "ant-design-vue";
 
-// Lưu danh sách bài đăng
+const aEmpty = Empty;
+
+// State cho bài đăng và bộ lọc
 const posts = ref([]);
-
-// Lưu userId
 const userId = ref(null);
-
-// Lưu trạng thái đang chọn (mặc định là "APPROVED")
 const selectedStatus = ref("APPROVED");
-
-// Lưu hình thức đang chọn (mặc định là "PHONG_TRO")
 const selectedMotelType = ref("PHONG_TRO");
-
-// Lưu bộ lọc Hiển thị (mặc định là "Hiển thị" -> del=false)
 const selectedDel = ref(false);
+
+// State phân trang
+const pagination = ref({
+  current: 1,
+  pageSize: 5,
+  total: 0,
+});
+
+// Hàm reset lại trang hiện tại về 1 khi thay đổi bộ lọc
+function resetPage() {
+  pagination.value.current = 1;
+}
 
 /**
  * Hàm fetchPosts() gọi API getPostsByUser với params dựa vào các bộ lọc đã chọn.
@@ -163,7 +182,7 @@ const selectedDel = ref(false);
 async function fetchPosts() {
   if (!userId.value) return;
 
-  // Tạo params cho API dựa vào trạng thái
+  // Tạo params dựa vào bộ lọc trạng thái
   let params = {};
   switch (selectedStatus.value) {
     case "APPROVED":
@@ -178,15 +197,17 @@ async function fetchPosts() {
       params.notApproved = true;
       break;
   }
-
   // Thêm param cho hình thức (motel)
   params.motel = selectedMotelType.value;
-
   // Thêm param cho bộ lọc Hiển thị: del=false (Hiển thị) hay del=true (Bị ẩn)
   params.del = selectedDel.value;
 
+  // Thêm tham số phân trang: API dùng start là số thứ tự trang (0-based) và limit là số item trên 1 trang
+  params.start = Math.max(pagination.value.current - 1, 0);
+  params.limit = pagination.value.pageSize;
+
   try {
-    const postResponse = await getPostsByUser(userId.value, params);
+    const postResponse = await getPostsByUserId(userId.value, params);
     const responseData =
       postResponse && postResponse.data ? postResponse.data : {};
     console.log("Posts API full data:", responseData);
@@ -195,25 +216,45 @@ async function fetchPosts() {
       if (responseData.success) {
         if (responseData.data && responseData.data.items) {
           posts.value = responseData.data.items;
+          pagination.value.total = responseData.data.total || 0;
         } else if (responseData.items) {
           posts.value = responseData.items;
+          pagination.value.total =
+            responseData.total || responseData.items.length;
         } else {
           posts.value = [];
+          pagination.value.total = 0;
         }
       } else {
         console.error("Server error:", responseData.error);
         posts.value = [];
+        pagination.value.total = 0;
       }
     } else {
       if (responseData.items) {
         posts.value = responseData.items;
+        pagination.value.total =
+          responseData.total || responseData.items.length;
       } else {
         posts.value = [];
+        pagination.value.total = 0;
       }
     }
   } catch (error) {
     console.error("Error fetching posts:", error);
   }
+}
+
+/**
+ * Xử lý khi người dùng chuyển trang
+ */
+function handlePageChange(page) {
+  pagination.value.current = page;
+  fetchPosts();
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
 }
 
 /**

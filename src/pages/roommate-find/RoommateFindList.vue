@@ -3,6 +3,8 @@
     <div class="pt-6 px-6">
       <div
         class="text-3xl font-bold flex flex-col items-center justify-center flex-wrap space-y-2"
+        data-aos="zoom-out"
+        data-aos-duration="800"
       >
         <span class="text-teal-500"> TÌM NGƯỜI Ở GHÉP </span>
 
@@ -20,9 +22,9 @@
       </div>
 
       <!-- Nội dung chính: chiếm phần còn lại -->
-      <div class="flex-1 flex flex-col bg-gray-100 p-2">
+      <div class="flex-1 flex flex-col bg-gray-100">
         <!-- Thanh tìm kiếm từ khóa -->
-        <div class="mb-1 p-3" data-aos="zoom-out" data-aos-duration="800">
+        <div class="mb-1" data-aos="zoom-out" data-aos-duration="800">
           <input
             v-model="filters.keywords"
             type="text"
@@ -38,30 +40,41 @@
 
         <!-- Danh sách tin đăng -->
         <div class="p-4 pb-20 flex-1 overflow-y-auto">
-          <!-- Sử dụng grid 1 cột để mỗi dòng chỉ có 1 card -->
-          <div class="grid grid-cols-1 gap-4">
-            <router-link
-              v-for="post in posts"
-              :key="post.id"
-              :to="{ name: 'RoommateFindDetail', params: { id: post.id } }"
-              class="block"
-            >
-              <Card :post="post" data-aos="fade-left" data-aos-duration="800" />
-            </router-link>
-          </div>
+          <template v-if="posts.length">
+            <!-- Sử dụng grid 1 cột để mỗi dòng chỉ có 1 card -->
+            <div class="grid grid-cols-1 gap-4">
+              <router-link
+                v-for="post in posts"
+                :key="post.id"
+                :to="{ name: 'RoommateFindDetail', params: { id: post.id } }"
+                class="block"
+              >
+                <Card
+                  :post="post"
+                  data-aos="fade-left"
+                  data-aos-duration="800"
+                />
+              </router-link>
+            </div>
 
-          <!-- Phân trang (Ant Design Vue) -->
-          <div class="pt-10">
-            <a-pagination
-              :current="pagination.current"
-              :pageSize="pagination.pageSize"
-              :total="pagination.total"
-              show-quick-jumper
-              :locale="paginationLocale"
-              :itemRender="itemRender"
-              @change="handlePageChange"
-            />
-          </div>
+            <!-- Phân trang (Ant Design Vue) -->
+            <div class="pt-10">
+              <a-pagination
+                :current="pagination.current"
+                :pageSize="pagination.pageSize"
+                :total="pagination.total"
+                show-quick-jumper
+                :locale="paginationLocale"
+                :itemRender="itemRender"
+                @change="handlePageChange"
+              />
+            </div>
+          </template>
+          <template v-else>
+            <div class="flex items-center font-semibold justify-center py-10">
+              <a-empty description="Không tìm thấy tin đăng nào!" />
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -75,8 +88,10 @@ import MotelFilter from "@/components/filter/MotelFilter.vue";
 import Card from "@/components/card/Card.vue";
 import { getListPost } from "@/apis/postService.js";
 // Nếu dùng Ant Design Vue, import Pagination component
-import { Pagination } from "ant-design-vue";
 import RoommateFilter from "../../components/filter/RoommateFilter.vue";
+import { Pagination, Empty } from "ant-design-vue";
+
+const aEmpty = Empty;
 
 // State bộ lọc
 const filters = ref({
