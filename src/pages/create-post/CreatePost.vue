@@ -18,7 +18,7 @@
         </div>
 
         <label>Loại hình <span class="text-red-500">*</span> </label>
-        <div class="flex border border-gray-300 rounded-lg mt-1">
+        <div class="flex rounded-lg mt-1">
           <a-select
             v-model:value="formData.accomodation.motel"
             placeholder="Chọn hình thức"
@@ -26,6 +26,29 @@
           >
             <a-select-option value="PHONG_TRO">Tìm phòng trọ</a-select-option>
             <a-select-option value="O_GHEP">Tìm người ở ghép</a-select-option>
+          </a-select>
+        </div>
+      </div>
+
+      <div
+        v-if="formData.accomodation.motel === 'O_GHEP'"
+        class="block bg-white p-4 rounded-xl"
+        data-aos="zoom-out"
+        data-aos-duration="800"
+      >
+        <div class="py-2">
+          <span class="font-bold text-base">Giới tính</span>
+        </div>
+        <label>Giới tính yêu cầu</label>
+        <div class="flex rounded-lg mt-1">
+          <a-select
+            v-model:value="formData.accomodation.gender"
+            placeholder="Chọn giới tính"
+            class="w-full"
+          >
+            <a-select-option :value="true">Nam</a-select-option>
+            <a-select-option :value="false">Nữ</a-select-option>
+            <a-select-option :value="null">Không yêu cầu</a-select-option>
           </a-select>
         </div>
       </div>
@@ -133,29 +156,6 @@
       </div>
 
       <div
-        v-if="formData.accomodation.motel === 'O_GHEP'"
-        class="block bg-white p-4 rounded-xl"
-        data-aos="zoom-out"
-        data-aos-duration="800"
-      >
-        <div class="py-2">
-          <span class="font-bold text-base">Giới tính</span>
-        </div>
-        <label>Giới tính yêu cầu</label>
-        <div class="flex border border-gray-300 rounded-lg mt-1">
-          <a-select
-            v-model:value="formData.accomodation.gender"
-            placeholder="Chọn giới tính"
-            class="w-full"
-          >
-            <a-select-option :value="true">Nam</a-select-option>
-            <a-select-option :value="false">Nữ</a-select-option>
-            <a-select-option :value="null">Không yêu cầu</a-select-option>
-          </a-select>
-        </div>
-      </div>
-
-      <div
         class="block bg-white p-4 rounded-xl"
         data-aos="zoom-out"
         data-aos-duration="800"
@@ -166,7 +166,7 @@
         <div class="py-2">
           <label>Khu vực <span class="text-red-500">*</span></label>
 
-          <div class="flex border border-gray-300 rounded-lg mt-1">
+          <div class="flex rounded-lg mt-1">
             <a-select
               v-model:value="formData.accomodation.idDistrict"
               placeholder="Chọn khu vực"
@@ -187,9 +187,7 @@
           <label class="block text-gray-700"
             >Địa chỉ <span class="text-red-500">*</span></label
           >
-          <div
-            class="flex items-center border border-gray-300 rounded-lg mt-1 w-120"
-          >
+          <div class="flex items-center rounded-lg mt-1 w-120">
             <input
               v-model="formData.accomodation.address"
               type="text"

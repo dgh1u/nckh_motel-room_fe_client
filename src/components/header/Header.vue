@@ -5,6 +5,9 @@ import logo from "@/assets/vnua-sv-logo.jpg";
 import DropdownMenu from "@/components/header/DropdownMenu.vue";
 import { Bell, Edit, ChevronDown } from "lucide-vue-next";
 
+// ** Import component notifications dropdown **
+import ActionNotificationsDropdown from "@/components//notifications/Notification.vue";
+
 const authStore = useAuthStore();
 
 // Biến kiểm tra header sticky khi cuộn trang
@@ -25,17 +28,26 @@ onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll);
 });
 
-// Hàm hiển thị dropdown
+// Hàm hiển thị dropdown Tìm trọ
 const showMenu = () => {
   clearTimeout(hideTimeout);
   showDropdown.value = true;
 };
 
-// Hàm ẩn dropdown
+// Hàm ẩn dropdown Tìm trọ
 const hideMenu = () => {
   hideTimeout = setTimeout(() => {
     showDropdown.value = false;
   }, 150);
+};
+
+/* 
+  ====== THAY ĐỔI CHO PHẦN THÔNG BÁO =======
+  showNotifications -> toggle dropdown Thông báo
+*/
+const showNotifications = ref(false);
+const toggleNotifications = () => {
+  showNotifications.value = !showNotifications.value;
 };
 </script>
 
@@ -143,17 +155,10 @@ const hideMenu = () => {
             <span>Đăng tin</span>
           </router-link>
 
-          <!-- Thông báo -->
-          <router-link
-            to="/saved"
-            data-aos="zoom-out"
-            data-aos-duration="800"
-            exact-active-class="text-blue-500"
-            class="flex items-center ml-5 hover:text-teal-500 transition duration-150"
-          >
-            <Bell size="20" class="mr-1" />
-            <span>Thông báo</span>
-          </router-link>
+          <!-- THAY ĐỔI PHẦN THÔNG BÁO TẠI ĐÂY -->
+          <div class="relative ml-5">
+            <ActionNotificationsDropdown />
+          </div>
 
           <!-- Dropdown user -->
           <DropdownMenu />
