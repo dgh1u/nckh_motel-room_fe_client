@@ -1,16 +1,17 @@
 <template>
   <DefaultLayout>
     <div class="create-post max-w-3xl mx-auto p-4 space-y-4">
+      <!-- Tiêu đề trang -->
       <div class="block p-4 items-center justify-center flex">
         <span class="font-bold text-3xl text-teal-500">Cập nhật tin đăng</span>
       </div>
 
+      <!-- PHẦN HÌNH THỨC -->
       <div class="block bg-white p-4 pb-6 rounded-xl">
         <div class="py-2">
           <span class="font-bold text-base">Hình thức</span>
         </div>
-
-        <label>Loại hình <span class="text-red-500">*</span> </label>
+        <label>Loại hình <span class="text-red-500">*</span></label>
         <div class="flex rounded-lg mt-1">
           <a-select
             v-model:value="formData.accomodation.motel"
@@ -23,6 +24,7 @@
         </div>
       </div>
 
+      <!-- PHẦN GIỚI TÍNH (nếu O_GHEP) -->
       <div
         v-if="formData.accomodation.motel === 'O_GHEP'"
         class="block bg-white p-4 rounded-xl"
@@ -44,6 +46,7 @@
         </div>
       </div>
 
+      <!-- PHẦN THÔNG TIN MÔ TẢ -->
       <div class="block bg-white p-4 rounded-xl">
         <div class="py-2">
           <span class="font-bold text-base">Thông tin mô tả</span>
@@ -59,11 +62,10 @@
             />
           </div>
         </div>
-
         <div class="py-2">
-          <span class="block"
-            >Nội dung mô tả <span class="text-red-500">*</span></span
-          >
+          <span class="block">
+            Nội dung mô tả <span class="text-red-500">*</span>
+          </span>
           <div class="flex border border-gray-300 rounded-lg mt-1">
             <textarea
               v-model="formData.content"
@@ -73,7 +75,6 @@
             />
           </div>
         </div>
-
         <div class="py-2">
           <label>Giá cho thuê <span class="text-red-500">*</span></label>
           <div class="flex border border-gray-300 rounded-lg mt-1 w-120">
@@ -85,15 +86,14 @@
             />
             <span class="p-2 border-l border-gray-300">đồng/tháng</span>
           </div>
-          <small class="text-gray-500"
-            >Nhập đầy đủ số, ví dụ 1 triệu thì nhập là 1000000</small
-          >
+          <small class="text-gray-500">
+            Nhập đầy đủ số, ví dụ 1 triệu thì nhập là 1000000
+          </small>
         </div>
-
         <div class="py-2">
-          <label class="block text-gray-700"
-            >Diện tích <span class="text-red-500">*</span></label
-          >
+          <label class="block text-gray-700">
+            Diện tích <span class="text-red-500">*</span>
+          </label>
           <div
             class="flex items-center border border-gray-300 rounded-lg mt-1 w-120"
           >
@@ -106,11 +106,10 @@
             <span class="p-2 border-l border-gray-300">m²</span>
           </div>
         </div>
-
         <div class="py-2">
-          <label class="block text-gray-700"
-            >Giá điện <span class="text-red-500">*</span></label
-          >
+          <label class="block text-gray-700">
+            Giá điện <span class="text-red-500">*</span>
+          </label>
           <div
             class="flex items-center border border-gray-300 rounded-lg mt-1 w-120"
           >
@@ -123,11 +122,10 @@
             <span class="p-2 border-l border-gray-300">đồng/kWh</span>
           </div>
         </div>
-
         <div class="py-2">
-          <label class="block text-gray-700"
-            >Giá nước <span class="text-red-500">*</span></label
-          >
+          <label class="block text-gray-700">
+            Giá nước <span class="text-red-500">*</span>
+          </label>
           <div
             class="flex items-center border border-gray-300 rounded-lg mt-1 w-120"
           >
@@ -142,6 +140,7 @@
         </div>
       </div>
 
+      <!-- PHẦN KHU VỰC -->
       <div class="block bg-white p-4 rounded-xl">
         <div class="py-2">
           <span class="font-bold text-base">Khu vực</span>
@@ -164,11 +163,10 @@
             </a-select>
           </div>
         </div>
-
         <div class="py-2">
-          <label class="block text-gray-700"
-            >Địa chỉ <span class="text-red-500">*</span></label
-          >
+          <label class="block text-gray-700">
+            Địa chỉ <span class="text-red-500">*</span>
+          </label>
           <div class="flex items-center rounded-lg mt-1 w-120">
             <input
               v-model="formData.accomodation.address"
@@ -178,7 +176,6 @@
             />
           </div>
         </div>
-
         <div class="map-wrapper py-2">
           <label class="block text-gray-700">Bản đồ</label>
           <div class="flex items-center border border-gray-300 rounded-lg mt-1">
@@ -196,6 +193,7 @@
         </div>
       </div>
 
+      <!-- PHẦN ĐẶC ĐIỂM NỔI BẬT -->
       <div class="block bg-white p-4 rounded-xl">
         <h3 class="text-xl font-semibold">Đặc điểm nổi bật</h3>
         <div class="grid grid-cols-2 gap-y-3">
@@ -231,6 +229,61 @@
         </div>
       </div>
 
+      <!-- PHẦN HÌNH ẢNH (UPLOAD, PREVIEW, XOÁ) -->
+      <div class="block bg-white p-4 rounded-xl">
+        <h3 class="font-bold text-base">Hình ảnh</h3>
+        <div
+          class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
+        >
+          <FolderUp class="w-12 h-12 text-teal-500" />
+          <span class="mt-2 text-gray-500">Tải ảnh từ thiết bị</span>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            @change="handleFileChange"
+            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
+        </div>
+        <small
+          v-if="newFiles.length < 5 && existingImages.length === 0"
+          class="text-red-500 block mt-2"
+        >
+          Vui lòng chọn ít nhất 5 ảnh.
+        </small>
+        <div class="mt-6 grid grid-cols-3 gap-4">
+          <!-- Ảnh cũ (base64) -->
+          <div
+            v-for="(img, idx) in existingImages"
+            :key="idx"
+            class="relative bg-white rounded-lg shadow overflow-hidden"
+          >
+            <img :src="img.preview" class="w-full h-32 object-cover" />
+            <button
+              @click="removeExisting(idx)"
+              class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-red-500"
+            >
+              <Trash2 class="w-4 h-4" /><span class="text-xs">Xóa</span>
+            </button>
+          </div>
+          <!-- Ảnh mới -->
+          <div
+            v-for="(file, idx) in newFiles"
+            :key="idx"
+            class="relative bg-white rounded-lg shadow overflow-hidden"
+          >
+            <img :src="file.preview" class="w-full h-32 object-cover" />
+            <button
+              @click="removeNew(idx)"
+              class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-red-500"
+            >
+              <Trash2 class="w-4 h-4" /><span class="text-xs">Xóa</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NÚT SUBMIT VÀ TRỞ VỀ -->
       <div class="text-white font-semibold">
         <button
           class="submit-btn bg-teal-500 px-4 py-2 rounded hover:bg-teal-600 w-full flex items-center justify-center"
@@ -246,7 +299,6 @@
             <span v-if="loading">Đang cập nhật...</span>
           </span>
         </button>
-        <!-- Nút Trở về -->
         <router-link
           :to="
             formData.accomodation.motel === 'PHONG_TRO'
@@ -264,11 +316,30 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from "vue";
-import { updatePost, getDetailPost } from "@/apis/postService.js";
-import { Select, message } from "ant-design-vue";
-import { Check as CheckIcon } from "lucide-vue-next";
 import { useRoute, useRouter } from "vue-router";
 import DefaultLayout from "../../layouts/DefaultLayout.vue";
+import { Select, message } from "ant-design-vue";
+import { Check as CheckIcon, FolderUp, Trash2 } from "lucide-vue-next";
+
+import { updatePost, getDetailPost } from "@/apis/postService.js";
+import {
+  getImageDTOByPost, // Lấy mảng ImageDTO (base64)
+  deleteImagesByPost,
+  uploadMultipleImages,
+} from "@/apis/imageService.js";
+
+/**
+ * Hàm chuyển base64 -> File
+ */
+function base64ToFile(base64, fileName, fileType) {
+  const byteString = atob(base64);
+  const arrayBuffer = new ArrayBuffer(byteString.length);
+  const intArray = new Uint8Array(arrayBuffer);
+  for (let i = 0; i < byteString.length; i++) {
+    intArray[i] = byteString.charCodeAt(i);
+  }
+  return new File([intArray], fileName, { type: fileType });
+}
 
 const ASelect = Select;
 const ASelectOption = ASelect.Option;
@@ -344,11 +415,28 @@ const route = useRoute();
 const router = useRouter();
 const postId = route.params.id;
 
+/**
+ * Mảng ảnh cũ: Lưu dưới dạng ImageDTO -> { id, fileName, fileType, base64, preview }
+ */
+const existingImages = ref([]);
+/**
+ * Mảng ảnh mới (File)
+ */
+const newFiles = ref([]);
+/**
+ * Số lượng ảnh ban đầu (để biết người dùng có xóa ảnh cũ không)
+ */
+const initialImageCount = ref(0);
+
+/**
+ * onMounted: Lấy chi tiết bài đăng + mảng ImageDTO (base64) ảnh cũ
+ */
 onMounted(async () => {
   try {
-    const response = await getDetailPost(postId);
-    const data = response.data;
-    // Giả sử cấu trúc trả về chứa: title, content và accomodationDTO
+    // 1) Lấy detail post
+    const resp = await getDetailPost(postId);
+    console.log("Detail post:", resp.data);
+    const data = resp.data;
     formData.title = data.title;
     formData.content = data.content;
     if (data.accomodationDTO) {
@@ -357,15 +445,78 @@ onMounted(async () => {
         formData.accomodation.idDistrict = data.accomodationDTO.district.id;
       }
     }
+
+    // 2) Gọi API getImageDTOByPost => lấy ảnh cũ dạng base64
+    const imgRes = await getImageDTOByPost(postId);
+    console.log("Response từ getImageDTOByPost:", imgRes);
+    console.log("Data từ getImageDTOByPost:", imgRes.data);
+
+    // Kiểm tra xem mảng ImageDTO nằm ở imgRes.data hay sâu hơn (vd. imgRes.data.data)
+    const imageArray = imgRes; // Nếu backend trả về { data: [...] } thì thay bằng: imgRes.data.data
+    if (imageArray && Array.isArray(imageArray)) {
+      existingImages.value = imageArray.map((img) => {
+        const previewUrl = `data:${img.fileType};base64,${img.uri}`;
+        console.log("Item ImageDTO:", img, "=> preview:", previewUrl);
+        return {
+          id: img.id,
+          fileName: img.fileName,
+          fileType: img.fileType,
+          base64: img.uri,
+          preview: previewUrl,
+        };
+      });
+      initialImageCount.value = existingImages.value.length;
+      console.log("Số ảnh cũ ban đầu:", initialImageCount.value);
+    } else {
+      existingImages.value = [];
+      initialImageCount.value = 0;
+      console.warn("API không trả về mảng ImageDTO, data nhận:", imgRes.data);
+    }
   } catch (error) {
-    console.error("Lỗi tải thông tin bài đăng:", error);
-    message.error("Không thể tải thông tin bài đăng.");
+    console.error("Lỗi khi tải detail post:", error);
+    message.error("Không thể tải dữ liệu bài đăng.");
   }
 });
 
-const handleUpdatePost = async () => {
-  loading.value = true;
-  const payload = {
+/**
+ * Khi user chọn file mới
+ */
+function handleFileChange(e) {
+  const files = Array.from(e.target.files);
+  files.forEach((file) => {
+    if (existingImages.value.length + newFiles.value.length < 8) {
+      file.preview = URL.createObjectURL(file);
+      newFiles.value.push(file);
+      console.log("Đã thêm file mới:", file.name);
+    } else {
+      message.error("Tối đa 8 ảnh");
+    }
+  });
+  e.target.value = null;
+}
+
+/**
+ * Xoá ảnh cũ (base64) ra khỏi existingImages
+ */
+function removeExisting(idx) {
+  console.log("Xoá ảnh cũ tại idx =", idx, ":", existingImages.value[idx]);
+  existingImages.value.splice(idx, 1);
+}
+
+/**
+ * Xoá file mới ra khỏi newFiles
+ */
+function removeNew(idx) {
+  console.log("Xoá ảnh mới tại idx =", idx, ":", newFiles.value[idx].name);
+  URL.revokeObjectURL(newFiles.value[idx].preview);
+  newFiles.value.splice(idx, 1);
+}
+
+/**
+ * Xây dựng payload updatePost
+ */
+function buildPayload() {
+  return {
     title: formData.title,
     content: formData.content,
     accomodation: {
@@ -390,12 +541,51 @@ const handleUpdatePost = async () => {
       security: formData.accomodation.security,
     },
   };
+}
 
+/**
+ * Khi nhấn "Cập nhật bài đăng"
+ */
+async function handleUpdatePost() {
+  loading.value = true;
   try {
-    const response = await updatePost(postId, payload);
-    console.log("Cập nhật bài đăng thành công:", response.data);
+    console.log("Cập nhật bài đăng với payload:", buildPayload());
+    await updatePost(postId, buildPayload());
+    console.log("Cập nhật bài đăng thành công.");
+
+    // Kiểm tra thay đổi ảnh
+    const hasChanges =
+      existingImages.value.length < initialImageCount.value ||
+      newFiles.value.length > 0;
+    console.log("Kiểm tra thay đổi ảnh:", {
+      existingLength: existingImages.value.length,
+      initialCount: initialImageCount.value,
+      newFilesCount: newFiles.value.length,
+      hasChanges,
+    });
+
+    if (hasChanges) {
+      console.log("Có thay đổi ảnh => Xoá toàn bộ trên server + re-upload");
+      await deleteImagesByPost(postId);
+
+      // Chuyển các ảnh cũ (base64) còn lại thành File
+      const reuploadOldFiles = existingImages.value.map((img) => {
+        const file = base64ToFile(img.base64, img.fileName, img.fileType);
+        console.log("Convert base64 -> File:", file);
+        return file;
+      });
+
+      // Gộp ảnh cũ + ảnh mới
+      const finalFiles = [...reuploadOldFiles, ...newFiles.value];
+      console.log("finalFiles để upload:", finalFiles);
+
+      if (finalFiles.length) {
+        console.log("Upload lại ảnh cũ + mới...");
+        await uploadMultipleImages(postId, finalFiles);
+      }
+    }
+
     message.success("Cập nhật tin thành công!");
-    // Chuyển hướng sau khi submit thành công dựa vào giá trị của motel
     if (formData.accomodation.motel === "PHONG_TRO") {
       router.push(`/post/motel/${postId}`);
     } else {
@@ -407,11 +597,19 @@ const handleUpdatePost = async () => {
   } finally {
     loading.value = false;
   }
-};
+}
 
-const toggleFeature = (featureValue) => {
+/**
+ * Toggle feature
+ */
+function toggleFeature(featureValue) {
   formData.accomodation[featureValue] = !formData.accomodation[featureValue];
-};
+  console.log(
+    "Toggle feature:",
+    featureValue,
+    formData.accomodation[featureValue]
+  );
+}
 </script>
 
 <style scoped>
@@ -426,7 +624,6 @@ const toggleFeature = (featureValue) => {
   height: 16px;
   animation: spin 2s linear infinite;
 }
-
 @keyframes spin {
   0% {
     transform: rotate(0deg);

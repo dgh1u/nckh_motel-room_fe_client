@@ -15,7 +15,7 @@
         <slot />
       </main>
     </div>
-
+    <Chatbot />
     <!-- Footer -->
     <Footer class="bg-gray-300 p-4" />
   </div>
@@ -25,4 +25,5 @@
 import Header from "../components/header/Header.vue";
 import Footer from "../components/footer/Footer.vue";
 import ProfileSidebar from "../components/sidebar-profile/ProfileSidebar.vue";
+import Chatbot from "../pages/chatbot/Chatbot.vue";
 </script>

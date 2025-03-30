@@ -10,6 +10,8 @@ import RoommateFindList from "../pages/roommate-find/RoommateFindList.vue";
 import RoommateFindDetail from "../pages/roommate-find/RoommateFindDetail.vue";
 import CreatePost from "../pages/create-post/CreatePost.vue";
 import UpdatePost from "../pages/update-post/UpdatePost.vue";
+import ListNotifications from "../pages/list-notifications/ListNotifications.vue";
+import UploadImages from "../pages/image/UploadImages.vue";
 
 export default [
   {
@@ -102,6 +104,24 @@ export default [
     path: "/update-post/:id",
     name: "UpdatePost",
     component: UpdatePost,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/list-notifications",
+    name: "ListNotification",
+    component: ListNotifications,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/image",
+    name: "UploadImages",
+    component: UploadImages,
     meta: {
       requiresAuth: false,
     },

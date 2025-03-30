@@ -8,3 +8,10 @@ export const getListAction = async (params) => {
     params: params,
   });
 };
+
+export const markActionAsRead = async (id) => {
+  return axios({
+    url: `/api/actions/${id}/mark-read`,
+    method: "PUT",
+  });
+};

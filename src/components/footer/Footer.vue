@@ -5,9 +5,7 @@
       data-aos="zoom-out-up"
       data-aos-duration="800"
     >
-      <div
-        class="grid grid-cols-1 md:grid-cols-3 gap-10 pb-6 border-b border-gray-700"
-      >
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 pb-6">
         <!-- Cột 1: Giới thiệu -->
         <div>
           <img

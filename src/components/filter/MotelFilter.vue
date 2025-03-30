@@ -32,7 +32,7 @@
     </div>
 
     <!-- KHU VỰC -->
-    <div class="mb-6" data-aos="zoom-out-right" data-aos-duration="800">
+    <div class="mb-6">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Khu vực</span>
       </div>
@@ -71,7 +71,7 @@
     </div>
 
     <!-- ĐẶC ĐIỂM -->
-    <div class="mb-4" data-aos="zoom-out-right" data-aos-duration="1200">
+    <div class="mb-4">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Đặc điểm</span>
       </div>
@@ -108,11 +108,7 @@
     </div>
 
     <!-- NÚT ĐẶT LẠI -->
-    <div
-      class="p-2 text-white"
-      data-aos="zoom-out-right"
-      data-aos-duration="1600"
-    >
+    <div class="p-2 text-white">
       <button
         class="flex items-center space-x-2 font-bold border border-red-400 px-5 py-2 rounded bg-red-400 hover:bg-red-500 text-white hover:border-red-500 transition"
         @click="resetAll"

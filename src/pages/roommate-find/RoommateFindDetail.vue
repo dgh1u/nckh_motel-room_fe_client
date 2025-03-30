@@ -22,28 +22,29 @@
       <!-- CỘT TRÁI -->
       <div class="flex-1 p-4 bg-gray-100">
         <!-- GALLERY Ở ĐẦU TRANG -->
-        <div
-          class="bg-white rounded-xl p-4 text-4xl"
-          data-aos="zoom-out"
-          data-aos-duration="800"
-        >
+        <div class="bg-white rounded-xl p-4 text-4xl shadow-lg">
           <div
+            v-if="galleryImages.length > 0"
             class="relative w-full h-96 bg-black text-white flex items-center justify-center mb-4 rounded-xl"
           >
             <button
               class="absolute left-0 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-3xl"
               @click="prevImage"
+              :disabled="galleryImages.length === 0"
             >
               &lt;
             </button>
+
             <img
               :src="galleryImages[currentImageIndex]"
               alt="gallery image"
               class="max-h-full object-contain"
             />
+
             <button
               class="absolute right-0 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-3xl"
               @click="nextImage"
+              :disabled="galleryImages.length === 0"
             >
               &gt;
             </button>
@@ -73,13 +74,8 @@
         <!-- Hiển thị thông báo lỗi nếu có -->
         <div v-if="errorMsg" class="text-red-600">{{ errorMsg }}</div>
         <!-- Hiển thị chi tiết bài đăng nếu có dữ liệu -->
-        <div
-          v-else-if="post"
-          class="pt-4"
-          data-aos="zoom-out"
-          data-aos-duration="800"
-        >
-          <div class="bg-white rounded-xl p-4 text-left">
+        <div v-else-if="post" class="pt-4">
+          <div class="bg-white rounded-xl p-4 text-left shadow-lg">
             <div>
               <div
                 class="bg-gray-200 w-15 rounded-lg flex items-center justify-center"
@@ -291,6 +287,14 @@
             </div>
           </div>
         </div>
+        <!-- Bình luận -->
+        <div class="mt-4">
+          <div v-if="post">
+            <div class="mt-4 shadow-lg">
+              <Comment v-if="post && post.id" :idPost="post.id" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- CỘT PHẢI: Thông tin người đăng -->
@@ -298,8 +302,6 @@
         <div
           v-if="post && post.userDTO"
           class="rounded-md p-4 shadow-md text-center bg-white"
-          data-aos="zoom-out-left"
-          data-aos-duration="800"
         >
           <!-- Ảnh đại diện -->
           <div
@@ -361,12 +363,7 @@
         </div>
         <!-- Thêm khối nút Cập nhật, Ẩn/Hiện tin đăng -->
         <div class="py-8">
-          <div
-            v-if="isOwner"
-            class="p-4 bg-white rounded-xl shadow-xl"
-            data-aos="zoom-out-left"
-            data-aos-duration="800"
-          >
+          <div v-if="isOwner" class="p-4 bg-white rounded-xl shadow-xl">
             <div><span class="font-semibold text-lg">Thao tác</span></div>
             <div class="py-4">
               <router-link
@@ -402,7 +399,10 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import DefaultLayout from "../../layouts/DefaultLayout.vue";
+import Comment from "../../components/comment/Comment.vue";
 import { getDetailPost, hidePost } from "@/apis/postService.js";
+import { getImageByPost } from "@/apis/imageService.js";
+
 import { getProfile } from "@/apis/authService.js";
 import { message } from "ant-design-vue";
 import { Phone, MessageCircle, MapPin, Mail, Toilet } from "lucide-vue-next";
@@ -465,13 +465,7 @@ const finalAvatar = computed(() => {
 });
 
 // ====================== GALLERY CODE ======================
-const galleryImages = ref([
-  "https://via.placeholder.com/600x400?text=Demo+1",
-  "https://via.placeholder.com/600x400?text=Demo+2",
-  "https://via.placeholder.com/600x400?text=Demo+3",
-  "https://via.placeholder.com/600x400?text=Demo+4",
-  "https://via.placeholder.com/600x400?text=Demo+5",
-]);
+const galleryImages = ref([]);
 
 const currentImageIndex = ref(0);
 
@@ -501,18 +495,29 @@ function nextImage() {
 }
 // ====================== END GALLERY CODE ======================
 
+// API: Lấy chi tiết bài đăng
 async function fetchPost() {
   const id = route.params.id;
+  console.log("Fetching post id =", id);
   try {
-    const response = await getDetailPost(id);
-    const result = response.data;
-    if (result && result.id) {
-      post.value = result;
-    } else {
-      errorMsg.value = "Lỗi: Không thể tải bài đăng";
-    }
+    const { data: result } = await getDetailPost(id);
+    console.log("Post API returned:", result);
+    post.value = result;
+    await loadGalleryImages(result.id);
   } catch (error) {
-    errorMsg.value = "Có lỗi xảy ra khi tải thông tin tin đăng.";
+    console.error("Error fetching post:", error);
+    errorMsg.value = "Có lỗi khi tải bài đăng";
+  }
+}
+async function loadGalleryImages(postId) {
+  console.log("Calling getImageByPost for postId =", postId);
+  try {
+    const urls = await getImageByPost(postId);
+    console.log("getImageByPost returned URLs array:", urls);
+    galleryImages.value = Array.isArray(urls) ? urls : [];
+    currentImageIndex.value = 0;
+  } catch (err) {
+    console.error("Error loading gallery images:", err);
   }
 }
 

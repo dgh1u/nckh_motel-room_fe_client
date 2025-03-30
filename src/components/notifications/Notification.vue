@@ -1,98 +1,8 @@
-<template>
-  <div
-    class="relative inline-block"
-    @mouseenter="showMenu"
-    @mouseleave="hideMenu"
-  >
-    <!-- Nút bấm mở dropdown -->
-    <button
-      class="flex items-center px-2 py-2 space-x-2 text-sm font-medium"
-      data-aos="zoom-out"
-      data-aos-duration="800"
-    >
-      <Bell size="20" class="mr-1" />
-      <span>Thông báo</span>
-    </button>
-
-    <transition name="fade">
-      <div
-        v-if="showDropdown"
-        class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg"
-        style="z-index: 9999"
-      >
-        <!-- Header dropdown -->
-        <div class="px-4 py-3">
-          <span class="font-bold text-lg">Thông báo</span>
-        </div>
-
-        <!-- Danh sách thông báo -->
-        <div class="max-h-96 overflow-y-auto">
-          <ul>
-            <li
-              v-for="action in actions"
-              :key="action.id"
-              class="flex items-start px-2 py-3 mx-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-              @click="goToPost(action)"
-            >
-              <!-- Icon hành động -->
-              <component
-                :is="actionIcon(action.action)"
-                class="w-7 h-7 p-1 text-white rounded-full flex-shrink-0"
-                :class="actionColor(action.action)"
-              />
-              <!-- Nội dung -->
-              <div class="ml-3 text-sm leading-5 text-gray-700">
-                <p>
-                  <template v-if="action.action === 'CREATE'">
-                    <strong>Bạn</strong> đã tạo bài đăng
-                    <span class="text-teal-500">{{ action.postTitle }}</span>
-                    (ID: <span class="text-amber-400">{{ action.postId }}</span
-                    >) đang chờ kiểm duyệt.
-                  </template>
-                  <template v-else-if="action.action === 'APPROVE'">
-                    <strong>ADMIN</strong> đã duyệt bài đăng
-                    <span class="text-teal-500">{{ action.postTitle }}</span>
-
-                    (ID: <span class="text-amber-400">{{ action.postId }}</span
-                    >) .
-                  </template>
-                  <template v-else-if="action.action === 'BLOCK'">
-                    <strong>ADMIN</strong> đã khóa bài đăng
-                    <span class="text-teal-500">{{ action.postTitle }}</span>
-                    (ID: <span class="text-amber-400">{{ action.postId }}</span
-                    >) .
-                  </template>
-                </p>
-                <!-- Thời gian -->
-                <div class="text-xs text-gray-400 font-medium">
-                  {{ formatTime(action.time) }}
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Phân trang nhỏ -->
-        <div class="border-t border-gray-100 px-2 py-2 flex justify-center">
-          <a-pagination
-            size="small"
-            :current="pagination.current"
-            :pageSize="pagination.pageSize"
-            :total="pagination.total"
-            :showTotal="pagination.showTotal"
-            @change="handlePageChange"
-          />
-        </div>
-      </div>
-    </transition>
-  </div>
-</template>
-
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { PlusCircle, CheckCircle2, XCircle, Bell } from "lucide-vue-next";
-import { getListAction } from "@/apis/actionService";
+import { getListAction, markActionAsRead } from "@/apis/actionService";
 import { getPostsByUserId } from "@/apis/postService";
 
 // Dropdown mở/đóng bằng hover
@@ -130,6 +40,11 @@ const pagination = ref({
   showTotal: (total) => `Tổng: ${total} thông báo`,
 });
 
+// Tính số lượng thông báo chưa đọc
+const unreadCount = computed(() => {
+  return actions.value.filter((action) => !action.isRead).length;
+});
+
 onMounted(() => {
   fetchActions();
 });
@@ -137,15 +52,30 @@ onMounted(() => {
 // Router để điều hướng
 const router = useRouter();
 function goToPost(action) {
-  // Kiểm tra action.motel
-  if (action.motel === "O_GHEP") {
-    router.push(`/post/roommate/${action.postId}`);
-  } else if (action.motel === "PHONG_TRO") {
-    router.push(`/post/motel/${action.postId}`);
-  } else {
-    // Nếu không khớp, cho mặc định link motel
-    router.push(`/post/motel/${action.postId}`);
-  }
+  // Gọi API PUT để đánh dấu thông báo là đã đọc và cập nhật isRead
+  markActionAsRead(action.id)
+    .then(() => {
+      action.isRead = true;
+      // Sau đó điều hướng đến chi tiết bài đăng
+      if (action.motel === "O_GHEP") {
+        router.push(`/post/roommate/${action.postId}`);
+      } else if (action.motel === "PHONG_TRO") {
+        router.push(`/post/motel/${action.postId}`);
+      } else {
+        router.push(`/post/motel/${action.postId}`);
+      }
+    })
+    .catch((error) => {
+      console.error("Error marking notification as read:", error);
+      // Dù lỗi vẫn chuyển hướng
+      if (action.motel === "O_GHEP") {
+        router.push(`/post/roommate/${action.postId}`);
+      } else if (action.motel === "PHONG_TRO") {
+        router.push(`/post/motel/${action.postId}`);
+      } else {
+        router.push(`/post/motel/${action.postId}`);
+      }
+    });
 }
 
 // API lấy các action
@@ -244,6 +174,106 @@ function actionColor(type) {
   );
 }
 </script>
+
+<template>
+  <div
+    class="relative inline-block"
+    @mouseenter="showMenu"
+    @mouseleave="hideMenu"
+  >
+    <!-- Nút bấm mở dropdown -->
+    <button
+      class="relative flex items-center py-2 space-x-2 text-sm font-medium"
+      data-aos="zoom-out"
+      data-aos-duration="800"
+    >
+      <!-- Bell icon + Badge -->
+      <div class="relative">
+        <Bell size="22" class="mr-1" />
+        <!-- Badge đỏ hiển thị số thông báo chưa đọc -->
+        <span
+          v-if="unreadCount > 0"
+          class="absolute -top-1.5 -right-0.5 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
+        >
+          {{ unreadCount }}
+        </span>
+      </div>
+    </button>
+
+    <transition name="fade">
+      <div
+        v-if="showDropdown"
+        class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg"
+        style="z-index: 9999"
+      >
+        <!-- Header dropdown -->
+        <div class="px-4 py-3">
+          <span class="font-bold text-lg">Thông báo</span>
+        </div>
+
+        <!-- Danh sách thông báo -->
+        <div class="max-h-96 overflow-y-auto">
+          <ul>
+            <li
+              v-for="action in actions"
+              :key="action.id"
+              class="flex items-start px-2 py-3 mx-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+              @click="goToPost(action)"
+            >
+              <!-- Icon hành động -->
+              <component
+                :is="actionIcon(action.action)"
+                class="w-7 h-7 p-1 text-white rounded-full flex-shrink-0"
+                :class="actionColor(action.action)"
+              />
+              <!-- Nội dung -->
+              <div
+                :style="{ opacity: action.isRead ? 0.5 : 1 }"
+                class="ml-3 text-sm leading-5 text-gray-700"
+              >
+                <p>
+                  <template v-if="action.action === 'CREATE'">
+                    <strong>Bạn</strong> đã tạo bài đăng
+                    <span class="text-teal-500">{{ action.postTitle }}</span>
+                    (ID: <span class="text-amber-400">{{ action.postId }}</span>
+                    ) đang chờ kiểm duyệt.
+                  </template>
+                  <template v-else-if="action.action === 'APPROVE'">
+                    <strong>ADMIN</strong> đã duyệt bài đăng
+                    <span class="text-teal-500">{{ action.postTitle }}</span>
+                    (ID: <span class="text-amber-400">{{ action.postId }}</span>
+                    ).
+                  </template>
+                  <template v-else-if="action.action === 'BLOCK'">
+                    <strong>ADMIN</strong> đã khóa bài đăng
+                    <span class="text-teal-500">{{ action.postTitle }}</span>
+                    (ID: <span class="text-amber-400">{{ action.postId }}</span>
+                    ).
+                  </template>
+                </p>
+                <!-- Thời gian -->
+                <div class="text-xs text-gray-400 font-medium">
+                  {{ formatTime(action.time) }}
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Phân trang nhỏ -->
+        <!-- Thay phân trang bằng một span "Xem tất cả thông báo" -->
+        <div class="border-t border-gray-100 px-2 py-2 flex justify-center">
+          <span
+            class="text-blue-500 cursor-pointer"
+            @click="router.push('/list-notifications')"
+          >
+            Xem tất cả thông báo
+          </span>
+        </div>
+      </div>
+    </transition>
+  </div>
+</template>
 
 <style scoped>
 .fade-enter-active,

@@ -14,6 +14,7 @@
         <slot />
         <!-- Khu vực hiển thị nội dung trang -->
       </main>
+      <Chatbot />
 
       <!-- Sidebar Right -->
       <div class="col-span-1 bg-white p-1 text-center">Content</div>
@@ -28,4 +29,5 @@
 import Header from "../components/header/Header.vue";
 import Footer from "../components/footer/Footer.vue";
 import HomeBanner from "../components/banner/HomeBanner.vue";
+import Chatbot from "../pages/chatbot/Chatbot.vue";
 </script>

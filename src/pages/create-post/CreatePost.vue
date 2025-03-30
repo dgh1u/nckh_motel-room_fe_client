@@ -1,18 +1,10 @@
 <template>
   <ProfileLayout>
     <div class="create-post max-w-3xl mx-auto space-y-4">
-      <div
-        class="block items-center pb-4 justify-center flex"
-        data-aos="zoom-out"
-        data-aos-duration="800"
-      >
+      <div class="block items-center pb-4 justify-center flex">
         <span class="font-bold text-3xl text-teal-500">Đăng tin cho thuê</span>
       </div>
-      <div
-        class="block bg-white p-4 pb-6 rounded-xl"
-        data-aos="zoom-out"
-        data-aos-duration="800"
-      >
+      <div class="block bg-white p-4 pb-6 rounded-xl">
         <div class="py-2">
           <span class="font-bold text-base">Hình thức</span>
         </div>
@@ -33,8 +25,6 @@
       <div
         v-if="formData.accomodation.motel === 'O_GHEP'"
         class="block bg-white p-4 rounded-xl"
-        data-aos="zoom-out"
-        data-aos-duration="800"
       >
         <div class="py-2">
           <span class="font-bold text-base">Giới tính</span>
@@ -53,11 +43,7 @@
         </div>
       </div>
 
-      <div
-        class="block bg-white p-4 rounded-xl"
-        data-aos="zoom-out"
-        data-aos-duration="800"
-      >
+      <div class="block bg-white p-4 rounded-xl">
         <div class="py-2">
           <span class="font-bold text-base">Thông tin mô tả</span>
         </div>
@@ -155,11 +141,7 @@
         </div>
       </div>
 
-      <div
-        class="block bg-white p-4 rounded-xl"
-        data-aos="zoom-out"
-        data-aos-duration="800"
-      >
+      <div class="block bg-white p-4 rounded-xl">
         <div class="py-2">
           <span class="font-bold text-base">Khu vực</span>
         </div>
@@ -214,12 +196,10 @@
         </div>
       </div>
 
-      <div
-        class="block bg-white p-4 rounded-xl"
-        data-aos="zoom-out"
-        data-aos-duration="800"
-      >
-        <h3 class="text-xl font-semibold">Đặc điểm nổi bật</h3>
+      <div class="block bg-white p-4 rounded-xl">
+        <div class="py-2">
+          <span class="font-bold text-base">Đặc điểm nổi bật</span>
+        </div>
         <div class="grid grid-cols-2 gap-y-3">
           <div
             v-for="(feature, idx) in featureOptions"
@@ -252,11 +232,67 @@
           </div>
         </div>
       </div>
-      <div
-        class="text-white font-semibold"
-        data-aos="zoom-out"
-        data-aos-duration="800"
-      >
+      <div class="block bg-white p-4 rounded-xl">
+        <div class="py-2">
+          <span class="font-bold text-base">Hình ảnh</span>
+        </div>
+
+        <div
+          class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
+        >
+          <FolderUp class="w-12 h-12 text-teal-500" />
+          <span class="mt-2 text-gray-500">Tải ảnh từ thiết bị</span>
+
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            @change="handleFileChange"
+            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
+        </div>
+
+        <small
+          v-if="files.length < 5 || files.length > 8"
+          class="text-red-500 block mt-2"
+        >
+          Vui lòng chọn ít nhất 5 và tối đa 8 ảnh.
+        </small>
+
+        <ul class="mt-4 text-gray-500 text-xs list-disc list-inside space-y-1">
+          <li>
+            Tối thiểu 5 ảnh gồm các khu vực: 2 ảnh Phòng chính, 1 ảnh Nhà vệ
+            sinh, 1 ảnh Bếp, 1 ảnh Mặt tiền
+          </li>
+          <li>Dung lượng mỗi ảnh tối đa 10MB</li>
+          <li>Ảnh phải liên quan đến phòng trọ, nhà cho thuê</li>
+          <li>Không chèn văn bản hoặc số điện thoại lên ảnh</li>
+        </ul>
+
+        <!-- Preview ảnh -->
+        <div v-if="files.length" class="mt-6 grid grid-cols-3 gap-4">
+          <div
+            v-for="(file, idx) in files"
+            :key="idx"
+            class="relative bg-white rounded-lg shadow overflow-hidden"
+          >
+            <img
+              :src="file.preview"
+              alt="preview"
+              class="w-full h-32 object-cover"
+            />
+            <button
+              @click="removeImage(idx)"
+              class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 text-red-500 hover:text-red-600"
+            >
+              <Trash2 class="w-4 h-4" />
+              <span class="text-xs">Xóa</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-white font-semibold">
         <button
           class="submit-btn bg-teal-500 px-4 py-2 rounded hover:bg-teal-600 w-full flex items-center justify-center"
           :disabled="loading"
@@ -279,16 +315,21 @@
 <script setup>
 import { ref, reactive, computed, watch } from "vue";
 import { createPost } from "@/apis/postService.js";
+import { uploadMultipleImages } from "@/apis/imageService.js";
+
 // Import các component của Ant Design Vue
 import { Select, message, Spin } from "ant-design-vue";
 const { Option: ASelectOption } = Select;
-import { Check as CheckIcon } from "lucide-vue-next";
+import { Check as CheckIcon, FolderUp, Trash2 } from "lucide-vue-next";
 import ProfileLayout from "@/layouts/ProfileLayout.vue";
+import UploadImages from "../image/UploadImages.vue";
 
 // Import các component của Ant Design Vue trực tiếp trong setup
 const ASelect = Select;
 const ASelectOptionComponent = ASelectOption;
 const ASpin = Spin;
+
+const files = ref([]);
 
 // Khai báo các biến reactive
 const formData = reactive({
@@ -360,22 +401,49 @@ watch(
 );
 
 // Methods
+const handleFileChange = (e) => {
+  const selected = Array.from(e.target.files);
+  for (const file of selected) {
+    if (files.value.length < 8) {
+      file.preview = URL.createObjectURL(file);
+      files.value.push(file);
+    } else {
+      message.error("Chỉ được tải lên tối đa 8 ảnh");
+      break;
+    }
+  }
+  e.target.value = null;
+};
+const removeImage = (idx) => {
+  URL.revokeObjectURL(files.value[idx].preview);
+  files.value.splice(idx, 1);
+};
+
 const handleCreatePost = async () => {
+  if (files.value.length < 5) {
+    message.error("Bạn phải tải lên ít nhất 5 ảnh");
+    return;
+  }
+
   loading.value = true;
 
-  setTimeout(async () => {
-    try {
-      const response = await createPost(formData);
-      console.log("Tạo bài viết thành công:", response.data);
-      message.success("Đăng tin thành công!");
-      resetForm();
-    } catch (error) {
-      console.error("Lỗi khi tạo bài viết:", error);
-      message.error("Đã có lỗi xảy ra khi đăng tin.");
-    } finally {
-      loading.value = false;
-    }
-  }, 1000);
+  try {
+    // 1️⃣ Tạo bài viết
+    const { data: post } = await createPost(formData);
+    const postId = post.id;
+
+    // 2️⃣ Upload đồng loạt 5 ảnh
+    await uploadMultipleImages(postId, files.value);
+
+    message.success("Đăng tin thành công!");
+    resetForm();
+    files.value = [];
+  } catch (error) {
+    console.error(error);
+    message.error("Đã có lỗi xảy ra");
+  } finally {
+    loading.value = false;
+  }
 };
 
 const toggleFeature = (featureValue) => {
