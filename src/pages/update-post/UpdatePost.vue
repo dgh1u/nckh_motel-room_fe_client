@@ -547,6 +547,61 @@ function buildPayload() {
  * Khi nhấn "Cập nhật bài đăng"
  */
 async function handleUpdatePost() {
+  // Validate tiêu đề:
+  if (!formData.title.trim()) {
+    message.error("Tiêu đề không được để trống");
+    return;
+  }
+  if (formData.title.trim().length < 10 || formData.title.trim().length > 100) {
+    message.error("Tiêu đề phải từ 10 đến 100 ký tự");
+    return;
+  }
+
+  // Validate nội dung mô tả:
+  if (!formData.content.trim()) {
+    message.error("Nội dung mô tả không được để trống");
+    return;
+  }
+  if (
+    formData.content.trim().length < 50 ||
+    formData.content.trim().length > 500
+  ) {
+    message.error("Nội dung mô tả phải từ 50 đến 500 ký tự");
+    return;
+  }
+
+  // Validate các trường của accomodation:
+  if (!formData.accomodation.price) {
+    message.error("Giá cho thuê không được để trống");
+    return;
+  }
+  if (!formData.accomodation.acreage) {
+    message.error("Diện tích không được để trống");
+    return;
+  }
+  if (!formData.accomodation.electricPrice) {
+    message.error("Giá điện không được để trống");
+    return;
+  }
+  if (!formData.accomodation.waterPrice) {
+    message.error("Giá nước không được để trống");
+    return;
+  }
+  if (!formData.accomodation.idDistrict) {
+    message.error("Khu vực không được để trống");
+    return;
+  }
+  if (!formData.accomodation.address.trim()) {
+    message.error("Địa chỉ không được để trống");
+    return;
+  }
+  // Validate số lượng ảnh (tổng số ảnh cũ và ảnh mới) phải >= 5
+  const totalImages = existingImages.value.length + newFiles.value.length;
+  if (totalImages < 5) {
+    message.error("Bạn phải tải lên ít nhất 5 ảnh");
+    return;
+  }
+
   loading.value = true;
   try {
     console.log("Cập nhật bài đăng với payload:", buildPayload());

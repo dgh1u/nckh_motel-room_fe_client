@@ -57,6 +57,7 @@ export const useAuthStore = defineStore(
         isAuthenticated.value = false;
         avatar.value = ""; // reset avatar khi đăng xuất
         localStorage.removeItem("auth");
+        localStorage.removeItem("chatMessages");
         console.log("User logged out successfully.");
       }
     };

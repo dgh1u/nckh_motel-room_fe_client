@@ -57,17 +57,18 @@
       <!-- Phần hiển thị số dư -->
       <div class="flex flex-col mr-2">
         <span class="text-sm text-gray-600">Số dư tài khoản</span>
-        <span class="text-md font-bold">0</span>
+        <!-- Sử dụng formattedBalance để định dạng số -->
+        <span class="text-md font-bold">{{ formattedBalance }} ₫</span>
       </div>
 
       <!-- Nút "Nạp tiền" -->
-      <button
+      <router-link
+        to="/payment"
         class="flex items-center space-x-2 bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1.5 rounded-xl transition duration-150"
-        @click="handleDeposit"
       >
         <CreditCard size="16" />
         <span class="text-sm font-bold">Nạp tiền</span>
-      </button>
+      </router-link>
     </div>
     <!-- Menu điều hướng -->
     <nav class="space-y-3" data-aos="zoom-out" data-aos-duration="800">
@@ -97,7 +98,7 @@
         Danh sách tin đăng
       </router-link>
       <router-link
-        to="/profile/security"
+        to="/payment"
         class="flex items-center block py-2 px-10 rounded hover:text-teal-500 font-medium text-gray-700"
         active-class="bg-teal-400 text-white"
       >
@@ -105,7 +106,7 @@
         Nạp tiền
       </router-link>
       <router-link
-        to="/profile/orders"
+        to="/payment-history"
         class="flex items-center block py-2 px-10 rounded hover:text-teal-500 font-medium text-gray-700"
         active-class="bg-teal-400 text-white"
       >
@@ -123,10 +124,7 @@ import {
   RefreshCw,
   Save,
   User,
-  Lock,
   Clock,
-  LogOut,
-  Bookmark,
   CreditCard,
   Folder,
   FolderPen,
@@ -137,13 +135,23 @@ import { postAvatar, getProfile } from "@/apis/authService";
 const authStore = useAuthStore();
 
 const userEmail = ref("");
+const balance = ref(0);
 onMounted(async () => {
   try {
     const profileRes = await getProfile();
     userEmail.value = profileRes.data.email;
+    balance.value = profileRes.data.balance;
   } catch (error) {
     console.error("Error fetching profile:", error);
   }
+});
+
+// Computed property để định dạng số dư
+const formattedBalance = computed(() => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "decimal",
+    maximumFractionDigits: 0,
+  }).format(balance.value);
 });
 
 // Biến tạm để lưu preview avatar
@@ -154,7 +162,7 @@ const selectedFile = ref(null);
 // Tham chiếu đến input file ẩn
 const avatarInputRef = ref(null);
 
-// computed avatarUrl
+// Computed property để lấy avatarUrl
 const avatarUrl = computed(() => {
   return selectedFile.value ? previewAvatar.value : authStore.avatar;
 });

@@ -45,7 +45,7 @@
         >
           <div class="flex flex-col mr-2">
             <span class="text-sm text-gray-600">Số dư tài khoản</span>
-            <span class="text-md font-bold">0</span>
+            <span class="text-md font-bold">{{ formattedBalance }} ₫</span>
           </div>
           <button
             class="flex items-center space-x-2 bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1.5 rounded-xl transition duration-150"
@@ -99,14 +99,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useAuthStore } from "@/stores/store";
 import { useRouter } from "vue-router";
-import {
-  Clock,
-  User,
-  Bookmark,
-  LogOut,
-  CreditCard,
-  Folder,
-} from "lucide-vue-next";
+import { Clock, User, LogOut, CreditCard, Folder } from "lucide-vue-next";
 import { getProfile } from "@/apis/authService";
 
 const authStore = useAuthStore();
@@ -122,7 +115,9 @@ const profile = ref({
   email: "",
 });
 
-// Lấy thông tin hồ sơ khi component được mounted
+const balance = ref(0);
+
+// Lấy thông tin hồ sơ (bao gồm balance) khi component được mounted
 onMounted(async () => {
   try {
     const response = await getProfile();
@@ -130,9 +125,18 @@ onMounted(async () => {
       fullName: response.data.fullName,
       email: response.data.email,
     };
+    balance.value = response.data.balance;
   } catch (error) {
     console.error("Lỗi khi lấy thông tin profile:", error);
   }
+});
+
+// Computed để định dạng số dư theo locale Việt Nam
+const formattedBalance = computed(() => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "decimal",
+    maximumFractionDigits: 0,
+  }).format(balance.value);
 });
 
 const showMenu = () => {
@@ -147,7 +151,8 @@ const hideMenu = () => {
 };
 
 const handleDeposit = () => {
-  router.push("/nap-tien");
+  // Chuyển hướng tới /payment thay vì /nap-tien
+  router.push("/payment");
 };
 
 const handleLogout = () => {

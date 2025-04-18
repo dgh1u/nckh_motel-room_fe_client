@@ -318,11 +318,13 @@ import { createPost } from "@/apis/postService.js";
 import { uploadMultipleImages } from "@/apis/imageService.js";
 
 // Import các component của Ant Design Vue
-import { Select, message, Spin } from "ant-design-vue";
+import { Select, message, Spin, Modal } from "ant-design-vue";
+
+const { confirm } = Modal;
+
 const { Option: ASelectOption } = Select;
 import { Check as CheckIcon, FolderUp, Trash2 } from "lucide-vue-next";
 import ProfileLayout from "@/layouts/ProfileLayout.vue";
-import UploadImages from "../image/UploadImages.vue";
 
 // Import các component của Ant Design Vue trực tiếp trong setup
 const ASelect = Select;
@@ -419,31 +421,92 @@ const removeImage = (idx) => {
   files.value.splice(idx, 1);
 };
 
-const handleCreatePost = async () => {
+const handleCreatePost = () => {
+  // Validate các trường bắt buộc không được để trống
+  // Validate tiêu đề:
+  if (!formData.title.trim()) {
+    message.error("Tiêu đề không được để trống");
+    return;
+  }
+  if (formData.title.trim().length < 10 || formData.title.trim().length > 100) {
+    message.error("Tiêu đề phải từ 10 đến 100 ký tự");
+    return;
+  }
+
+  // Validate nội dung mô tả:
+  if (!formData.content.trim()) {
+    message.error("Nội dung mô tả không được để trống");
+    return;
+  }
+  if (
+    formData.content.trim().length < 50 ||
+    formData.content.trim().length > 500
+  ) {
+    message.error("Nội dung mô tả phải từ 50 đến 500 ký tự");
+    return;
+  }
+  if (!formData.accomodation.price) {
+    message.error("Giá cho thuê không được để trống");
+    return;
+  }
+  if (!formData.accomodation.acreage) {
+    message.error("Diện tích không được để trống");
+    return;
+  }
+  if (!formData.accomodation.electricPrice) {
+    message.error("Giá điện không được để trống");
+    return;
+  }
+  if (!formData.accomodation.waterPrice) {
+    message.error("Giá nước không được để trống");
+    return;
+  }
+  if (!formData.accomodation.idDistrict) {
+    message.error("Khu vực không được để trống");
+    return;
+  }
+  if (!formData.accomodation.address.trim()) {
+    message.error("Địa chỉ không được để trống");
+    return;
+  }
   if (files.value.length < 5) {
     message.error("Bạn phải tải lên ít nhất 5 ảnh");
     return;
   }
 
-  loading.value = true;
+  // Hiển thị confirm trước khi trừ 2000 số dư
+  confirm({
+    title: "Xác nhận đăng bài",
+    content: "Bạn có chắc chắn muốn đăng bài viết này không? (Phí: 2000₫/lần)",
+    async onOk() {
+      loading.value = true;
+      try {
+        // Tạo bài viết
+        const { data: post } = await createPost(formData);
+        const postId = post.id;
+        // Upload ảnh
+        await uploadMultipleImages(postId, files.value);
+        message.success("Đăng tin thành công!");
+        resetForm();
+        files.value = [];
+      } catch (error) {
+        const errorMessage = error.message;
 
-  try {
-    // 1️⃣ Tạo bài viết
-    const { data: post } = await createPost(formData);
-    const postId = post.id;
-
-    // 2️⃣ Upload đồng loạt 5 ảnh
-    await uploadMultipleImages(postId, files.value);
-
-    message.success("Đăng tin thành công!");
-    resetForm();
-    files.value = [];
-  } catch (error) {
-    console.error(error);
-    message.error("Đã có lỗi xảy ra");
-  } finally {
-    loading.value = false;
-  }
+        if (errorMessage.includes("Số dư không đủ")) {
+          message.error(
+            "Không thể đăng bài: Số dư không đủ 2000 đồng. Vui lòng nạp thêm tiền để có thể Đăng tin!"
+          );
+        } else {
+          message.error("Đã có lỗi xảy ra");
+        }
+      } finally {
+        loading.value = false;
+      }
+    },
+    onCancel() {
+      message.info("Đã hủy đăng tin");
+    },
+  });
 };
 
 const toggleFeature = (featureValue) => {

@@ -11,7 +11,9 @@ import RoommateFindDetail from "../pages/roommate-find/RoommateFindDetail.vue";
 import CreatePost from "../pages/create-post/CreatePost.vue";
 import UpdatePost from "../pages/update-post/UpdatePost.vue";
 import ListNotifications from "../pages/list-notifications/ListNotifications.vue";
-import UploadImages from "../pages/image/UploadImages.vue";
+import Payment from "../pages/dropdown-menu/payment/Payment.vue";
+import PaymentHistory from "../pages/dropdown-menu/payment-history/PaymentHistory.vue";
+import PaymentResult from "../pages/payment-result/PaymentResult.vue";
 
 export default [
   {
@@ -119,9 +121,27 @@ export default [
   },
 
   {
-    path: "/image",
-    name: "UploadImages",
-    component: UploadImages,
+    path: "/payment",
+    name: "Payment",
+    component: Payment,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/payment-history",
+    name: "PaymentHistory",
+    component: PaymentHistory,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/payment/:id/result",
+    name: "PaymentResult",
+    component: PaymentResult,
     meta: {
       requiresAuth: false,
     },

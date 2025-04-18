@@ -165,11 +165,23 @@ const toggleNotifications = () => {
         </div>
 
         <!-- Nếu chưa đăng nhập -->
-        <div v-else>
+        <div v-else class="flex items-center">
           <router-link
             to="/login"
+            data-aos="zoom-out"
+            data-aos-duration="800"
+            exact-active-class="bg-red-600"
+            class="flex items-center bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-xl transition duration-150"
+          >
+            <Edit size="20" class="mr-2" />
+            <span>Đăng tin</span>
+          </router-link>
+          <router-link
+            to="/login"
+            data-aos="zoom-out"
+            data-aos-duration="800"
             exact-active-class="bg-blue-600"
-            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded ml-5"
           >
             Đăng nhập
           </router-link>

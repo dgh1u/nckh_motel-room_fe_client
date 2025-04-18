@@ -7,9 +7,9 @@
           @click="openChat"
           class="flex items-center bg-white px-4 py-2 rounded-t-xl rounded-bl-xl shadow-md hover:shadow-lg transition"
         >
-          <span class="text-gray-800 font-medium whitespace-nowrap"
-            >Tôi có thể giúp gì cho bạn?</span
-          >
+          <span class="text-gray-800 font-medium whitespace-nowrap">
+            Tôi có thể giúp gì cho bạn?
+          </span>
         </button>
       </div>
       <button
@@ -39,9 +39,9 @@
         >
           <div class="flex items-center space-x-2">
             <img src="@/assets/vnua-logo.png" alt="VNUA Chat" class="w-8 h-8" />
-            <span class="text-white font-semibold text-lg"
-              >VNUA Services Chatbot</span
-            >
+            <span class="text-white font-semibold text-lg">
+              VNUA Services Chatbot
+            </span>
           </div>
           <div class="flex items-center space-x-2">
             <button @click="clearChat" class="focus:outline-none">
@@ -66,7 +66,7 @@
           >
             <div
               v-if="msg.sender === 'bot'"
-              class="bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-2xl px-4 py-2 max-w-[75%]"
+              class="bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-2xl px-4 py-2 max-w-[75%] pre-line"
             >
               <template v-if="msg.loading">
                 <div class="flex space-x-1">
@@ -124,7 +124,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue";
+import { ref, nextTick, onMounted, watch } from "vue";
 import { SendHorizonal, X, RotateCcw, BotMessageSquare } from "lucide-vue-next";
 import { sendQuery } from "@/apis/chatbotService";
 
@@ -133,9 +133,31 @@ const input = ref("");
 const messages = ref([]);
 const chatContainer = ref(null);
 
-const openChat = () => (isOpen.value = true);
+// Lấy các tin nhắn từ localStorage khi component được mount
+onMounted(() => {
+  const storedMessages = localStorage.getItem("chatMessages");
+  if (storedMessages) {
+    messages.value = JSON.parse(storedMessages);
+    nextTick(() => scrollToBottom());
+  }
+});
+
+// Theo dõi mảng messages, cập nhật localStorage mỗi khi có thay đổi
+watch(
+  messages,
+  (newVal) => {
+    localStorage.setItem("chatMessages", JSON.stringify(newVal));
+  },
+  { deep: true }
+);
+
+const openChat = () => {
+  isOpen.value = true;
+};
+
 const clearChat = () => {
   messages.value = [];
+  localStorage.removeItem("chatMessages"); // Xóa tin nhắn khỏi localStorage khi restart
   nextTick().then(scrollToBottom);
 };
 
@@ -160,12 +182,14 @@ const handleSend = async () => {
   scrollToBottom();
 
   try {
-    const { answer } = await sendQuery(q);
-    loadingMsg.content = answer;
-  } catch {
+    const response = await sendQuery(q);
+    loadingMsg.content = response.answer || "Không có câu trả lời từ API";
+    messages.value = messages.value.slice();
+  } catch (error) {
     loadingMsg.content = "Error — please try again.";
   } finally {
     loadingMsg.loading = false;
+    messages.value = messages.value.slice();
     await nextTick();
     scrollToBottom();
   }
@@ -173,6 +197,9 @@ const handleSend = async () => {
 </script>
 
 <style scoped>
+.pre-line {
+  white-space: pre-line;
+}
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
 }

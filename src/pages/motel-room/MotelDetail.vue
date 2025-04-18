@@ -399,6 +399,7 @@ import DefaultLayout from "../../layouts/DefaultLayout.vue";
 import Comment from "../../components/comment/Comment.vue";
 import { getDetailPost, hidePost } from "@/apis/postService.js";
 import { getImageByPost } from "@/apis/imageService.js";
+import { useAuthStore } from "@/stores/store";
 
 import { getProfile } from "@/apis/authService.js";
 import { message } from "ant-design-vue";
@@ -551,7 +552,14 @@ async function toggleHidePost() {
 
 onMounted(() => {
   fetchPost();
-  fetchProfile();
+
+  const authStore = useAuthStore();
+  if (authStore.isAuthenticated && authStore.token?.trim() !== "") {
+    console.log("Đã đăng nhập, gọi fetchProfile()");
+    fetchProfile();
+  } else {
+    console.log("Chưa đăng nhập, không gọi fetchProfile()");
+  }
 });
 </script>
 

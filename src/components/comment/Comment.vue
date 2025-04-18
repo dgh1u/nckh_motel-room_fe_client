@@ -158,6 +158,8 @@ import {
   deleteComment,
 } from "@/apis/commentService.js";
 import { getProfile } from "@/apis/authService.js";
+import { useAuthStore } from "@/stores/store";
+
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
@@ -226,13 +228,19 @@ function handlePageChange(page) {
 
 // Create comment
 async function handleAddComment() {
+  const authStore = useAuthStore();
+  if (!authStore.isAuthenticated || !authStore.token?.trim()) {
+    return message.warning("Bạn cần đăng nhập để bình luận.");
+  }
+
   if (!newComment.value.trim()) {
     return message.warning("Vui lòng nhập nội dung bình luận.");
   }
+
   try {
     await createComment(
       { content: newComment.value, idPost: props.idPost, rate: 0 },
-      localStorage.getItem("token")
+      authStore.token
     );
     message.success("Bình luận đã được đăng");
     newComment.value = "";
@@ -294,8 +302,13 @@ function confirmDelete(id) {
 
 // Like/unlike
 async function handleLike(comment) {
+  const authStore = useAuthStore();
+  if (!authStore.isAuthenticated || !authStore.token?.trim()) {
+    return message.warning("Bạn cần đăng nhập để thích bình luận.");
+    return;
+  }
+
   try {
-    const token = localStorage.getItem("token");
     const newRate = comment.liked ? comment.rate - 1 : comment.rate + 1;
     comment.liked
       ? (likedComments.value = likedComments.value.filter(
@@ -303,10 +316,12 @@ async function handleLike(comment) {
         ))
       : likedComments.value.push(comment.id);
     comment.liked = !comment.liked;
+
     await updateComment(
       { id: comment.id, content: comment.content, rate: newRate },
-      token
+      authStore.token
     );
+
     message.success(comment.liked ? "Đã like bình luận" : "Bỏ like bình luận");
     comment.rate = newRate;
   } catch {
@@ -321,7 +336,15 @@ function formatDate(dateStr) {
 
 // Lifecycle
 onMounted(async () => {
-  await fetchProfile();
+  const authStore = useAuthStore();
+
+  if (authStore.isAuthenticated && authStore.token?.trim() !== "") {
+    console.log("Đã đăng nhập, gọi fetchProfile()");
+    await fetchProfile();
+  } else {
+    console.log("Chưa đăng nhập, không gọi fetchProfile()");
+  }
+
   fetchComments();
 });
 watch(

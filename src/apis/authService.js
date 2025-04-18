@@ -69,7 +69,7 @@ export const forgotPassword = async (email, password, otp) => {
 };
 
 // Lấy token từ localStorage (key = "auth")
-const getToken = () => {
+export const getToken = () => {
   const authData = localStorage.getItem("auth");
   return authData ? JSON.parse(authData)?.user?.token : null;
 };
@@ -80,6 +80,9 @@ export const getProfile = async () => {
   return axios({
     url: "/auth/profile",
     method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 };
 
