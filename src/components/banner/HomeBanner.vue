@@ -13,16 +13,16 @@
           <div class="relative z-20 text-center lg:text-left">
             <span class="text-7xl mb-4 lg:pb-3 font-extrabold">
               Kênh thông tin
-              <span class="text-blue-500 font-extrabold">Nhà trọ</span> khu vực
+              <span class="text-blue-500 font-extrabold">Dịch vụ</span> khu vực
               <span class="text-green-400 font-extrabold">
                 Học viện Nông nghiệp Việt Nam
               </span>
             </span>
 
             <p class="mb-4 lg:pb-3 md:pb-2 pt-10">
-              <span class="mr-2 text-gray-600">
-                Bạn là tân sinh viên đang tìm nhà trọ? Hay bạn đang muốn chuyển
-                sang một chỗ ở mới?
+              <span class="mr-2 text-gray-600 text-base">
+                Bạn là tân sinh viên đang tìm nhà trọ? Hay bạn đang muốn tìm một
+                cửa hàng?
                 <br />Kênh thông tin sẽ cung cấp cho bạn thông tin dịch vụ tại
                 khu vực Học viện Nông nghiệp Việt Nam.
               </span>
@@ -31,17 +31,25 @@
               href="/home"
               data-scroll
               data-scroll-offset="250"
-              class="inline-block px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-600 transition"
+              class="inline-block px-6 py-3 bg-teal-500 text-white font-bold rounded hover:bg-green-600 transition"
             >
-              Tìm trọ
+              Tìm phòng trọ
             </a>
             <a
               href="/home"
               data-scroll
               data-scroll-offset="250"
-              class="inline-block ml-2 px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-600 transition"
+              class="inline-block ml-2 px-6 py-3 bg-teal-500 text-white font-bold rounded hover:bg-green-600 transition"
             >
               Tìm người ở ghép
+            </a>
+            <a
+              href="/home"
+              data-scroll
+              data-scroll-offset="250"
+              class="inline-block ml-2 px-6 py-3 bg-teal-500 text-white font-bold rounded hover:bg-green-600 transition"
+            >
+              Tìm cửa hàng
             </a>
           </div>
         </div>
@@ -122,7 +130,7 @@
                       <span
                         class="hero-animation-fade hero-animation-delay-3 text-gray-500"
                       >
-                        Tôi cần cho thuê phòng trọ
+                        Tôi cần tìm cửa hàng
                       </span>
                     </div>
                   </div>

@@ -14,6 +14,15 @@ import ListNotifications from "../pages/list-notifications/ListNotifications.vue
 import Payment from "../pages/dropdown-menu/payment/Payment.vue";
 import PaymentHistory from "../pages/dropdown-menu/payment-history/PaymentHistory.vue";
 import PaymentResult from "../pages/payment-result/PaymentResult.vue";
+import PrivacyPolicy from "../pages/policy/PrivacyPolicy.vue";
+import RestaurantList from "../pages/sv-restaurant/RestaurantList.vue";
+import RestaurantDetail from "../pages/sv-restaurant/RestaurantDetail.vue";
+import BeverageList from "../pages/sv-beverage/BeverageList.vue";
+import BeverageDetail from "../pages/sv-beverage/BeverageDetail.vue";
+import StoreList from "../pages/sv-store/StoreList.vue";
+import StoreDetail from "../pages/sv-store/StoreDetail.vue";
+import UtilityList from "../pages/sv-utility/UtilityList.vue";
+import UtilityDetail from "../pages/sv-utility/UtilityDetail.vue";
 
 export default [
   {
@@ -37,7 +46,7 @@ export default [
     name: "Profile",
     component: Profile,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
   {
@@ -85,11 +94,83 @@ export default [
   },
 
   {
+    path: "/post/restaurant",
+    name: "RestaurantList",
+    component: RestaurantList,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/post/restaurant/:id",
+    name: "RestaurantDetail",
+    component: RestaurantDetail,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/post/beverage",
+    name: "BeverageList",
+    component: BeverageList,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/post/beverage/:id",
+    name: "BeverageDetail",
+    component: BeverageDetail,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/post/store",
+    name: "StoreList",
+    component: StoreList,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/post/store/:id",
+    name: "StoreDetail",
+    component: StoreDetail,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/post/utility",
+    name: "UtilityList",
+    component: UtilityList,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
+    path: "/post/utility/:id",
+    name: "UtilityDetail",
+    component: UtilityDetail,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+
+  {
     path: "/my-posts",
     name: "MyPostList",
     component: MyPostList,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
 
@@ -98,7 +179,7 @@ export default [
     name: "CreatePost",
     component: CreatePost,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
 
@@ -107,7 +188,7 @@ export default [
     name: "UpdatePost",
     component: UpdatePost,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
 
@@ -116,7 +197,7 @@ export default [
     name: "ListNotification",
     component: ListNotifications,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
 
@@ -125,7 +206,7 @@ export default [
     name: "Payment",
     component: Payment,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
 
@@ -134,7 +215,7 @@ export default [
     name: "PaymentHistory",
     component: PaymentHistory,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
 
@@ -143,7 +224,16 @@ export default [
     name: "PaymentResult",
     component: PaymentResult,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
+    },
+  },
+
+  {
+    path: "/privacy-policy",
+    name: "PrivacyPolicy",
+    component: PrivacyPolicy,
+    meta: {
+      requiresAuth: true,
     },
   },
 ];

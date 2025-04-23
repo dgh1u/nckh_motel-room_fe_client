@@ -8,8 +8,8 @@
       data-aos-duration="800"
     >
       <div class="text-sm text-gray-500 flex items-center flex-wrap space-x-1">
-        <router-link to="/post/motel" class="text-teal-500 hover:underline">
-          Cho thuê phòng trọ
+        <router-link to="/post/store" class="text-teal-500 hover:underline">
+          Cửa hàng
         </router-link>
         <span>/</span>
 
@@ -94,64 +94,43 @@
                 </div>
 
                 <!-- Địa chỉ -->
-                <div class="flex items-center text-sm text-gray-600 mb-2">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
                   <!-- Icon địa chỉ -->
-                  <MapPinIcon class="w-4 h-4 mr-1" />
-                  <!-- Nội dung địa chỉ -->
-                  <span class="text-black">
-                    {{ post.accomodationDTO?.address }}
-                  </span>
+                  <div class="flex items-center">
+                    <MapPinIcon class="w-4 h-4 mr-1" />
+                    <!-- Nội dung địa chỉ -->
+                    <span class="text-black">
+                      {{ post.accomodationDTO?.address }}
+                    </span>
 
-                  <!-- Dấu chấm giữa -->
-                  <span class="mx-2">·</span>
+                    <!-- Dấu chấm giữa -->
+                    <span class="mx-2">·</span>
 
-                  <!-- Tên quận/huyện -->
-                  <span>
-                    Khu vực:
-                    {{ post.accomodationDTO?.district?.name }}
-                  </span>
+                    <!-- Tên quận/huyện -->
+                    <span>
+                      Khu vực:
+                      {{ post.accomodationDTO?.district?.name }}
+                    </span>
+                  </div>
+                  <div class="flex text-sm">
+                    <Tag class="w-3 h-4 mr-1 mt-1" />
+                    <span
+                      ><span class="text-black">Phân loại: </span>
+                      {{ post.accomodationDTO?.secondMotel }}</span
+                    >
+                  </div>
                 </div>
 
-                <!-- (Giá, diện tích, giá điện, giá nước, ngày đăng) trên cùng 1 dòng -->
                 <div
                   class="flex items-center justify-between flex-wrap gap-4 mb-4"
                 >
-                  <!-- Bên trái: Giá, diện tích, giá điện, giá nước -->
                   <div class="flex items-center flex-wrap gap-4">
-                    <!-- Giá (màu đỏ) -->
-                    <span class="text-red-500 text-xl font-bold">
-                      {{ formatPrice(post.accomodationDTO.price) }}
-                    </span>
-
-                    <!-- Diện tích (có icon) -->
-                    <div class="flex items-center ml-5">
-                      <ScanIcon class="w-4 h-4 mr-1 mt-0.5" />
-                      <span>{{ post.accomodationDTO.acreage }}m²</span>
-                    </div>
-
-                    <!-- Giá điện (có icon) -->
-                    <div class="flex items-center ml-5">
-                      <ZapIcon class="w-4 h-4 mr-1 mt-0.5" />
+                    <div class="flex items-center">
+                      <Clock class="w-4 h-4 mr-1 mt-0.5" />
                       <span
-                        >{{
-                          formatElectricWaterPrice(
-                            post.accomodationDTO.electricPrice
-                          )
-                        }}
-                        / số</span
-                      >
-                    </div>
-
-                    <!-- Giá nước (có icon) -->
-                    <div class="flex items-center ml-5">
-                      <DropletIcon class="w-4 h-4 mr-1 mt-0.5" />
-                      <span
-                        >{{
-                          formatElectricWaterPrice(
-                            post.accomodationDTO.waterPrice
-                          )
-                        }}
-                        / khối</span
+                        >Giờ mở cửa:<span class="ml-2 text-gray-600">
+                          {{ post.accomodationDTO.openHours }}</span
+                        ></span
                       >
                     </div>
                   </div>
@@ -173,19 +152,9 @@
               <hr class="my-3 mx-6 border-gray-100" />
 
               <!-- Đặc điểm -->
-              <!-- Đặc điểm -->
               <div class="py-2">
                 <span class="text-lg font-semibold">Đặc điểm</span>
                 <div class="grid grid-cols-2 gap-4 p-2">
-                  <div class="flex items-center">
-                    <BedIcon class="w-4 h-4 mr-1" />
-                    <span>
-                      Nội thất:
-                      {{
-                        post.accomodationDTO.interior ? "Đầy đủ" : "Phòng trống"
-                      }}
-                    </span>
-                  </div>
                   <div class="flex items-center">
                     <SnowflakeIcon class="w-4 h-4 mr-1" />
                     <span>
@@ -194,66 +163,50 @@
                     </span>
                   </div>
                   <div class="flex items-center">
-                    <UserIcon class="w-4 h-4 mr-1" />
+                    <Truck class="w-4 h-4 mr-1" />
                     <span>
-                      Hình thức:
-                      {{
-                        post.accomodationDTO.owner
-                          ? "Không Chung chủ"
-                          : "Chung chủ"
-                      }}
-                    </span>
-                  </div>
-
-                  <div class="flex items-center">
-                    <ThermometerIcon class="w-4 h-4 mr-1" />
-                    <span>
-                      Nóng lạnh:
-                      {{ post.accomodationDTO.heater ? "Có" : "Không" }}
-                    </span>
-                  </div>
-
-                  <div class="flex items-center">
-                    <ShieldIcon class="w-4 h-4 mr-1" />
-                    <span>
-                      An ninh:
-                      {{ post.accomodationDTO.security ? "Tốt" : "Không tốt" }}
+                      Giao hàng :
+                      {{ post.accomodationDTO.delivery ? "Có" : "Không" }}
                     </span>
                   </div>
                   <div class="flex items-center">
                     <WifiIcon class="w-4 h-4 mr-1" />
                     <span>
-                      Internet:
+                      Wifi miễn phí:
                       {{ post.accomodationDTO.internet ? "Có" : "Không" }}
+                    </span>
+                  </div>
+                  <div class="flex items-center">
+                    <UtensilsCrossed class="w-4 h-4 mr-1" />
+                    <span>
+                      Phục vụ tại chỗ:
+                      {{ post.accomodationDTO.dineIn ? "Có" : "Không" }}
                     </span>
                   </div>
 
                   <div class="flex items-center">
-                    <ClockIcon class="w-4 h-4 mr-1" />
-                    <span>
-                      Giờ giấc:
-                      {{ post.accomodationDTO.time ? "Tự do" : "Không tự do" }}
-                    </span>
-                  </div>
-                  <div class="flex items-center">
-                    <CoffeeIcon class="w-4 h-4 mr-1" />
-                    <span>
-                      Kệ bếp:
-                      {{ post.accomodationDTO.kitchen ? "Có" : "Không" }}
-                    </span>
-                  </div>
-                  <div class="flex items-center">
-                    <CarIcon class="w-4 h-4 mr-1" />
+                    <CircleParking class="w-4 h-4 mr-1" />
                     <span>
                       Chỗ để xe:
                       {{ post.accomodationDTO.parking ? "Có" : "Không" }}
                     </span>
                   </div>
                   <div class="flex items-center">
-                    <Toilet class="w-4 h-4 mr-1" />
+                    <ShoppingBag class="w-4 h-4 mr-1" />
                     <span>
-                      Vệ sinh:
-                      {{ post.accomodationDTO.toilet ? "Khép kín" : "Chung" }}
+                      Mua mang đi:
+                      {{ post.accomodationDTO.takeAway ? "Có" : "Không" }}
+                    </span>
+                  </div>
+                  <div class="flex items-center">
+                    <Expand class="w-4 h-4 mr-1" />
+                    <span>
+                      Không gian:
+                      {{
+                        post.accomodationDTO.bigSpace
+                          ? "Rộng rãi"
+                          : "Bình thường"
+                      }}
                     </span>
                   </div>
                 </div>
@@ -357,6 +310,26 @@
               <span class="font-medium">Nhắn Zalo</span>
             </a>
           </div>
+
+          <div
+            v-if="
+              post.accomodationDTO.linkShopeeFood &&
+              post.accomodationDTO.linkShopeeFood.trim() !== ''
+            "
+            class="text-white"
+          >
+            <a
+              :href="`${post.accomodationDTO.linkShopeeFood}`"
+              target="_blank"
+              class="bg-orange-200 w-full py-2 rounded-xl mt-2 flex items-center justify-center"
+            >
+              <img
+                src="@/assets/shopee-food-logo.svg"
+                alt="Zalo Icon"
+                class="w-25"
+              />
+            </a>
+          </div>
         </div>
         <!-- 2 nút mới chỉ hiển thị khi người đăng trùng với người xem -->
         <div class="py-8">
@@ -403,7 +376,19 @@ import { useAuthStore } from "@/stores/store";
 
 import { getProfile } from "@/apis/authService.js";
 import { message } from "ant-design-vue";
-import { Phone, MapPin, Mail, Toilet } from "lucide-vue-next";
+import {
+  Phone,
+  MapPin,
+  Mail,
+  Toilet,
+  Clock,
+  CircleParking,
+  Truck,
+  UtensilsCrossed,
+  ShoppingBag,
+  Expand,
+  Tag,
+} from "lucide-vue-next";
 import {
   MapPin as MapPinIcon,
   Scan as ScanIcon,
@@ -434,15 +419,6 @@ function formatDate(dateStr) {
   return date.toLocaleDateString();
 }
 
-// Hàm định dạng giá tiền theo VND
-function formatElectricWaterPrice(price) {
-  if (!price) return "";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(price);
-}
-
 // Tạo URL Google Maps (không dùng API Key)
 const mapUrl = computed(() => {
   if (!post.value?.accomodationDTO?.address) return "";
@@ -465,20 +441,6 @@ const finalAvatar = computed(() => {
 const galleryImages = ref([]);
 
 const currentImageIndex = ref(0);
-
-function formatPrice(price) {
-  if (!price) return "";
-  if (price >= 1000000) {
-    const millionPrice = (price / 1000000).toFixed(1);
-    return `${millionPrice} triệu/tháng`;
-  } else {
-    const formattedPrice = new Intl.NumberFormat("vi-VN", {
-      style: "decimal",
-      maximumFractionDigits: 0,
-    }).format(price);
-    return `${formattedPrice} đồng/tháng`;
-  }
-}
 
 function prevImage() {
   currentImageIndex.value =

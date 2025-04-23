@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import authRoutes from "./authRoutes";
 import homeRoutes from "./homeRoutes";
+import { useAuthStore } from "@/stores/store";
 
 // Các route khác của ứng dụng
 const routes = [
@@ -8,7 +9,7 @@ const routes = [
   ...homeRoutes,
   {
     path: "/",
-    redirect: "/login",
+    redirect: "/home",
   },
   {
     path: "/:pathMatch(.*)*",
@@ -32,13 +33,25 @@ const router = createRouter({
   },
 });
 
-// Xử lý Route Guard (nếu cần)
+// Xử lý Route Guard
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem("authToken"); // Kiểm tra token (ví dụ)
+  // Lấy trạng thái xác thực từ Pinia store
+  const authStore = useAuthStore();
+  const isAuthenticated = authStore.isAuthenticated;
+
+  // Kiểm tra xem route yêu cầu đăng nhập không
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next("/login"); // Chuyển hướng đến Login nếu chưa đăng nhập
+    // Lưu URL đích vào localStorage trước khi chuyển hướng đến trang login
+    localStorage.setItem("redirectAfterLogin", to.fullPath);
+
+    // Chuyển hướng đến trang login
+    next({ name: "Login" });
+  } else if (to.meta.requiresGuest && isAuthenticated) {
+    // Nếu route chỉ dành cho khách và người dùng đã đăng nhập
+    next({ name: "Home" });
   } else {
-    next(); // Cho phép truy cập
+    // Cho phép tiếp tục đến trang đích
+    next();
   }
 });
 

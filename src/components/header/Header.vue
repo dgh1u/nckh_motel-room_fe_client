@@ -14,8 +14,16 @@ const authStore = useAuthStore();
 const isSticky = ref(false);
 
 // Biến điều khiển hiển thị dropdown "Tìm trọ"
-const showDropdown = ref(false);
-let hideTimeout = null;
+const showRoomDropdown = ref(false);
+let hideRoomTimeout = null;
+
+// Biến điều khiển hiển thị dropdown "Dịch vụ"
+const showServiceDropdown = ref(false);
+let hideServiceTimeout = null;
+
+// Biến điều khiển hiển thị dropdown "Cửa hàng"
+const showShopDropdown = ref(false);
+let hideShopTimeout = null;
 
 const handleScroll = () => {
   isSticky.value = window.scrollY > window.innerHeight;
@@ -29,15 +37,41 @@ onUnmounted(() => {
 });
 
 // Hàm hiển thị dropdown Tìm trọ
-const showMenu = () => {
-  clearTimeout(hideTimeout);
-  showDropdown.value = true;
+const showRoomMenu = () => {
+  clearTimeout(hideRoomTimeout);
+  showRoomDropdown.value = true;
 };
 
 // Hàm ẩn dropdown Tìm trọ
-const hideMenu = () => {
-  hideTimeout = setTimeout(() => {
-    showDropdown.value = false;
+const hideRoomMenu = () => {
+  hideRoomTimeout = setTimeout(() => {
+    showRoomDropdown.value = false;
+  }, 150);
+};
+
+// Hàm hiển thị dropdown Dịch vụ
+const showServiceMenu = () => {
+  clearTimeout(hideServiceTimeout);
+  showServiceDropdown.value = true;
+};
+
+// Hàm ẩn dropdown Dịch vụ
+const hideServiceMenu = () => {
+  hideServiceTimeout = setTimeout(() => {
+    showServiceDropdown.value = false;
+  }, 150);
+};
+
+// Hàm hiển thị dropdown Cửa hàng
+const showShopMenu = () => {
+  clearTimeout(hideShopTimeout);
+  showShopDropdown.value = true;
+};
+
+// Hàm ẩn dropdown Cửa hàng
+const hideShopMenu = () => {
+  hideShopTimeout = setTimeout(() => {
+    showShopDropdown.value = false;
   }, 150);
 };
 
@@ -79,8 +113,8 @@ const toggleNotifications = () => {
 
         <div
           class="relative ml-5"
-          @mouseenter="showMenu"
-          @mouseleave="hideMenu"
+          @mouseenter="showRoomMenu"
+          @mouseleave="hideRoomMenu"
         >
           <span
             class="flex items-center text-gray-700 hover:text-teal-500 transition duration-150"
@@ -90,7 +124,7 @@ const toggleNotifications = () => {
             Tìm trọ <ChevronDown size="18" class="ml-1" />
           </span>
           <div
-            v-show="showDropdown"
+            v-show="showRoomDropdown"
             class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg transition-opacity duration-200"
             style="z-index: 9999"
           >
@@ -109,32 +143,76 @@ const toggleNotifications = () => {
           </div>
         </div>
 
-        <router-link
-          data-aos="zoom-out"
-          data-aos-duration="800"
-          to="/cua-hang"
-          exact-active-class="text-blue-500"
-          class="hover:text-teal-500 transition duration-150"
+        <div
+          class="relative ml-5"
+          @mouseenter="showServiceMenu"
+          @mouseleave="hideServiceMenu"
         >
-          Cửa hàng
-        </router-link>
+          <span
+            class="flex items-center text-gray-700 hover:text-teal-500 transition duration-150"
+            data-aos="zoom-out"
+            data-aos-duration="800"
+          >
+            Ăn uống <ChevronDown size="18" class="ml-1" />
+          </span>
+          <div
+            v-show="showServiceDropdown"
+            class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg transition-opacity duration-200"
+            style="z-index: 9999"
+          >
+            <router-link
+              to="/post/restaurant"
+              class="block px-4 py-2 pt-4 font-medium text-gray-700 hover:text-teal-500 transition duration-150"
+            >
+              Quán ăn
+            </router-link>
+            <router-link
+              to="/post/beverage"
+              class="block px-4 py-2 pb-4 text-gray-700 hover:text-teal-500 transition duration-150"
+            >
+              Quán nước
+            </router-link>
+          </div>
+        </div>
 
-        <router-link
-          data-aos="zoom-out"
-          data-aos-duration="800"
-          to="/giao-hang"
-          exact-active-class="text-blue-500"
-          class="hover:text-teal-500 transition duration-150"
+        <div
+          class="relative ml-5"
+          @mouseenter="showShopMenu"
+          @mouseleave="hideShopMenu"
         >
-          Giao hàng
-        </router-link>
+          <span
+            class="flex items-center text-gray-700 hover:text-teal-500 transition duration-150"
+            data-aos="zoom-out"
+            data-aos-duration="800"
+          >
+            Cửa hàng & Tiện ích<ChevronDown size="18" class="ml-1" />
+          </span>
+          <div
+            v-show="showShopDropdown"
+            class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg transition-opacity duration-200"
+            style="z-index: 9999"
+          >
+            <router-link
+              to="/post/store"
+              class="block px-4 py-2 pt-4 font-medium text-gray-700 hover:text-teal-500 transition duration-150"
+            >
+              Cửa hàng
+            </router-link>
+            <router-link
+              to="/post/utility"
+              class="block px-4 py-2 pb-4 text-gray-700 hover:text-teal-500 transition duration-150"
+            >
+              Tiện ích
+            </router-link>
+          </div>
+        </div>
 
         <router-link
           data-aos="zoom-out"
           data-aos-duration="800"
           to="/contact"
           exact-active-class="text-blue-500"
-          class="hover:text-teal-500 transition duration-150"
+          class="hover:text-teal-500 transition duration-150 ml-5"
         >
           Liên hệ
         </router-link>
@@ -167,7 +245,7 @@ const toggleNotifications = () => {
         <!-- Nếu chưa đăng nhập -->
         <div v-else class="flex items-center">
           <router-link
-            to="/login"
+            to="/create-post"
             data-aos="zoom-out"
             data-aos-duration="800"
             exact-active-class="bg-red-600"

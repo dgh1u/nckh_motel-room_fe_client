@@ -1,16 +1,12 @@
 <template>
   <aside class="hidden md:block w-100 bg-white shadow-xl rounded-2xl p-4">
-    <span
-      class="font-extrabold text-lg mb-4 flex items-center"
-      data-aos="zoom-out-right"
-      data-aos-duration="800"
-    >
+    <span class="font-extrabold text-lg mb-4 flex items-center">
       <FilterIcon class="w-5 h-5 mr-2" />
       <span>Bộ lọc</span>
     </span>
 
     <!-- KHOẢNG GIÁ -->
-    <div class="mb-6" data-aos="zoom-out-right" data-aos-duration="800">
+    <div class="mb-6">
       <PriceRange
         v-model="priceRangeLocal"
         :min="0"
@@ -21,7 +17,7 @@
     </div>
 
     <!-- DIỆN TÍCH -->
-    <div class="mb-6" data-aos="zoom-out-right" data-aos-duration="800">
+    <div class="mb-6">
       <AcreageRange
         v-model="acreageRangeLocal"
         :min="0"
@@ -92,7 +88,7 @@
       </div>
     </div>
 
-    <!-- KHU VỰC -->
+    <!-- KHU VỰC - Modified for single selection -->
     <div class="mb-6">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Khu vực</span>
@@ -102,28 +98,27 @@
           v-for="(district, idx) in districtOptions"
           :key="idx"
           class="flex items-center p-2 rounded-lg cursor-pointer hover:text-teal-500"
-          :class="{ 'text-teal-500': isDistrictSelected(district.value) }"
-          @click="toggleDistrict(district.value)"
+          :class="{ 'text-teal-500': selectedDistrict === district.value }"
+          @click="selectDistrict(district.value)"
         >
           <div class="relative">
             <input
-              type="checkbox"
+              type="radio"
               class="hidden"
-              :checked="isDistrictSelected(district.value)"
+              :checked="selectedDistrict === district.value"
               readonly
             />
             <div
-              class="w-5 h-5 border border-gray-300 rounded flex items-center justify-center"
+              class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center"
               :class="{
-                'bg-teal-500 border-teal-500': isDistrictSelected(
-                  district.value
-                ),
+                'bg-teal-500 border-teal-500':
+                  selectedDistrict === district.value,
               }"
             >
-              <CheckIcon
-                v-if="isDistrictSelected(district.value)"
-                class="w-3 h-3 text-white"
-              />
+              <div
+                v-if="selectedDistrict === district.value"
+                class="w-3 h-3 rounded-full bg-white"
+              ></div>
             </div>
           </div>
           <span class="ml-2 text-sm">{{ district.label }}</span>
@@ -200,7 +195,7 @@ const acreageRangeLocal = ref([5, 95]);
 
 const districtOptions = [
   { label: "An Đào", value: "An Đào" },
-  { label: "Đào Nguyên", value: "Dậu Nguyên" },
+  { label: "Đào Nguyên", value: "Đào Nguyên" },
   { label: "Cửu Việt", value: "Cửu Việt" },
   { label: "Thành Chung", value: "Thành Chung" },
   { label: "Ngô Xuân Quảng", value: "Ngọ Xuân Quảng" },
@@ -221,26 +216,24 @@ const featureOptions = [
   { label: "Có chỗ để xe", value: "has_parking" },
 ];
 
-// State để lưu các lựa chọn cho khu vực và đặc điểm
-const selectedDistricts = ref([]);
+// Thay đổi từ mảng thành một giá trị duy nhất cho Khu vực
+const selectedDistrict = ref(null);
+// Đặc điểm vẫn cho phép chọn nhiều
 const selectedFeatures = ref([]);
 
 // Thêm state cho bộ lọc giới tính
 const genderSelected = ref(null);
 
-// Hàm xử lý khi người dùng click chọn khu vực
-function toggleDistrict(value) {
-  const index = selectedDistricts.value.indexOf(value);
-  if (index === -1) {
-    selectedDistricts.value.push(value);
+// Hàm xử lý chọn khu vực (chỉ một giá trị)
+function selectDistrict(value) {
+  if (selectedDistrict.value === value) {
+    // Nếu click vào cùng một giá trị đã chọn, bỏ chọn nó
+    selectedDistrict.value = null;
   } else {
-    selectedDistricts.value.splice(index, 1);
+    // Chọn giá trị mới, tự động bỏ chọn giá trị cũ
+    selectedDistrict.value = value;
   }
   updateFilters();
-}
-
-function isDistrictSelected(value) {
-  return selectedDistricts.value.includes(value);
 }
 
 // Hàm xử lý khi người dùng click chọn đặc điểm
@@ -272,7 +265,7 @@ function toggleGender(value) {
 function resetAll() {
   priceRangeLocal.value = [0, 30];
   acreageRangeLocal.value = [0, 100];
-  selectedDistricts.value = [];
+  selectedDistrict.value = null;
   selectedFeatures.value = [];
   genderSelected.value = null;
   updateFilters();
@@ -283,7 +276,7 @@ function updateFilters() {
   emit("update:filters", {
     priceRange: priceRangeLocal.value,
     acreageRange: acreageRangeLocal.value,
-    districtsSelected: selectedDistricts.value,
+    districtSelected: selectedDistrict.value,
     featuresSelected: selectedFeatures.value,
     gender: genderSelected.value,
   });

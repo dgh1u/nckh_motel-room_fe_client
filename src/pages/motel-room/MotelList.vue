@@ -3,8 +3,6 @@
     <div class="pt-6 px-6">
       <div
         class="text-3xl font-bold flex flex-col items-center justify-center flex-wrap space-y-2"
-        data-aos="zoom-out"
-        data-aos-duration="800"
       >
         <span class="text-teal-500"> CHO THUÊ PHÒNG TRỌ </span>
         <span class="text-lg font-normal">
@@ -22,12 +20,15 @@
       <!-- Nội dung chính: chiếm phần còn lại -->
       <div class="flex-1 flex flex-col bg-gray-100">
         <!-- Thanh tìm kiếm từ khóa -->
-        <div class="mb-1" data-aos="zoom-out" data-aos-duration="800">
+        <div class="mb-1 relative">
           <input
             v-model="filters.keywords"
             type="text"
-            placeholder="Tìm tin đăng..."
-            class="w-full p-3 bg-green-100 rounded-xl shadow hover:shadow-2xl"
+            placeholder="Nhập tên tin đăng muốn tìm..."
+            class="w-full p-3 pl-10 bg-green-50 rounded-xl shadow hover:shadow-2xl"
+          />
+          <Search
+            class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
           />
         </div>
         <!-- Hiển thị thông báo lỗi nếu có -->
@@ -35,7 +36,7 @@
           {{ errorMsg }}
         </div>
         <!-- Danh sách tin đăng -->
-        <div class="p-4 pb-20 flex-1 overflow-y-auto">
+        <div class="p-6 pb-20 flex-1 overflow-y-auto">
           <template v-if="posts.length">
             <!-- Sử dụng grid 1 cột để mỗi dòng chỉ có 1 card -->
             <div class="grid grid-cols-1 gap-4">
@@ -84,15 +85,17 @@ import Card from "@/components/card/Card.vue";
 import { getListPost } from "@/apis/postService.js";
 // Nếu dùng Ant Design Vue, import Pagination component
 import { Pagination, Empty } from "ant-design-vue";
+import { Search } from "lucide-vue-next";
 
 const aEmpty = Empty;
 
-// State bộ lọc
+// State bộ lọc - Cập nhật theo cấu trúc mới
 const filters = ref({
   keywords: "",
   priceRange: [0, 30],
   acreageRange: [5, 95],
-  districtsSelected: [],
+  // Thay đổi từ mảng sang giá trị đơn cho khu vực
+  districtSelected: null,
   featuresSelected: [],
 });
 
@@ -111,13 +114,18 @@ const pagination = ref({
 
 // Hàm xử lý sự kiện nhận bộ lọc từ MotelFilter
 function handleFilterUpdate(newFilters) {
-  filters.value = { ...filters.value, ...newFilters };
+  filters.value = {
+    ...filters.value,
+    ...newFilters,
+    // Giữ lại keywords vì nó không được truyền từ MotelFilter
+    keywords: filters.value.keywords,
+  };
   // Reset về trang 1 mỗi khi filter thay đổi
   pagination.value.current = 1;
   fetchPosts();
 }
 
-// Hàm chuyển đổi bộ lọc FE sang query params cho backend
+// Hàm chuyển đổi bộ lọc FE sang query params cho backend - Đã cập nhật
 function buildQueryParams() {
   const params = {};
   // Luôn gán motel là "PHONG_TRO"
@@ -130,20 +138,22 @@ function buildQueryParams() {
   if (filters.value.keywords && filters.value.keywords.trim() !== "") {
     params.keywords = filters.value.keywords.trim();
   }
+
   if (filters.value.priceRange && filters.value.priceRange.length === 2) {
     params.minPrice = filters.value.priceRange[0] * 1000000;
     params.maxPrice = filters.value.priceRange[1] * 1000000;
   }
+
   if (filters.value.acreageRange && filters.value.acreageRange.length === 2) {
     params.minAcreage = filters.value.acreageRange[0];
     params.maxAcreage = filters.value.acreageRange[1];
   }
-  if (
-    filters.value.districtsSelected &&
-    filters.value.districtsSelected.length > 0
-  ) {
-    params.districtName = filters.value.districtsSelected[0];
+
+  // Cập nhật xử lý cho district từ giá trị đơn thay vì mảng
+  if (filters.value.districtSelected) {
+    params.districtName = filters.value.districtSelected;
   }
+
   const featureMapping = {
     full_furniture: "interior",
     has_kitchen: "kitchen",
@@ -156,12 +166,14 @@ function buildQueryParams() {
     security_24_7: "security",
     has_parking: "parking",
   };
+
   filters.value.featuresSelected.forEach((feature) => {
     const mappedField = featureMapping[feature];
     if (mappedField) {
       params[mappedField] = true;
     }
   });
+
   return params;
 }
 

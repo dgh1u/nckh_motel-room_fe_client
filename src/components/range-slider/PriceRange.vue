@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref, defineExpose } from "vue";
 import Slider from "@vueform/slider";
 import { Check as CheckIcon } from "lucide-vue-next";
 
@@ -121,6 +121,16 @@ function isQuickRangeSelected(range) {
     quickPriceSelected.value && quickPriceSelected.value.label === range.label
   );
 }
+
+// Thêm phương thức reset để component cha có thể gọi
+function resetQuickPrice() {
+  quickPriceSelected.value = null;
+}
+
+// Expose các phương thức để component cha có thể gọi
+defineExpose({
+  resetQuickPrice,
+});
 </script>
 
 <!-- Import theme mặc định -->

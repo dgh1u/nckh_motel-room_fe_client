@@ -5,19 +5,19 @@
     <HomeBanner />
 
     <!-- Main Content Area -->
-    <div class="flex-1 grid grid-cols-10 gap-4 bg-white">
+    <div class="flex-1 grid grid-cols-14 gap-4 bg-white">
       <!-- Sidebar Left -->
-      <div class="col-span-1 bg-white text-center">Content</div>
+      <div class="col-span-1 bg-white text-center"></div>
 
       <!-- Main Content -->
-      <main class="col-span-8 bg-white p-4 text-center">
+      <main class="col-span-12 bg-white p-4 text-center">
         <slot />
         <!-- Khu vực hiển thị nội dung trang -->
       </main>
       <Chatbot />
 
       <!-- Sidebar Right -->
-      <div class="col-span-1 bg-white p-1 text-center">Content</div>
+      <div class="col-span-1 bg-white text-center"></div>
     </div>
 
     <!-- Footer -->

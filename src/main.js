@@ -10,6 +10,8 @@ import "ant-design-vue/dist/reset.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
+import Vue3Marquee from "vue3-marquee";
+
 const app = createApp(App);
 const pinia = createPinia();
 pinia.use(piniaPersist);
@@ -17,6 +19,7 @@ pinia.use(piniaPersist);
 app.use(pinia);
 app.use(router);
 app.use(Antd);
+app.use(Vue3Marquee);
 
 // Khởi tạo AOS
 AOS.init({

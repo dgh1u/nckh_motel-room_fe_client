@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white rounded-lg shadow p-4 hover:shadow-lg transition flex gap-4"
+    class="bg-white rounded-lg shadow p-4 hover:scale-[1.03] hover:shadow-lg transition flex gap-4"
   >
     <div class="w-1/3 flex flex-col gap-2">
       <div class="w-full h-40 bg-gray-200 rounded overflow-hidden">
@@ -72,7 +72,7 @@
           <div
             class="flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white px-3 py-1.5 rounded-full transition"
           >
-            <PhoneIcon class="w-4 h-4" />
+            <PhoneIcon class="w-4 h-4 text-white" fill="currentColor" />
             <span class="text-sm font-medium">{{
               post.userDTO?.phone || "Số điện thoại?"
             }}</span>

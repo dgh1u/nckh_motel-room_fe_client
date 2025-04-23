@@ -166,7 +166,7 @@ import "dayjs/locale/vi";
 
 // Props
 const props = defineProps({
-  idPost: { type: Number, required: true },
+  postId: { type: Number, required: true },
 });
 
 // Reactive state
@@ -191,62 +191,94 @@ async function fetchProfile() {
   }
 }
 
+// Fetch comments with pagination (với log)
 // Fetch comments with pagination
 async function fetchComments() {
-  try {
-    const params = {
-      idPost: props.idPost,
-      start: pagination.value.current - 1,
-      limit: pagination.value.pageSize,
-    };
-    const { data } = await getListComment(params);
+  console.log("🌀 fetchComments called", {
+    postId: props.postId,
+    page: pagination.value.current,
+    pageSize: pagination.value.pageSize,
+  });
 
-    // Lọc chỉ những comment thuộc về idPost hiện tại
+  const params = {
+    postId: props.postId,
+    start: pagination.value.current - 1,
+    limit: pagination.value.pageSize,
+  };
+  console.log("➡️ Request params for getListComment:", params);
+
+  try {
+    const { data } = await getListComment(params);
+    console.log("⬅️ API response data:", data);
+
+    // === CHỖ SỬA ===
+    // trước kia bạn filter theo c.postId nên luôn ra 0
+    // đúng ra là c.idPost, hoặc bỏ filter nếu API đã đúng
     const filtered = (data.items || []).filter(
-      (c) => c.idPost === props.idPost
+      (c) => c.idPost === props.postId
     );
+    console.log("🔍 Filtered comments count:", filtered.length);
 
     comments.value = filtered.map((c) => ({
       ...c,
       liked: likedComments.value.includes(c.id),
     }));
+    console.log("✅ Mapped comments:", comments.value);
 
-    // Tổng số phải tính trên dữ liệu đã lọc
     pagination.value.total = data.total ?? filtered.length;
-    console.log("TOTAL COMMENTS:", pagination.value.total);
+    console.log("📊 Updated pagination.total:", pagination.value.total);
   } catch (error) {
     message.error("Lỗi tải bình luận");
-    console.error(error);
+    console.error("❌ fetchComments error:", error);
   }
 }
 
-// Handle page change
+// Handle page change (với log)
 function handlePageChange(page) {
+  console.log("↔️ handlePageChange: new page =", page);
   pagination.value.current = page;
   fetchComments();
 }
 
 // Create comment
 async function handleAddComment() {
+  console.log("📝 handleAddComment start", { newComment: newComment.value });
   const authStore = useAuthStore();
+  console.log("🔑 AuthStore:", {
+    isAuthenticated: authStore.isAuthenticated,
+    token: authStore.token,
+  });
+
+  // Kiểm tra đăng nhập
   if (!authStore.isAuthenticated || !authStore.token?.trim()) {
+    console.warn("⚠️ Chưa đăng nhập, không thể bình luận");
     return message.warning("Bạn cần đăng nhập để bình luận.");
   }
 
+  // Kiểm tra nội dung
   if (!newComment.value.trim()) {
+    console.warn("⚠️ newComment trống");
     return message.warning("Vui lòng nhập nội dung bình luận.");
   }
 
   try {
-    await createComment(
-      { content: newComment.value, idPost: props.idPost, rate: 0 },
+    console.log("⏳ Gửi request createComment...");
+    const response = await createComment(
+      { content: newComment.value, idPost: props.postId, rate: 0 },
       authStore.token
     );
+    console.log("🚀 createComment response:", response);
     message.success("Bình luận đã được đăng");
     newComment.value = "";
     fetchComments();
-  } catch {
-    message.error("Lỗi khi đăng bình luận");
+  } catch (error) {
+    console.error("❌ handleAddComment error:", error);
+    // hiển thị thêm thông tin lỗi nếu cần
+    message.error(
+      `Lỗi khi đăng bình luận${
+        error?.response?.data?.message ? ": " + error.response.data.message : ""
+      }`
+    );
   }
 }
 
@@ -305,7 +337,6 @@ async function handleLike(comment) {
   const authStore = useAuthStore();
   if (!authStore.isAuthenticated || !authStore.token?.trim()) {
     return message.warning("Bạn cần đăng nhập để thích bình luận.");
-    return;
   }
 
   try {
@@ -322,7 +353,10 @@ async function handleLike(comment) {
       authStore.token
     );
 
-    message.success(comment.liked ? "Đã like bình luận" : "Bỏ like bình luận");
+    comment.liked
+      ? message.success("Đã like bình luận")
+      : message.error("Bỏ like bình luận");
+
     comment.rate = newRate;
   } catch {
     message.error("Lỗi khi xử lý like bình luận");
@@ -336,20 +370,24 @@ function formatDate(dateStr) {
 
 // Lifecycle
 onMounted(async () => {
+  console.log("🚀 Component mounted, postId =", props.postId);
   const authStore = useAuthStore();
-
   if (authStore.isAuthenticated && authStore.token?.trim() !== "") {
-    console.log("Đã đăng nhập, gọi fetchProfile()");
+    console.log("🔑 Đã đăng nhập, fetchProfile()");
     await fetchProfile();
   } else {
-    console.log("Chưa đăng nhập, không gọi fetchProfile()");
+    console.log("🔓 Chưa đăng nhập");
   }
-
   fetchComments();
 });
+
+// Watch postId để reset phân trang (với log)
 watch(
-  () => props.idPost,
-  () => {
+  () => props.postId,
+  (newId, oldId) => {
+    console.log(
+      `🔄 props.postId changed from ${oldId} to ${newId}, reset page → 1`
+    );
     pagination.value.current = 1;
     fetchComments();
   }

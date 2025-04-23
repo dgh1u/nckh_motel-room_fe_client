@@ -1,35 +1,50 @@
 <template>
-  <aside class="hidden md:block w-100 bg-white shadow-xl rounded-2xl p-4">
+  <aside class="hidden md:block w-100 bg-gray-100 shadow-lg rounded-2xl p-4">
     <span class="font-extrabold text-lg mb-4 flex items-center">
       <FilterIcon class="w-5 h-5 mr-2" />
       <span>Bộ lọc</span>
     </span>
-
-    <!-- KHOẢNG GIÁ -->
+    <!-- LOẠI QUÁN ĂN - Modified to select only one at a time -->
     <div class="mb-6">
-      <PriceRange
-        ref="priceRangeRef"
-        v-model="priceRangeLocal"
-        :min="0"
-        :max="30"
-        :step="1"
-        :tooltip="true"
-      />
+      <div class="p-3 text-left">
+        <span class="font-bold text-lg mb-2">Loại quán ăn</span>
+      </div>
+      <div class="grid grid-cols-2">
+        <div
+          v-for="(secondMotel, idx) in secondMotelOptions"
+          :key="idx"
+          class="flex items-center p-2 rounded-lg cursor-pointer hover:text-teal-500"
+          :class="{
+            'text-teal-500': selectedSecondMotel === secondMotel.value,
+          }"
+          @click="selectSecondMotel(secondMotel.value)"
+        >
+          <div class="relative">
+            <input
+              type="radio"
+              class="hidden"
+              :checked="selectedSecondMotel === secondMotel.value"
+              readonly
+            />
+            <div
+              class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center"
+              :class="{
+                'bg-teal-500 border-teal-500':
+                  selectedSecondMotel === secondMotel.value,
+              }"
+            >
+              <div
+                v-if="selectedSecondMotel === secondMotel.value"
+                class="w-3 h-3 rounded-full bg-white"
+              ></div>
+            </div>
+          </div>
+          <span class="ml-2 text-sm">{{ secondMotel.label }}</span>
+        </div>
+      </div>
     </div>
 
-    <!-- DIỆN TÍCH -->
-    <div class="mb-6">
-      <AcreageRange
-        ref="acreageRangeRef"
-        v-model="acreageRangeLocal"
-        :min="0"
-        :max="100"
-        :step="1"
-        :tooltip="true"
-      />
-    </div>
-
-    <!-- KHU VỰC - Modified for single selection -->
+    <!-- KHU VỰC - Modified to select only one at a time -->
     <div class="mb-6">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Khu vực</span>
@@ -67,7 +82,7 @@
       </div>
     </div>
 
-    <!-- ĐẶC ĐIỂM -->
+    <!-- ĐẶC ĐIỂM - This section remains with multiple selections -->
     <div class="mb-4">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Đặc điểm</span>
@@ -119,8 +134,7 @@
 
 <script setup>
 import { ref, watch, defineEmits } from "vue";
-import PriceRange from "@/components/range-slider/PriceRange.vue";
-import AcreageRange from "@/components/range-slider/AcreageRange.vue";
+
 import {
   Filter as FilterIcon,
   Check as CheckIcon,
@@ -129,14 +143,6 @@ import {
 
 // Sử dụng emit để gửi dữ liệu bộ lọc cho component cha khi có thay đổi
 const emit = defineEmits(["update:filters"]);
-
-// Thêm ref đến các component range
-const priceRangeRef = ref(null);
-const acreageRangeRef = ref(null);
-
-// Khai báo state riêng cho bộ lọc trong component con
-const priceRangeLocal = ref([0, 30]);
-const acreageRangeLocal = ref([5, 95]);
 
 const districtOptions = [
   { label: "An Đào", value: "An Đào" },
@@ -148,21 +154,29 @@ const districtOptions = [
   { label: "Khu vực khác", value: "Khác" },
 ];
 
-const featureOptions = [
-  { label: "Đầy đủ nội thất", value: "full_furniture" },
-  { label: "Kệ bếp", value: "has_kitchen" },
-  { label: "Có điều hòa", value: "has_aircon" },
-  { label: "Có nóng lạnh", value: "has_washer" },
-  { label: "Có internet", value: "has_internet" },
-  { label: "Vệ sinh khép kín", value: "no_toilet" },
-  { label: "Không Chung chủ", value: "no_owner" },
-  { label: "Giờ giấc tự do", value: "free_time" },
-  { label: "An ninh tốt", value: "security_24_7" },
-  { label: "Có chỗ để xe", value: "has_parking" },
+const secondMotelOptions = [
+  { label: "Cơm", value: "Cơm" },
+  { label: "Món nước", value: "Món nước" },
+  { label: "Xôi và Bánh mì", value: "Xôi và Bánh mì" },
+  { label: "Cháo", value: "Cháo" },
+  { label: "Ăn vặt", value: "Ăn vặt" },
+  { label: "Đồ ăn nhanh", value: "Đồ ăn nhanh" },
+  { label: "Quán nhậu", value: "Quán nhậu" },
 ];
 
-// Thay đổi từ mảng thành một giá trị duy nhất cho Khu vực
+const featureOptions = [
+  { label: "Có điều hòa", value: "has_aircon" },
+  { label: "Có giao hàng", value: "has_delivery" },
+  { label: "Không gian rộng", value: "has_bigSpace" },
+  { label: "Phục vụ tại chỗ", value: "has_dineIn" },
+  { label: "Có chỗ để xe", value: "has_parking" },
+  { label: "Mua mang đi", value: "has_takeAway" },
+  { label: "Wifi miễn phí", value: "has_internet" },
+];
+
+// Thay đổi từ mảng thành một giá trị duy nhất cho Khu vực và Loại quán ăn
 const selectedDistrict = ref(null);
+const selectedSecondMotel = ref(null);
 // Đặc điểm vẫn cho phép chọn nhiều
 const selectedFeatures = ref([]);
 
@@ -178,7 +192,19 @@ function selectDistrict(value) {
   updateFilters();
 }
 
-// Hàm xử lý khi người dùng click chọn đặc điểm
+// Hàm xử lý chọn loại quán ăn (chỉ một giá trị)
+function selectSecondMotel(value) {
+  if (selectedSecondMotel.value === value) {
+    // Nếu click vào cùng một giá trị đã chọn, bỏ chọn nó
+    selectedSecondMotel.value = null;
+  } else {
+    // Chọn giá trị mới, tự động bỏ chọn giá trị cũ
+    selectedSecondMotel.value = value;
+  }
+  updateFilters();
+}
+
+// Hàm xử lý khi người dùng click chọn đặc điểm (cho phép nhiều lựa chọn)
 function toggleFeature(value) {
   const index = selectedFeatures.value.indexOf(value);
   if (index === -1) {
@@ -195,20 +221,9 @@ function isFeatureSelected(value) {
 
 // Hàm đặt lại toàn bộ bộ lọc
 function resetAll() {
-  priceRangeLocal.value = [0, 30];
-  acreageRangeLocal.value = [0, 100];
   selectedDistrict.value = null;
+  selectedSecondMotel.value = null;
   selectedFeatures.value = [];
-
-  // Reset quickPriceSelected trong PriceRange component
-  if (priceRangeRef.value) {
-    priceRangeRef.value.resetQuickPrice();
-  }
-
-  // Nếu có component AcreageRange tương tự cần reset thì thêm ở đây
-  if (acreageRangeRef.value) {
-    acreageRangeRef.value.resetQuickAcreage();
-  }
 
   updateFilters();
 
@@ -222,16 +237,11 @@ function resetAll() {
 // Hàm gửi state bộ lọc về cho component cha
 function updateFilters() {
   emit("update:filters", {
-    priceRange: priceRangeLocal.value,
-    acreageRange: acreageRangeLocal.value,
     districtSelected: selectedDistrict.value,
+    secondMotelSelected: selectedSecondMotel.value,
     featuresSelected: selectedFeatures.value,
   });
 }
-
-// Theo dõi thay đổi của slider để cập nhật bộ lọc
-watch(priceRangeLocal, updateFilters);
-watch(acreageRangeLocal, updateFilters);
 </script>
 
 <style scoped>

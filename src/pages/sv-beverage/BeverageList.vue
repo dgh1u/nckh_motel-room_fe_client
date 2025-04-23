@@ -1,63 +1,57 @@
 <template>
-  <DefaultLayout>
-    <div class="pt-6 px-6">
+  <DefaultWhiteLayout>
+    <div class="pt-6 px-6 bg-white">
       <div
         class="text-3xl font-bold flex flex-col items-center justify-center flex-wrap space-y-2"
       >
-        <span class="text-teal-500"> TÌM NGƯỜI Ở GHÉP </span>
-
-        <span class="text-lg font-normal"
-          >Kênh thông tin phòng trọ Giá Rẻ, Chính Chủ, Mới Nhất khu vực Học viện
-          Nông nghiệp Việt Nam</span
-        >
+        <span class="text-teal-500"> QUÁN NƯỚC </span>
+        <span class="text-lg font-normal">
+          Kênh thông tin Dịch vụ khu vực Học viện Nông nghiệp Việt Nam
+        </span>
       </div>
     </div>
     <!-- Wrapper toàn trang: hướng cột trên mobile, hướng hàng ngang từ md trở lên -->
-    <div class="flex flex-col md:flex-row min-h-screen py-6">
+    <div class="flex flex-col md:flex-row min-h-screen py-6 bg-white">
       <!-- Bộ lọc: chiếm toàn bộ chiều rộng trên mobile, tự động shrink trên desktop -->
       <div class="w-full md:w-auto md:mr-4 mb-4 md:mb-0">
-        <RoommateFilter @update:filters="handleFilterUpdate" />
+        <BeverageFilter @update:filters="handleFilterUpdate" />
       </div>
-
       <!-- Nội dung chính: chiếm phần còn lại -->
-      <div class="flex-1 flex flex-col bg-gray-100">
+      <div class="flex-1 flex flex-col bg-white">
         <!-- Thanh tìm kiếm từ khóa -->
         <div class="mb-1 relative">
           <input
             v-model="filters.keywords"
             type="text"
-            placeholder="Nhập tên tin đăng muốn tìm..."
+            placeholder="Nhập tên quán nước muốn tìm..."
             class="w-full p-3 pl-10 bg-green-50 rounded-xl shadow hover:shadow-2xl"
           />
           <Search
             class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
           />
         </div>
-
         <!-- Hiển thị thông báo lỗi nếu có -->
         <div v-if="errorMsg" class="p-4 text-red-600">
           {{ errorMsg }}
         </div>
-
         <!-- Danh sách tin đăng -->
-        <div class="p-6 pb-20 flex-1 overflow-y-auto">
+        <div class="p-2 pb-20 flex-1 overflow-y-auto">
           <template v-if="posts.length">
             <!-- Sử dụng grid 1 cột để mỗi dòng chỉ có 1 card -->
-            <div class="grid grid-cols-1 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <router-link
                 v-for="post in posts"
                 :key="post.id"
-                :to="{ name: 'RoommateFindDetail', params: { id: post.id } }"
+                :to="{ name: 'BeverageDetail', params: { id: post.id } }"
                 class="block"
               >
-                <Card
+                <RestaurantCard
                   :post="post"
                   data-aos="fade-left"
                   data-aos-duration="800"
                 />
               </router-link>
             </div>
-
             <!-- Phân trang (Ant Design Vue) -->
             <div class="pt-10">
               <a-pagination
@@ -79,18 +73,18 @@
         </div>
       </div>
     </div>
-  </DefaultLayout>
+  </DefaultWhiteLayout>
 </template>
 
 <script setup>
 import { ref, watch, onMounted } from "vue";
-import DefaultLayout from "../../layouts/DefaultLayout.vue";
-import MotelFilter from "@/components/filter/MotelFilter.vue";
-import Card from "@/components/card/Card.vue";
+import DefaultWhiteLayout from "../../layouts/DefaultWhiteLayout.vue";
+
 import { getListPost } from "@/apis/postService.js";
 // Nếu dùng Ant Design Vue, import Pagination component
-import RoommateFilter from "../../components/filter/RoommateFilter.vue";
 import { Pagination, Empty } from "ant-design-vue";
+import RestaurantCard from "../../components/card/RestaurantCard.vue";
+import BeverageFilter from "../../components/filter/BeverageFilter.vue";
 import { Search } from "lucide-vue-next";
 
 const aEmpty = Empty;
@@ -98,12 +92,10 @@ const aEmpty = Empty;
 // State bộ lọc - Cập nhật theo cấu trúc mới
 const filters = ref({
   keywords: "",
-  priceRange: [0, 30],
-  acreageRange: [5, 95],
-  // Thay đổi từ mảng sang giá trị đơn cho khu vực
+  // Cập nhật từ mảng sang giá trị đơn cho khu vực và loại quán ăn
   districtSelected: null,
+  secondMotelSelected: null,
   featuresSelected: [],
-  gender: null,
 });
 
 // Danh sách bài đăng
@@ -115,16 +107,16 @@ const errorMsg = ref("");
 // Biến pagination (giống logic user)
 const pagination = ref({
   current: 1,
-  pageSize: 5,
+  pageSize: 6,
   total: 0,
 });
 
-// Hàm xử lý sự kiện nhận bộ lọc từ RoommateFilter
+// Hàm xử lý sự kiện nhận bộ lọc từ RestaurantFilter
 function handleFilterUpdate(newFilters) {
   filters.value = {
     ...filters.value,
     ...newFilters,
-    // Giữ lại keywords vì nó không được truyền từ RoommateFilter
+    // Giữ lại keywords vì nó không được truyền từ RestaurantFilter
     keywords: filters.value.keywords,
   };
   // Reset về trang 1 mỗi khi filter thay đổi
@@ -132,10 +124,11 @@ function handleFilterUpdate(newFilters) {
   fetchPosts();
 }
 
+// Hàm chuyển đổi bộ lọc FE sang query params cho backend - Đã cập nhật
 function buildQueryParams() {
   const params = {};
-  // Luôn gán motel là "O_GHEP"
-  params.motel = "O_GHEP";
+  // Luôn gán motel là "QUAN_AN"
+  params.motel = "QUAN_NUOC";
 
   // Thêm start, limit cho phân trang
   params.start = Math.max(pagination.value.current - 1, 0);
@@ -145,32 +138,23 @@ function buildQueryParams() {
     params.keywords = filters.value.keywords.trim();
   }
 
-  if (filters.value.priceRange && filters.value.priceRange.length === 2) {
-    params.minPrice = filters.value.priceRange[0] * 1000000;
-    params.maxPrice = filters.value.priceRange[1] * 1000000;
-  }
-
-  if (filters.value.acreageRange && filters.value.acreageRange.length === 2) {
-    params.minAcreage = filters.value.acreageRange[0];
-    params.maxAcreage = filters.value.acreageRange[1];
-  }
-
-  // Cập nhật xử lý cho district từ giá trị đơn thay vì mảng
+  // Cập nhật xử lý cho district và secondMotel từ giá trị đơn
   if (filters.value.districtSelected) {
     params.districtName = filters.value.districtSelected;
   }
 
+  if (filters.value.secondMotelSelected) {
+    params.secondMotel = filters.value.secondMotelSelected;
+  }
+
   const featureMapping = {
-    full_furniture: "interior",
-    has_kitchen: "kitchen",
     has_aircon: "airConditioner",
-    has_washer: "heater",
     has_internet: "internet",
-    no_toilet: "toilet",
-    no_owner: "owner",
-    free_time: "time",
-    security_24_7: "security",
     has_parking: "parking",
+    has_delivery: "delivery",
+    has_dineIn: "dineIn",
+    has_takeAway: "takeAway",
+    has_bigSpace: "bigSpace",
   };
 
   filters.value.featuresSelected.forEach((feature) => {
@@ -179,11 +163,6 @@ function buildQueryParams() {
       params[mappedField] = true;
     }
   });
-
-  // Thêm xử lý cho bộ lọc giới tính
-  if (filters.value.gender !== null) {
-    params.gender = filters.value.gender;
-  }
 
   return params;
 }

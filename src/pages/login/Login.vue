@@ -188,7 +188,15 @@ const handleLogin = async () => {
 
   try {
     await authStore.login(email.value, password.value);
-    router.push("/home");
+
+    // Lấy URL chuyển hướng từ localStorage (nếu có)
+    const redirectPath = localStorage.getItem("redirectAfterLogin") || "/home";
+
+    // Xóa dữ liệu chuyển hướng đã lưu
+    localStorage.removeItem("redirectAfterLogin");
+
+    // Chuyển hướng người dùng đến trang đích
+    router.push(redirectPath);
   } catch (err) {
     generalError.value = err?.message || "Đăng nhập thất bại!";
   } finally {
