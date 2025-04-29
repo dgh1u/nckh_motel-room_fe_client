@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- Chat launcher -->
+    <!-- Nút khởi động chat -->
     <div class="fixed bottom-6 right-6 flex items-center space-x-2">
       <div class="pr-0.5 pb-5">
         <button
@@ -20,7 +20,7 @@
       </button>
     </div>
 
-    <!-- Chat Window -->
+    <!-- Cửa sổ chat -->
     <transition
       enter-active-class="transition-transform duration-300 ease-out"
       enter-from-class="scale-0 opacity-0"
@@ -33,7 +33,7 @@
         v-if="isOpen"
         class="fixed bottom-4 right-4 w-90 h-[500px] bg-white rounded-xl shadow-lg flex flex-col overflow-hidden z-50"
       >
-        <!-- Header -->
+        <!-- Phần header -->
         <div
           class="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-teal-400 to-blue-300 rounded-t-xl"
         >
@@ -53,7 +53,7 @@
           </div>
         </div>
 
-        <!-- Messages -->
+        <!-- Khu vực hiển thị tin nhắn -->
         <div
           ref="chatContainer"
           class="flex-1 overflow-y-auto px-4 py-3 space-y-4 bg-gray-100 scrollbar-thin scrollbar-thumb-gray-300"
@@ -88,7 +88,7 @@
           </div>
         </div>
 
-        <!-- Input area -->
+        <!-- Khu vực nhập liệu -->
         <div class="px-4 py-3 bg-gray-100 pb-3">
           <div class="relative flex items-center">
             <input
@@ -109,7 +109,7 @@
           </div>
         </div>
 
-        <!-- Footer: Powered by Gemini -->
+        <!-- Footer -->
         <div class="pb-2 text-center text-xs text-gray-500 bg-gray-100">
           Powered by
           <span
@@ -128,12 +128,13 @@ import { ref, nextTick, onMounted, watch } from "vue";
 import { SendHorizonal, X, RotateCcw, BotMessageSquare } from "lucide-vue-next";
 import { sendQuery } from "@/apis/chatbotService";
 
+// Khởi tạo các biến reactive
 const isOpen = ref(false);
 const input = ref("");
 const messages = ref([]);
 const chatContainer = ref(null);
 
-// Lấy các tin nhắn từ localStorage khi component được mount
+// Khôi phục tin nhắn từ localStorage khi component được tạo
 onMounted(() => {
   const storedMessages = localStorage.getItem("chatMessages");
   if (storedMessages) {
@@ -142,7 +143,7 @@ onMounted(() => {
   }
 });
 
-// Theo dõi mảng messages, cập nhật localStorage mỗi khi có thay đổi
+// Lưu tin nhắn vào localStorage khi có thay đổi
 watch(
   messages,
   (newVal) => {
@@ -151,37 +152,44 @@ watch(
   { deep: true }
 );
 
+// Mở cửa sổ chat
 const openChat = () => {
   isOpen.value = true;
 };
 
+// Xóa toàn bộ lịch sử chat
 const clearChat = () => {
   messages.value = [];
-  localStorage.removeItem("chatMessages"); // Xóa tin nhắn khỏi localStorage khi restart
+  localStorage.removeItem("chatMessages");
   nextTick().then(scrollToBottom);
 };
 
+// Cuộn xuống cuối danh sách tin nhắn
 const scrollToBottom = () => {
   if (chatContainer.value) {
     chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
   }
 };
 
+// Xử lý gửi tin nhắn
 const handleSend = async () => {
   const q = input.value.trim();
   if (!q) return;
 
+  // Thêm tin nhắn của người dùng
   messages.value.push({ sender: "user", content: q });
   input.value = "";
   await nextTick();
   scrollToBottom();
 
+  // Thêm tin nhắn đang tải của bot
   const loadingMsg = { sender: "bot", content: "", loading: true };
   messages.value.push(loadingMsg);
   await nextTick();
   scrollToBottom();
 
   try {
+    // Gửi câu hỏi đến API và nhận phản hồi
     const response = await sendQuery(q);
     loadingMsg.content = response.answer || "Không có câu trả lời từ API";
     messages.value = messages.value.slice();

@@ -13,7 +13,7 @@
         Chọn nhanh số tiền cần nạp
       </span>
 
-      <!-- Danh sách các khối mệnh giá nhanh (radio button tự tạo) -->
+      <!-- Danh sách các mệnh giá nhanh dạng radio button tùy chỉnh -->
       <div class="flex flex-wrap gap-4 mb-6">
         <label
           v-for="(amount, index) in quickAmounts"
@@ -33,7 +33,7 @@
             v-model="selectedAmount"
             class="sr-only"
           />
-          <!-- Custom radio indicator -->
+          <!-- Hiển thị radio tùy chỉnh -->
           <div
             class="w-4 h-4 border rounded-full flex items-center justify-center"
             :class="
@@ -112,7 +112,7 @@
         </span>
       </div>
     </div>
-    <!-- Nút tạo link thanh toán được đặt bên ngoài khối container chính với width bằng với container -->
+    <!-- Nút tạo link thanh toán -->
     <div class="max-w-158 mx-auto mt-6 text-white">
       <button
         @click="createPaymentLink"
@@ -131,34 +131,34 @@ import { paymentApi } from "@/apis/paymentService";
 import { MoveRight } from "lucide-vue-next";
 
 /**
- * Hàm định dạng số theo kiểu "vi-VN" (ví dụ: 5000 => "5.000")
+ * Định dạng số tiền theo định dạng tiền tệ Việt Nam
  */
 function formatMoney(num) {
   return new Intl.NumberFormat("vi-VN").format(num);
 }
 
-// Mảng chứa các mệnh giá có sẵn
+// Danh sách các mệnh giá nạp tiền nhanh
 const quickAmounts = [
   5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000,
 ];
 
-// selectedAmount lưu giá trị mệnh giá được chọn
+// Lưu mệnh giá đang được chọn
 const selectedAmount = ref(quickAmounts[0]);
 
-// manualPrice lưu giá trị ô nhập thủ công, ban đầu hiển thị theo selectedAmount
+// Giá trị hiển thị trong ô nhập thủ công
 const manualPrice = ref(formatMoney(selectedAmount.value));
 
-// Mô tả (lời nhắn)
+// Lời nhắn kèm theo giao dịch
 const desc = ref("");
 
-// Theo dõi thay đổi selectedAmount để cập nhật lại ô nhập thủ công
+// Cập nhật ô nhập thủ công khi thay đổi mệnh giá
 watch(selectedAmount, (newVal) => {
   if (newVal) {
     manualPrice.value = formatMoney(newVal);
   }
 });
 
-// Theo dõi thay đổi ô nhập thủ công, chuyển đổi và cập nhật selectedAmount nếu khớp
+// Cập nhật lại selectedAmount nếu nhập giá trị khớp với mệnh giá có sẵn
 watch(manualPrice, (newVal) => {
   const sanitized = newVal.trim();
   if (sanitized === "") return;
@@ -170,7 +170,7 @@ watch(manualPrice, (newVal) => {
   }
 });
 
-// Tính giá trị cuối cùng của số tiền
+// Tính toán giá trị cuối cùng của số tiền cần nạp
 const price = computed(() => {
   const sanitized = manualPrice.value.trim();
   if (!sanitized) return selectedAmount.value || quickAmounts[0];
@@ -180,7 +180,9 @@ const price = computed(() => {
     : selectedAmount.value || quickAmounts[0];
 });
 
-// Hàm chuyển số sang chữ tiếng Việt (phiên bản đơn giản)
+/**
+ * Chuyển đổi số tiền sang dạng chữ tiếng Việt
+ */
 function convertNumberToWordsVN(num) {
   if (!num || num <= 0) return "";
   if (num === 5000) return "năm nghìn đồng";
@@ -194,12 +196,14 @@ function convertNumberToWordsVN(num) {
   return `${formatMoney(num)} đồng`;
 }
 
-// computed spelledOutPrice hiển thị số tiền dạng chữ
+// Hiển thị số tiền dạng chữ
 const spelledOutPrice = computed(() => {
   return convertNumberToWordsVN(price.value);
 });
 
-// Định dạng lại ô nhập khi mất focus
+/**
+ * Định dạng lại số tiền khi người dùng nhập xong
+ */
 function onBlur() {
   const sanitized = manualPrice.value.trim();
   if (sanitized === "") return;
@@ -209,7 +213,9 @@ function onBlur() {
   }
 }
 
-// Hàm tạo link thanh toán: gọi API và chuyển hướng
+/**
+ * Tạo link thanh toán và chuyển hướng người dùng
+ */
 async function createPaymentLink() {
   try {
     const requestData = {
@@ -219,16 +225,8 @@ async function createPaymentLink() {
     const response = await paymentApi(requestData);
     window.location.href = response.url;
   } catch (error) {
-    if (error.response) {
-      console.error(error.response.data.message || "Đăng nhập thất bại.");
-    } else {
-      console.error("Lỗi kết nối hoặc lỗi không xác định:", error.message);
-    }
+    console.error("Lỗi tạo link thanh toán:", error.message);
     throw error;
   }
 }
 </script>
-
-<style scoped>
-/* Không cần thêm style riêng nếu chỉ dùng các lớp có sẵn của Tailwind */
-</style>

@@ -4,7 +4,7 @@
       <FilterIcon class="w-5 h-5 mr-2" />
       <span>Bộ lọc</span>
     </span>
-    <!-- LOẠI QUÁN ĂN - Modified to select only one at a time -->
+    <!-- Lựa chọn loại quán nước - Chỉ cho phép chọn một tùy chọn -->
     <div class="mb-6">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Loại quán nước</span>
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <!-- KHU VỰC - Modified to select only one at a time -->
+    <!-- Lựa chọn khu vực - Chỉ cho phép chọn một tùy chọn -->
     <div class="mb-6">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Khu vực</span>
@@ -82,7 +82,7 @@
       </div>
     </div>
 
-    <!-- ĐẶC ĐIỂM - This section remains with multiple selections -->
+    <!-- Đặc điểm - Cho phép chọn nhiều tùy chọn -->
     <div class="mb-4">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Đặc điểm</span>
@@ -119,7 +119,7 @@
       </div>
     </div>
 
-    <!-- NÚT ĐẶT LẠI -->
+    <!-- Nút đặt lại bộ lọc -->
     <div class="p-2 text-white">
       <button
         class="flex items-center space-x-2 font-bold border border-red-400 px-5 py-2 rounded bg-red-400 hover:bg-red-500 text-white hover:border-red-500 transition"
@@ -133,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref, watch, defineEmits } from "vue";
+import { ref, defineEmits } from "vue";
 
 import {
   Filter as FilterIcon,
@@ -141,9 +141,10 @@ import {
   RefreshCw as ResetIcon,
 } from "lucide-vue-next";
 
-// Sử dụng emit để gửi dữ liệu bộ lọc cho component cha khi có thay đổi
+// Định nghĩa sự kiện để gửi dữ liệu bộ lọc cho component cha
 const emit = defineEmits(["update:filters"]);
 
+// Danh sách các tùy chọn khu vực
 const districtOptions = [
   { label: "An Đào", value: "An Đào" },
   { label: "Đào Nguyên", value: "Đào Nguyên" },
@@ -154,6 +155,7 @@ const districtOptions = [
   { label: "Khu vực khác", value: "Khác" },
 ];
 
+// Danh sách các tùy chọn loại quán nước
 const secondMotelOptions = [
   { label: "Quán Cà phê", value: "Quán Cà phê" },
   { label: "Quán Trà chanh", value: "Quán Trà chanh" },
@@ -161,6 +163,7 @@ const secondMotelOptions = [
   { label: "Quán Trà sữa", value: "Quán Trà sữa" },
 ];
 
+// Danh sách các tùy chọn đặc điểm
 const featureOptions = [
   { label: "Có điều hòa", value: "has_aircon" },
   { label: "Có giao hàng", value: "has_delivery" },
@@ -171,52 +174,54 @@ const featureOptions = [
   { label: "Wifi miễn phí", value: "has_internet" },
 ];
 
-// Thay đổi từ mảng thành một giá trị duy nhất cho Khu vực và Loại quán ăn
-const selectedDistrict = ref(null);
-const selectedSecondMotel = ref(null);
-// Đặc điểm vẫn cho phép chọn nhiều
-const selectedFeatures = ref([]);
+// Khai báo trạng thái cho các lựa chọn
+const selectedDistrict = ref(null); // Lưu khu vực được chọn
+const selectedSecondMotel = ref(null); // Lưu loại quán nước được chọn
+const selectedFeatures = ref([]); // Lưu danh sách đặc điểm được chọn
 
-// Hàm xử lý chọn khu vực (chỉ một giá trị)
+// Hàm xử lý chọn khu vực (chỉ một tùy chọn được chọn)
 function selectDistrict(value) {
   if (selectedDistrict.value === value) {
-    // Nếu click vào cùng một giá trị đã chọn, bỏ chọn nó
+    // Nếu click vào giá trị đã chọn, bỏ chọn nó
     selectedDistrict.value = null;
   } else {
-    // Chọn giá trị mới, tự động bỏ chọn giá trị cũ
+    // Chọn giá trị mới
     selectedDistrict.value = value;
   }
   updateFilters();
 }
 
-// Hàm xử lý chọn loại quán ăn (chỉ một giá trị)
+// Hàm xử lý chọn loại quán nước (chỉ một tùy chọn được chọn)
 function selectSecondMotel(value) {
   if (selectedSecondMotel.value === value) {
-    // Nếu click vào cùng một giá trị đã chọn, bỏ chọn nó
+    // Nếu click vào giá trị đã chọn, bỏ chọn nó
     selectedSecondMotel.value = null;
   } else {
-    // Chọn giá trị mới, tự động bỏ chọn giá trị cũ
+    // Chọn giá trị mới
     selectedSecondMotel.value = value;
   }
   updateFilters();
 }
 
-// Hàm xử lý khi người dùng click chọn đặc điểm (cho phép nhiều lựa chọn)
+// Hàm xử lý khi người dùng chọn đặc điểm (cho phép nhiều tùy chọn)
 function toggleFeature(value) {
   const index = selectedFeatures.value.indexOf(value);
   if (index === -1) {
+    // Nếu đặc điểm chưa được chọn, thêm vào danh sách
     selectedFeatures.value.push(value);
   } else {
+    // Nếu đặc điểm đã được chọn, xóa khỏi danh sách
     selectedFeatures.value.splice(index, 1);
   }
   updateFilters();
 }
 
+// Kiểm tra xem một đặc điểm có được chọn hay không
 function isFeatureSelected(value) {
   return selectedFeatures.value.includes(value);
 }
 
-// Hàm đặt lại toàn bộ bộ lọc
+// Đặt lại toàn bộ bộ lọc
 function resetAll() {
   selectedDistrict.value = null;
   selectedSecondMotel.value = null;
@@ -231,7 +236,7 @@ function resetAll() {
   });
 }
 
-// Hàm gửi state bộ lọc về cho component cha
+// Cập nhật và gửi thông tin bộ lọc cho component cha
 function updateFilters() {
   emit("update:filters", {
     districtSelected: selectedDistrict.value,
@@ -242,5 +247,5 @@ function updateFilters() {
 </script>
 
 <style scoped>
-/* Tuỳ chỉnh style nếu cần */
+/* Có thể thêm style tùy chỉnh ở đây nếu cần */
 </style>

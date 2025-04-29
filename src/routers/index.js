@@ -3,7 +3,7 @@ import authRoutes from "./authRoutes";
 import homeRoutes from "./homeRoutes";
 import { useAuthStore } from "@/stores/store";
 
-// Các route khác của ứng dụng
+// Khai báo các routes của ứng dụng
 const routes = [
   ...authRoutes,
   ...homeRoutes,
@@ -18,39 +18,36 @@ const routes = [
   },
 ];
 
-// Tạo Router với scrollBehavior
+// Khởi tạo router với cấu hình cuộn trang
 const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    // Nếu có savedPosition (như khi dùng nút back/forward) thì khôi phục vị trí đó
+    // Khôi phục vị trí cuộn trước đó nếu có
     if (savedPosition) {
       return savedPosition;
     } else {
-      // Với các chuyển hướng khác, cuộn về đầu trang
+      // Cuộn lên đầu trang khi chuyển route
       return { top: 0 };
     }
   },
 });
 
-// Xử lý Route Guard
+// Bảo vệ route - kiểm tra quyền truy cập
 router.beforeEach((to, from, next) => {
-  // Lấy trạng thái xác thực từ Pinia store
   const authStore = useAuthStore();
   const isAuthenticated = authStore.isAuthenticated;
 
-  // Kiểm tra xem route yêu cầu đăng nhập không
+  // Chuyển hướng nếu route yêu cầu xác thực
   if (to.meta.requiresAuth && !isAuthenticated) {
-    // Lưu URL đích vào localStorage trước khi chuyển hướng đến trang login
+    // Lưu URL đích để chuyển hướng sau khi đăng nhập
     localStorage.setItem("redirectAfterLogin", to.fullPath);
-
-    // Chuyển hướng đến trang login
     next({ name: "Login" });
   } else if (to.meta.requiresGuest && isAuthenticated) {
-    // Nếu route chỉ dành cho khách và người dùng đã đăng nhập
+    // Chuyển hướng nếu route chỉ dành cho khách không đăng nhập
     next({ name: "Home" });
   } else {
-    // Cho phép tiếp tục đến trang đích
+    // Cho phép truy cập route
     next();
   }
 });

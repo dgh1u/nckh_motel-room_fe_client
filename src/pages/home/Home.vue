@@ -1,158 +1,93 @@
 <template>
   <Layout>
     <!-- Room Search and Roommate Finding Section -->
-    <div class="py-12 bg-gray-50">
+    <div class="pb-12 bg-white">
       <div class="container mx-auto px-4">
         <div class="text-center mb-10">
-          <h2 class="text-3xl font-bold text-gray-800 mb-4">
-            Tìm kiếm không gian sống lý tưởng
-          </h2>
+          <div class="pb-3">
+            <span class="text-center text-3xl font-bold">
+              Tìm nhà trọ hoặc tìm người ở ghép
+            </span>
+          </div>
           <p class="text-gray-600 max-w-2xl mx-auto">
-            Hỗ trợ tìm kiếm phòng trọ phù hợp hoặc kết nối với người ở ghép gần
-            Học viện Nông nghiệp Việt Nam
+            Hỗ trợ tìm kiếm phòng trọ phù hợp hoặc kết nối với người ở ghép khu
+            vực Học viện Nông nghiệp Việt Nam
           </p>
         </div>
 
+        <!-- Split layout - Image on left, Content on right -->
         <div class="flex flex-col md:flex-row gap-8 mt-6">
-          <!-- Find Room Card -->
-          <div
-            class="bg-white rounded-xl shadow-lg overflow-hidden flex-1 transition-transform hover:scale-105"
-          >
-            <div class="p-6">
-              <div
-                class="flex items-center justify-center mb-4 text-emerald-500"
-              >
-                <Home class="w-10 h-10" />
-              </div>
-              <h3 class="text-xl font-semibold text-center mb-2">
-                Tìm phòng trọ
-              </h3>
-              <p class="text-gray-600 text-center mb-6">
-                Khám phá các lựa chọn phòng trọ phù hợp với ngân sách và nhu cầu
-                của bạn
-              </p>
-
-              <div class="space-y-4 mb-6">
-                <div class="relative">
-                  <MapPin class="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-                  <select
-                    class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 pl-10"
-                  >
-                    <option selected>Chọn khu vực</option>
-                    <option value="hvnn">Học viện Nông nghiệp</option>
-                    <option value="thuyLoi">Đại học Thủy Lợi</option>
-                    <option value="bachKhoa">Đại học Bách Khoa</option>
-                  </select>
-                </div>
-
-                <div class="relative">
-                  <Wallet class="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-                  <select
-                    class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 pl-10"
-                  >
-                    <option selected>Mức giá</option>
-                    <option value="1">Dưới 1.5 triệu</option>
-                    <option value="2">1.5 - 2.5 triệu</option>
-                    <option value="3">2.5 - 3.5 triệu</option>
-                    <option value="4">Trên 3.5 triệu</option>
-                  </select>
-                </div>
-
-                <div class="relative">
-                  <Home class="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-                  <select
-                    class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 pl-10"
-                  >
-                    <option selected>Loại phòng</option>
-                    <option value="ktx">Ký túc xá</option>
-                    <option value="chungCu">Chung cư mini</option>
-                    <option value="nhaNguyenCan">Nhà nguyên căn</option>
-                    <option value="chdv">Căn hộ dịch vụ</option>
-                  </select>
-                </div>
-              </div>
-
-              <button
-                class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2.5 px-4 rounded-lg transition duration-300"
-              >
-                Tìm kiếm ngay
-              </button>
+          <!-- Left side - Image -->
+          <div class="w-full md:w-3/5">
+            <div class="h-full overflow-hidden">
+              <img
+                src="@/assets/motel.png"
+                alt="Phòng trọ sinh viên"
+                class="w-full h-full object-cover"
+              />
             </div>
           </div>
 
-          <!-- Find Roommate Card -->
-          <div
-            class="bg-white rounded-xl shadow-lg overflow-hidden flex-1 transition-transform hover:scale-105"
-          >
-            <div class="p-6">
-              <div class="flex items-center justify-center mb-4 text-blue-500">
-                <Users class="w-10 h-10" />
-              </div>
-              <h3 class="text-xl font-semibold text-center mb-2">
-                Tìm người ở ghép
-              </h3>
-              <p class="text-gray-600 text-center mb-6">
-                Kết nối với người cùng chí hướng để chia sẻ không gian sống
-              </p>
+          <!-- Right side - Content -->
+          <div class="w-full md:w-2/5">
+            <div class="bg-white pt-4 h-full">
+              <span class="text-2xl font-bold mb-8 text-gray-800 block">
+                Tìm nhà trọ hoặc tìm người ở ghép khu vực Học viện Nông nghiệp
+                Việt Nam
+              </span>
+              <div class="text-base">
+                <span class="block text-gray-600 mb-4 text-left">
+                  Chúng tôi hiểu rằng việc tìm kiếm một nơi ở phù hợp là một
+                  trong những thách thức lớn nhất đối với sinh viên. Với đa dạng
+                  các lựa chọn từ ký túc xá đến căn hộ dịch vụ, chúng tôi cung
+                  cấp giải pháp phù hợp với mọi ngân sách.
+                </span>
 
-              <div class="space-y-4 mb-6">
-                <div class="relative">
-                  <MapPin class="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-                  <select
-                    class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 pl-10"
-                  >
-                    <option selected>Chọn khu vực</option>
-                    <option value="hvnn">Học viện Nông nghiệp</option>
-                    <option value="thuyLoi">Đại học Thủy Lợi</option>
-                    <option value="bachKhoa">Đại học Bách Khoa</option>
-                  </select>
-                </div>
+                <span class="block text-gray-600 mb-4 text-left">
+                  Tất cả các phòng trọ trên nền tảng của chúng tôi đều được kiểm
+                  duyệt kỹ lưỡng để đảm bảo độ tin cậy và an toàn cho sinh viên.
+                </span>
 
-                <div class="relative">
-                  <Users class="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-                  <select
-                    class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 pl-10"
-                  >
-                    <option selected>Giới tính</option>
-                    <option value="nam">Nam</option>
-                    <option value="nu">Nữ</option>
-                    <option value="all">Tất cả</option>
-                  </select>
-                </div>
+                <span class="block text-gray-600 mb-4 text-left">
+                  Dịch vụ tìm kiếm phòng trọ nhanh chóng và hiệu quả dành riêng
+                  cho sinh viên Học viện Nông nghiệp Việt Nam.
+                </span>
 
-                <div class="relative">
-                  <CalendarClock
-                    class="absolute left-3 top-3 text-gray-400 w-5 h-5"
-                  />
-                  <select
-                    class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 pl-10"
-                  >
-                    <option selected>Thời gian</option>
-                    <option value="1">Cần gấp</option>
-                    <option value="2">Trong tháng</option>
-                    <option value="3">Trong quý</option>
-                  </select>
-                </div>
+                <span class="block text-gray-600 mb-4 text-left">
+                  Kết nối những người có nhu cầu ở ghép, giúp giảm chi phí và
+                  tạo môi trường sống thân thiện. Tìm được 1 bạn cùng phòng chất
+                  lượng phù hợp với nhu cầu bản thân.
+                </span>
               </div>
 
-              <button
-                class="w-full bg-blue-500 hover: text-white font-medium py-2.5 px-4 rounded-lg transition duration-300"
-              >
-                Tìm người ở ghép
-              </button>
+              <div class="flex flex-col sm:flex-row gap-4 mt-6 text-white">
+                <router-link
+                  to="/post/motel"
+                  class="hover:scale-103 flex-1 bg-teal-500 hover:bg-teal-600 font-medium py-2.5 px-4 rounded-xl transition duration-300"
+                >
+                  Tìm phòng trọ
+                </router-link>
+                <router-link
+                  to="/post/roommate"
+                  class="hover:scale-103 flex-1 bg-blue-500 hover:bg-blue-600 font-medium py-2.5 px-4 rounded-xl transition duration-300"
+                >
+                  Tìm người ở ghép
+                </router-link>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
     <!-- Local Shops Information Section -->
-    <div class="py-12">
+    <div class="py-24">
       <div class="container mx-auto px-4">
         <div class="text-center mb-10">
-          <h2 class="text-3xl font-bold text-gray-800 mb-4">
-            Dịch vụ tiện ích quanh Học viện Nông nghiệp
-          </h2>
+          <div class="pb-3">
+            <span class="text-center text-3xl font-bold">
+              Các dịch vụ tiện ích khu vực Học viện Nông nghiệp Việt Nam
+            </span>
+          </div>
           <p class="text-gray-600 max-w-2xl mx-auto">
             Khám phá các cửa hàng và dịch vụ thiết yếu gần khu vực trường học
           </p>
@@ -160,7 +95,8 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Food Card -->
-          <div
+          <router-link
+            to="/post/restaurant"
             class="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl hover:scale-105"
           >
             <div class="h-40 overflow-hidden">
@@ -184,23 +120,24 @@
                 <span>15+ địa điểm</span>
               </div>
             </div>
-          </div>
+          </router-link>
 
           <!-- Convenience Store Card -->
-          <div
+          <router-link
+            to="/post/store"
             class="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl hover:scale-105"
           >
             <div class="h-40 overflow-hidden">
               <img
                 src="@/assets/home-page/circlek.jpg"
-                alt="Cửa hàng tiện lợi"
+                alt="Cửa hàng"
                 class="w-full h-full object-cover"
               />
             </div>
             <div class="p-4">
               <div class="flex items-center mb-2">
                 <ShoppingBag class="w-5 h-5 text-blue-500 mr-2 mb-2" />
-                <h3 class="font-semibold text-lg">Cửa hàng tiện lợi</h3>
+                <h3 class="font-semibold text-lg">Cửa hàng</h3>
               </div>
               <p class="text-gray-600 text-sm mb-3">
                 Các cửa hàng tiện lợi 24/7 cung cấp đầy đủ nhu yếu phẩm cho sinh
@@ -211,10 +148,11 @@
                 <span>8+ địa điểm</span>
               </div>
             </div>
-          </div>
+          </router-link>
 
           <!-- Cafe Card -->
-          <div
+          <router-link
+            to="/post/beverage"
             class="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl hover:scale-105"
           >
             <div class="h-40 overflow-hidden">
@@ -238,10 +176,11 @@
                 <span>12+ địa điểm</span>
               </div>
             </div>
-          </div>
+          </router-link>
 
           <!-- Services Card -->
-          <div
+          <router-link
+            to="/post/utility"
             class="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl hover:scale-105"
           >
             <div class="h-40 overflow-hidden">
@@ -265,22 +204,23 @@
                 <span>10+ địa điểm</span>
               </div>
             </div>
-          </div>
+          </router-link>
         </div>
 
         <div class="text-center mt-8">
-          <button
+          <router-link
+            to="/post/restaurant"
             class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg inline-flex items-center transition-all"
           >
             Xem tất cả dịch vụ
             <ArrowRight class="w-4 h-4 ml-2" />
-          </button>
+          </router-link>
         </div>
       </div>
     </div>
 
     <!-- Logo Marquee Section (Preserved) -->
-    <div class="py-12">
+    <div class="pb-16">
       <div class="container mx-auto px-4">
         <div class="pb-10">
           <span class="text-center text-3xl font-bold">
@@ -299,7 +239,7 @@
     </div>
 
     <!-- Testimonials Slider Section -->
-    <div class="py-12">
+    <div class="py-16">
       <div class="py-8 bg-teal-500 rounded-2xl text-white">
         <div class="container mx-auto px-4">
           <div class="pb-3">
@@ -409,7 +349,9 @@
                         Sau khi đăng thông tin tìm người ở ghép lên trang web,
                         chỉ sau vài giờ tôi đã có nhiều lựa chọn bạn cùng phòng
                         của mình. Giao diện dễ sử dụng và thông tin chi tiết
-                        giúp tôi tìm được người hợp với thói quen sinh hoạt.
+                        giúp tôi tìm được người hợp với thói quen sinh hoạt.Cảm
+                        ơn đội ngũ phát triển đã tạo ra website kênh thông tin
+                        dịch vụ tuyệt vời này.
                       </p>
 
                       <div class="flex items-center mb-3">
@@ -428,7 +370,7 @@
                           class="w-10 h-10 mr-3 rounded-full overflow-hidden bg-blue-500"
                         >
                           <img
-                            src="@/assets/home-page/nam1.jpg"
+                            src="@/assets/home-page/thay hieu.png"
                             alt="User Avatar"
                             class="w-full h-full object-cover"
                           />
@@ -437,10 +379,10 @@
                           <span
                             class="font-medium text-sm leading-tight text-left"
                           >
-                            Trần Văn Hải
+                            Ths. Trần Trung Hiếu
                           </span>
                           <span class="text-xs text-gray-600 leading-tight">
-                            Sinh viên năm 3 - khoa Cơ điện
+                            Giảng viên - khoa Công nghệ thông tin
                           </span>
                         </div>
                       </div>
@@ -657,7 +599,9 @@
                         Tính năng thông báo ưu đãi từ các cửa hàng xung quanh
                         khu vực trường giúp tôi tiết kiệm được kha khá chi phí
                         sinh hoạt. Đặc biệt là chương trình giảm giá cho sinh
-                        viên và combo ăn uống được cập nhật thường xuyên.
+                        viên và combo ăn uống được cập nhật thường xuyên.Cảm ơn
+                        đội ngũ phát triển đã tạo ra website kênh thông tin dịch
+                        vụ tuyệt vời này.
                       </p>
 
                       <div class="flex items-center mb-3">
@@ -760,6 +704,7 @@ const imgArray = [
   "src/assets/marquee-items/logo3.svg",
   "src/assets/marquee-items/logo4.svg",
   "src/assets/marquee-items/logo5.svg",
+  "src/assets/marquee-items/vnua-logo.png",
 ];
 
 // Testimonials data

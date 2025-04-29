@@ -28,32 +28,17 @@
               </span>
             </p>
             <a
-              href="/home"
+              href="/contact"
               data-scroll
               data-scroll-offset="250"
-              class="inline-block px-6 py-3 bg-teal-500 text-white font-bold rounded hover:bg-green-600 transition"
+              class="hover:scale-103 inline-block px-6 py-3 bg-teal-500 text-white font-bold rounded-xl hover:bg-teal-600 transition"
             >
-              Tìm phòng trọ
-            </a>
-            <a
-              href="/home"
-              data-scroll
-              data-scroll-offset="250"
-              class="inline-block ml-2 px-6 py-3 bg-teal-500 text-white font-bold rounded hover:bg-green-600 transition"
-            >
-              Tìm người ở ghép
-            </a>
-            <a
-              href="/home"
-              data-scroll
-              data-scroll-offset="250"
-              class="inline-block ml-2 px-6 py-3 bg-teal-500 text-white font-bold rounded hover:bg-green-600 transition"
-            >
-              Tìm cửa hàng
+              Liên hệ với chúng tôi
             </a>
           </div>
         </div>
-        <!-- Cột phải: Hình ảnh & các box -->
+
+        <!-- Cột phải: Hình ảnh & các box thông điệp -->
         <div class="lg:ml-8">
           <div class="relative lg:ml-4">
             <!-- Hình ảnh nền với hiệu ứng xoay -->
@@ -68,6 +53,7 @@
                 />
               </div>
             </div>
+
             <!-- Các box thông điệp -->
             <div class="relative grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -144,7 +130,9 @@
   </section>
 </template>
 
-<script setup></script>
+<script setup>
+// Component trang chủ hiển thị kênh thông tin dịch vụ cho Học viện Nông nghiệp Việt Nam
+</script>
 
 <style scoped>
 /* Hiệu ứng xoay cho hình ảnh nền */
@@ -161,10 +149,12 @@
   }
 }
 
+/* Hiệu ứng mờ dần cho các box thông điệp */
 .hero-animation-fade {
   animation: fadeInOut 6s ease-in-out infinite;
 }
 
+/* Delay cho các hiệu ứng mờ dần */
 .hero-animation-delay-1 {
   animation-delay: 1s;
 }

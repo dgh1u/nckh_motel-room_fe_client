@@ -5,7 +5,7 @@ import { PlusCircle, CheckCircle2, XCircle, Bell } from "lucide-vue-next";
 import { getListAction, markActionAsRead } from "@/apis/actionService";
 import { getPostsByUserId } from "@/apis/postService";
 
-// Dropdown mở/đóng bằng hover
+// Xử lý dropdown thông báo (mở/đóng bằng hover)
 const showDropdown = ref(false);
 let hideTimeout = null;
 
@@ -13,13 +13,14 @@ function showMenu() {
   clearTimeout(hideTimeout);
   showDropdown.value = true;
 }
+
 function hideMenu() {
   hideTimeout = setTimeout(() => {
     showDropdown.value = false;
   }, 150);
 }
 
-// Lấy userId từ localStorage => parse key 'auth'
+// Lấy userId từ localStorage
 let userId = null;
 try {
   const authStr = localStorage.getItem("auth");
@@ -31,7 +32,7 @@ try {
   console.error("Lỗi parse JSON auth:", err);
 }
 
-// Mảng actions + phân trang
+// Quản lý danh sách thông báo và phân trang
 const actions = ref([]);
 const pagination = ref({
   current: 1,
@@ -49,43 +50,39 @@ onMounted(() => {
   fetchActions();
 });
 
-// Router để điều hướng
+// Xử lý điều hướng khi click vào thông báo
 const router = useRouter();
 function goToPost(action) {
-  // Gọi API PUT để đánh dấu thông báo là đã đọc và cập nhật isRead
+  // Đánh dấu thông báo đã đọc và chuyển hướng
   markActionAsRead(action.id)
     .then(() => {
       action.isRead = true;
-      // Sau đó điều hướng đến chi tiết bài đăng
+      // Điều hướng theo loại nhà trọ
       if (action.motel === "O_GHEP") {
         router.push(`/post/roommate/${action.postId}`);
-      } else if (action.motel === "PHONG_TRO") {
-        router.push(`/post/motel/${action.postId}`);
       } else {
         router.push(`/post/motel/${action.postId}`);
       }
     })
     .catch((error) => {
       console.error("Error marking notification as read:", error);
-      // Dù lỗi vẫn chuyển hướng
+      // Vẫn chuyển hướng ngay cả khi gặp lỗi
       if (action.motel === "O_GHEP") {
         router.push(`/post/roommate/${action.postId}`);
-      } else if (action.motel === "PHONG_TRO") {
-        router.push(`/post/motel/${action.postId}`);
       } else {
         router.push(`/post/motel/${action.postId}`);
       }
     });
 }
 
-// API lấy các action
+// Lấy danh sách thông báo từ API
 async function fetchActions() {
   try {
     if (!userId) {
       console.warn("Chưa có userId -> không thể tải thông báo.");
       return;
     }
-    // Lấy danh sách post
+    // Lấy danh sách bài đăng của người dùng
     const postRes = await getPostsByUserId(userId, {
       start: pagination.value.current - 1,
       limit: 50,
@@ -99,7 +96,7 @@ async function fetchActions() {
       return;
     }
 
-    // Lấy action theo postIds
+    // Lấy các thông báo liên quan đến bài đăng
     const actionRes = await getListAction({
       start: pagination.value.current - 1,
       limit: pagination.value.pageSize,
@@ -119,15 +116,11 @@ function handlePageChange(page) {
   fetchActions();
 }
 
-/**
- * Thay vì YYYY-MM-DD hh:mm:ss,
- * hiển thị "X phút trước", "X giờ trước", "X ngày trước"...
- */
+// Định dạng thời gian hiển thị dạng "X phút trước", "X giờ trước"...
 function formatTime(arr) {
   if (!Array.isArray(arr) || arr.length !== 6) return "";
 
   const [year, month, day, hour, minute, second] = arr;
-  // Tạo Date
   const date = new Date(year, month - 1, day, hour, minute, second);
 
   const now = Date.now();
@@ -146,7 +139,6 @@ function formatTime(arr) {
   } else if (diffDay < 30) {
     return `${diffDay} ngày trước`;
   } else {
-    // Nếu quá 30 ngày -> hiển thị yyyy-mm-dd
     return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
       2,
       "0"
@@ -154,7 +146,7 @@ function formatTime(arr) {
   }
 }
 
-// Icon & màu theo action
+// Trả về icon và màu sắc tương ứng cho từng loại thông báo
 function actionIcon(type) {
   return (
     {
@@ -164,6 +156,7 @@ function actionIcon(type) {
     }[type] || PlusCircle
   );
 }
+
 function actionColor(type) {
   return (
     {
@@ -181,16 +174,16 @@ function actionColor(type) {
     @mouseenter="showMenu"
     @mouseleave="hideMenu"
   >
-    <!-- Nút bấm mở dropdown -->
+    <!-- Nút hiển thị dropdown thông báo -->
     <button
       class="relative flex items-center py-2 space-x-2 text-sm font-medium"
       data-aos="zoom-out"
       data-aos-duration="800"
     >
-      <!-- Bell icon + Badge -->
+      <!-- Icon chuông thông báo và badge số lượng -->
       <div class="relative">
         <Bell size="22" class="mr-1" />
-        <!-- Badge đỏ hiển thị số thông báo chưa đọc -->
+        <!-- Badge hiển thị số thông báo chưa đọc -->
         <span
           v-if="unreadCount > 0"
           class="absolute -top-1.5 -right-0.5 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
@@ -206,7 +199,7 @@ function actionColor(type) {
         class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg"
         style="z-index: 9999"
       >
-        <!-- Header dropdown -->
+        <!-- Tiêu đề dropdown -->
         <div class="px-4 py-3">
           <span class="font-bold text-lg">Thông báo</span>
         </div>
@@ -220,13 +213,13 @@ function actionColor(type) {
               class="flex items-start px-2 py-3 mx-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
               @click="goToPost(action)"
             >
-              <!-- Icon hành động -->
+              <!-- Icon loại thông báo -->
               <component
                 :is="actionIcon(action.action)"
                 class="w-7 h-7 p-1 text-white rounded-full flex-shrink-0"
                 :class="actionColor(action.action)"
               />
-              <!-- Nội dung -->
+              <!-- Nội dung thông báo -->
               <div
                 :style="{ opacity: action.isRead ? 0.5 : 1 }"
                 class="ml-3 text-sm leading-5 text-gray-700"
@@ -251,7 +244,7 @@ function actionColor(type) {
                     ).
                   </template>
                 </p>
-                <!-- Thời gian -->
+                <!-- Thời gian thông báo -->
                 <div class="text-xs text-gray-400 font-medium">
                   {{ formatTime(action.time) }}
                 </div>
@@ -260,8 +253,7 @@ function actionColor(type) {
           </ul>
         </div>
 
-        <!-- Phân trang nhỏ -->
-        <!-- Thay phân trang bằng một span "Xem tất cả thông báo" -->
+        <!-- Footer hiển thị liên kết đến trang xem tất cả thông báo -->
         <div class="border-t border-gray-100 px-2 py-2 flex justify-center">
           <span
             class="text-blue-500 cursor-pointer"

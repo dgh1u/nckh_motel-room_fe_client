@@ -1,6 +1,6 @@
 <template>
   <ProfileLayout>
-    <div data-aos="zoom-out" data-aos-duration="800" class="ml-20">
+    <div data-aos="zoom-out" data-aos-duration="800" class="p-10">
       <span class="text-4xl font-extrabold mb-4">Thông tin tài khoản</span>
       <span class="block pt-2 text-2xl font-semibold mb-10 text-blue-400"
         >Cơ bản</span
@@ -12,7 +12,7 @@
         data-aos="zoom-out"
         data-aos-duration="800"
       >
-        <!-- Email (disable) và Họ tên -->
+        <!-- Phần form chứa Email (chỉ đọc) và Họ tên -->
         <div class="grid grid-cols-2 gap-6">
           <div>
             <label class="block mb-2 font-medium">Email</label>
@@ -35,7 +35,7 @@
           </div>
         </div>
 
-        <!-- Địa chỉ -->
+        <!-- Trường nhập địa chỉ -->
         <div>
           <label class="block mb-2 font-medium">Địa chỉ</label>
           <input
@@ -46,7 +46,7 @@
           />
         </div>
 
-        <!-- Số điện thoại -->
+        <!-- Trường nhập số điện thoại -->
         <div>
           <label class="block mb-2 font-medium">Số điện thoại</label>
           <input
@@ -57,7 +57,7 @@
           />
         </div>
       </form>
-      <!-- Nút hành động -->
+      <!-- Các nút hành động -->
       <div class="flex gap-6 mt-10 text-white font-semibold">
         <button
           type="button"
@@ -85,7 +85,7 @@ import ProfileLayout from "../../../layouts/ProfileLayout.vue";
 import { getProfile, updateProfile } from "@/apis/authService.js";
 import { message } from "ant-design-vue";
 
-// Dữ liệu form
+// Khởi tạo dữ liệu form
 const profileData = ref({
   email: "",
   fullName: "",
@@ -93,26 +93,24 @@ const profileData = ref({
   phone: "",
 });
 
-// Lưu trữ bản sao ban đầu của dữ liệu profile để reset form khi ấn "Hủy"
+// Lưu trữ bản sao ban đầu của dữ liệu profile để khôi phục khi hủy
 let initialProfileData = {};
 
+// Lấy thông tin profile khi component được tạo
 onMounted(async () => {
   try {
     const response = await getProfile();
     const { email, fullName, address, phone } = response.data;
-    profileData.value.email = email;
-    profileData.value.fullName = fullName;
-    profileData.value.address = address;
-    profileData.value.phone = phone;
-    // Lưu lại bản sao ban đầu
-    initialProfileData = { email, fullName, address, phone };
+    profileData.value = { email, fullName, address, phone };
+    // Lưu lại bản sao ban đầu cho chức năng hủy
+    initialProfileData = { ...profileData.value };
   } catch (error) {
-    alert("Lỗi khi lấy thông tin tài khoản!");
+    message.error("Lỗi khi lấy thông tin tài khoản!");
     console.error("Lỗi khi lấy thông tin profile:", error);
   }
 });
 
-// Hàm submit form: Gửi yêu cầu cập nhật thông tin profile (PUT)
+// Xử lý cập nhật thông tin profile
 const onSubmit = async () => {
   try {
     await updateProfile(profileData.value);
@@ -124,13 +122,12 @@ const onSubmit = async () => {
   }
 };
 
-// Hàm hủy: Reset form về trạng thái ban đầu lấy từ API getProfile
+// Khôi phục dữ liệu về trạng thái ban đầu
 const onCancel = () => {
   profileData.value = { ...initialProfileData };
-  console.log("Form reset to initial profile data:", initialProfileData);
 };
 </script>
 
 <style scoped>
-/* CSS tuỳ chỉnh nếu cần */
+/* CSS sẽ được thêm khi cần */
 </style>

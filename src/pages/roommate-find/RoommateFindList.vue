@@ -58,7 +58,7 @@
               </router-link>
             </div>
 
-            <!-- Phân trang (Ant Design Vue) -->
+            <!-- Phân trang -->
             <div class="pt-10">
               <a-pagination
                 :current="pagination.current"
@@ -85,81 +85,88 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import DefaultLayout from "../../layouts/DefaultLayout.vue";
-import MotelFilter from "@/components/filter/MotelFilter.vue";
 import Card from "@/components/card/Card.vue";
 import { getListPost } from "@/apis/postService.js";
-// Nếu dùng Ant Design Vue, import Pagination component
 import RoommateFilter from "../../components/filter/RoommateFilter.vue";
-import { Pagination, Empty } from "ant-design-vue";
+import { Empty } from "ant-design-vue";
 import { Search } from "lucide-vue-next";
 
-const aEmpty = Empty;
-
-// State bộ lọc - Cập nhật theo cấu trúc mới
+// Khởi tạo bộ lọc mặc định
 const filters = ref({
   keywords: "",
   priceRange: [0, 30],
   acreageRange: [5, 95],
-  // Thay đổi từ mảng sang giá trị đơn cho khu vực
   districtSelected: null,
   featuresSelected: [],
   gender: null,
 });
 
-// Danh sách bài đăng
+// Khởi tạo danh sách bài đăng
 const posts = ref([]);
 
-// Thông báo lỗi
+// Biến lưu thông báo lỗi
 const errorMsg = ref("");
 
-// Biến pagination (giống logic user)
+// Cấu hình phân trang
 const pagination = ref({
   current: 1,
   pageSize: 5,
   total: 0,
 });
 
-// Hàm xử lý sự kiện nhận bộ lọc từ RoommateFilter
+// Hàm xử lý cập nhật bộ lọc từ component con
 function handleFilterUpdate(newFilters) {
   filters.value = {
     ...filters.value,
     ...newFilters,
-    // Giữ lại keywords vì nó không được truyền từ RoommateFilter
+    // Giữ lại từ khóa tìm kiếm vì không được truyền từ RoommateFilter
     keywords: filters.value.keywords,
   };
-  // Reset về trang 1 mỗi khi filter thay đổi
+  // Reset về trang 1 khi thay đổi bộ lọc
   pagination.value.current = 1;
   fetchPosts();
 }
 
+// Xây dựng tham số truy vấn từ bộ lọc
 function buildQueryParams() {
   const params = {};
-  // Luôn gán motel là "O_GHEP"
+  // Cố định loại phòng là "Ở GHÉP"
   params.motel = "O_GHEP";
 
-  // Thêm start, limit cho phân trang
+  // Chỉ lấy tin đã được duyệt
+  params.approved = true;
+  params.notApproved = false;
+
+  // Chỉ lấy tin đang hiển thị (không bị xóa)
+  params.del = false;
+
+  // Thiết lập tham số phân trang
   params.start = Math.max(pagination.value.current - 1, 0);
   params.limit = pagination.value.pageSize;
 
+  // Thêm từ khóa tìm kiếm nếu có
   if (filters.value.keywords && filters.value.keywords.trim() !== "") {
     params.keywords = filters.value.keywords.trim();
   }
 
+  // Thêm tham số khoảng giá
   if (filters.value.priceRange && filters.value.priceRange.length === 2) {
     params.minPrice = filters.value.priceRange[0] * 1000000;
     params.maxPrice = filters.value.priceRange[1] * 1000000;
   }
 
+  // Thêm tham số khoảng diện tích
   if (filters.value.acreageRange && filters.value.acreageRange.length === 2) {
     params.minAcreage = filters.value.acreageRange[0];
     params.maxAcreage = filters.value.acreageRange[1];
   }
 
-  // Cập nhật xử lý cho district từ giá trị đơn thay vì mảng
+  // Thêm tham số khu vực
   if (filters.value.districtSelected) {
     params.districtName = filters.value.districtSelected;
   }
 
+  // Ánh xạ tính năng từ frontend sang tham số API
   const featureMapping = {
     full_furniture: "interior",
     has_kitchen: "kitchen",
@@ -173,6 +180,7 @@ function buildQueryParams() {
     has_parking: "parking",
   };
 
+  // Thêm các tham số tính năng đã chọn
   filters.value.featuresSelected.forEach((feature) => {
     const mappedField = featureMapping[feature];
     if (mappedField) {
@@ -180,7 +188,7 @@ function buildQueryParams() {
     }
   });
 
-  // Thêm xử lý cho bộ lọc giới tính
+  // Thêm tham số giới tính nếu đã chọn
   if (filters.value.gender !== null) {
     params.gender = filters.value.gender;
   }
@@ -188,23 +196,24 @@ function buildQueryParams() {
   return params;
 }
 
-// Hàm gọi API và cập nhật danh sách bài đăng
+// Gọi API lấy danh sách bài đăng
 async function fetchPosts() {
   try {
     errorMsg.value = "";
     const queryParams = buildQueryParams();
     const response = await getListPost(queryParams);
-    const data = response.data; // Giả sử API trả về {success, error, total, items}
+    const data = response.data;
 
     if (data && data.items) {
       posts.value = data.items;
-      // Lấy tổng số items để cập nhật pagination
+      // Cập nhật tổng số bài đăng cho phân trang
       pagination.value.total = data.total || 0;
     } else {
       posts.value = [];
       pagination.value.total = 0;
     }
   } catch (error) {
+    // Giữ lại log lỗi này vì quan trọng cho việc debug
     console.error("Error fetching posts:", error);
     errorMsg.value =
       "Có lỗi xảy ra khi lấy danh sách bài đăng. Vui lòng kiểm tra lại log!";
@@ -215,18 +224,19 @@ async function fetchPosts() {
 function handlePageChange(page) {
   pagination.value.current = page;
   fetchPosts();
-  // Cuộn lên đầu trang
+  // Cuộn lên đầu trang khi chuyển trang
   window.scrollTo({
     top: 0,
-    behavior: "smooth", // hoặc bỏ "smooth" nếu không muốn hiệu ứng
+    behavior: "smooth",
   });
 }
 
+// Khởi tạo dữ liệu khi component được mount
 onMounted(() => {
   fetchPosts();
 });
 
-// Nếu bạn muốn lắng nghe thay đổi filter để auto load
+// Theo dõi sự thay đổi của bộ lọc để tự động tải lại dữ liệu
 watch(
   filters,
   () => {

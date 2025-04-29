@@ -1,4 +1,3 @@
-// Import các component cần thiết
 import Profile from "../pages/dropdown-menu/profile/Profile.vue";
 import Home from "../pages/home/Home.vue";
 import NotFound from "../pages/not-found/NotFound.vue";

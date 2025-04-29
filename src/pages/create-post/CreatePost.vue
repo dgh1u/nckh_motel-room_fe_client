@@ -477,12 +477,37 @@
         </small>
 
         <ul class="mt-4 text-gray-500 text-xs list-disc list-inside space-y-1">
-          <li>
+          <li
+            v-if="
+              formData.accomodation.motel === 'PHONG_TRO' ||
+              formData.accomodation.motel === 'O_GHEP'
+            "
+          >
             Tối thiểu 5 ảnh gồm các khu vực: 2 ảnh Phòng chính, 1 ảnh Nhà vệ
             sinh, 1 ảnh Bếp, 1 ảnh Mặt tiền
           </li>
+          <li
+            v-if="
+              formData.accomodation.motel === 'QUAN_AN' ||
+              formData.accomodation.motel === 'QUAN_NUOC' ||
+              formData.accomodation.motel === 'CUA_HANG' ||
+              formData.accomodation.motel === 'TIEN_ICH'
+            "
+          >
+            Tối thiểu 5 ảnh gồm các khu vực: 1 ảnh Mặt tiền hoặc Biển hiệu, 2
+            ảnh Không gian trong quán, 2 ảnh Menu hoặc Danh sách sản phẩm kinh
+            doanh.
+          </li>
+
           <li>Dung lượng mỗi ảnh tối đa 10MB</li>
-          <li>Ảnh phải liên quan đến phòng trọ, nhà cho thuê</li>
+          <li
+            v-if="
+              formData.accomodation.motel === 'PHONG_TRO' ||
+              formData.accomodation.motel === 'O_GHEP'
+            "
+          >
+            Ảnh phải liên quan đến phòng trọ, nhà cho thuê
+          </li>
           <li>Không chèn văn bản hoặc số điện thoại lên ảnh</li>
         </ul>
 

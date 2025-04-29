@@ -57,10 +57,10 @@
               v-for="(img, index) in galleryImages"
               :key="index"
               @click="currentImageIndex = index"
-              class="cursor-pointer flex-shrink-0 w-20 h-20 border rounded"
+              class="cursor-pointer flex-shrink-0 w-20 h-20 rounded overflow-hidden"
               :class="{
-                'border-blue-500': currentImageIndex === index,
-                'border-gray-300': currentImageIndex !== index,
+                'border-3 border-red-500': currentImageIndex === index,
+                'border border-gray-300': currentImageIndex !== index,
               }"
             >
               <img
@@ -98,7 +98,7 @@
                   {{ post.accomodationDTO?.district?.name }}
                 </span>
               </div>
-              <!-- (Giá, diện tích, giá điện, giá nước, ngày đăng) trên cùng 1 dòng -->
+              <!-- Thông tin giá, diện tích, điện nước -->
               <div
                 class="flex items-center justify-between flex-wrap gap-4 mb-4"
               >
@@ -361,10 +361,12 @@
             </a>
           </div>
         </div>
-        <!-- Thêm khối nút Cập nhật, Ẩn/Hiện tin đăng -->
+        <!-- Thao tác cho chủ tin đăng -->
         <div class="py-8">
           <div v-if="isOwner" class="p-4 bg-white rounded-xl shadow-xl">
-            <div><span class="font-semibold text-lg">Thao tác</span></div>
+            <div class="text-center">
+              <span class="font-semibold text-lg">Thao tác</span>
+            </div>
             <div class="py-4">
               <router-link
                 :to="`/update-post/${post.id}`"
@@ -402,7 +404,6 @@ import DefaultLayout from "../../layouts/DefaultLayout.vue";
 import Comment from "../../components/comment/Comment.vue";
 import { getDetailPost, hidePost } from "@/apis/postService.js";
 import { getImageByPost } from "@/apis/imageService.js";
-
 import { getProfile } from "@/apis/authService.js";
 import { message } from "ant-design-vue";
 import { Phone, MessageCircle, MapPin, Mail, Toilet } from "lucide-vue-next";
@@ -411,7 +412,6 @@ import {
   Scan as ScanIcon,
   Zap as ZapIcon,
   Droplet as DropletIcon,
-  Calendar as CalendarIcon,
   Bed as BedIcon,
   Snowflake as SnowflakeIcon,
   Wifi as WifiIcon,
@@ -431,13 +431,13 @@ const post = ref(null);
 const errorMsg = ref("");
 const currentUser = ref(null);
 
-// Hàm định dạng ngày
+// Hàm định dạng ngày tháng
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   return date.toLocaleDateString();
 }
 
-// Hàm định dạng giá tiền theo VND
+// Hàm định dạng giá theo VND
 function formatElectricWaterPrice(price) {
   if (!price) return "";
   return new Intl.NumberFormat("vi-VN", {
@@ -446,14 +446,14 @@ function formatElectricWaterPrice(price) {
   }).format(price);
 }
 
-// Tạo URL Google Maps (không dùng API Key)
+// Tạo URL Google Maps từ địa chỉ
 const mapUrl = computed(() => {
   if (!post.value?.accomodationDTO?.address) return "";
   const encodedAddress = encodeURIComponent(post.value.accomodationDTO.address);
   return `https://maps.google.com/maps?q=${encodedAddress}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
 });
 
-// Xử lý avatar
+// Xử lý hiển thị avatar
 const finalAvatar = computed(() => {
   const avatar = post.value?.userDTO?.b64;
   if (avatar) {
@@ -464,11 +464,11 @@ const finalAvatar = computed(() => {
   return null;
 });
 
-// ====================== GALLERY CODE ======================
+// Quản lý gallery hình ảnh
 const galleryImages = ref([]);
-
 const currentImageIndex = ref(0);
 
+// Hàm định dạng giá phòng (triệu/đồng)
 function formatPrice(price) {
   if (!price) return "";
   if (price >= 1000000) {
@@ -483,6 +483,7 @@ function formatPrice(price) {
   }
 }
 
+// Điều hướng gallery
 function prevImage() {
   currentImageIndex.value =
     (currentImageIndex.value - 1 + galleryImages.value.length) %
@@ -493,43 +494,41 @@ function nextImage() {
   currentImageIndex.value =
     (currentImageIndex.value + 1) % galleryImages.value.length;
 }
-// ====================== END GALLERY CODE ======================
 
-// API: Lấy chi tiết bài đăng
+// Lấy thông tin bài đăng từ API
 async function fetchPost() {
   const id = route.params.id;
-  console.log("Fetching post id =", id);
   try {
     const { data: result } = await getDetailPost(id);
-    console.log("Post API returned:", result);
     post.value = result;
     await loadGalleryImages(result.id);
   } catch (error) {
-    console.error("Error fetching post:", error);
     errorMsg.value = "Có lỗi khi tải bài đăng";
   }
 }
+
+// Tải hình ảnh gallery cho bài đăng
 async function loadGalleryImages(postId) {
-  console.log("Calling getImageByPost for postId =", postId);
   try {
     const urls = await getImageByPost(postId);
-    console.log("getImageByPost returned URLs array:", urls);
     galleryImages.value = Array.isArray(urls) ? urls : [];
     currentImageIndex.value = 0;
   } catch (err) {
-    console.error("Error loading gallery images:", err);
+    // Xử lý lỗi khi tải hình ảnh
   }
 }
 
+// Lấy thông tin người dùng hiện tại
 async function fetchProfile() {
   try {
     const response = await getProfile();
     currentUser.value = response.data;
   } catch (error) {
-    console.error("Lỗi khi tải thông tin hồ sơ", error);
+    // Xử lý lỗi khi tải thông tin hồ sơ
   }
 }
 
+// Kiểm tra xem người dùng hiện tại có phải chủ bài viết hay không
 const isOwner = computed(() => {
   return (
     currentUser.value &&
@@ -539,6 +538,7 @@ const isOwner = computed(() => {
   );
 });
 
+// Ẩn/hiện bài đăng
 async function toggleHidePost() {
   try {
     const response = await hidePost(post.value.id);
@@ -549,6 +549,7 @@ async function toggleHidePost() {
   }
 }
 
+// Khởi tạo dữ liệu khi component được tạo
 onMounted(() => {
   fetchPost();
   fetchProfile();

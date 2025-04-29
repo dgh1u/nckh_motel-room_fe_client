@@ -4,7 +4,7 @@
       <FilterIcon class="w-5 h-5 mr-2" />
       <span>Bộ lọc</span>
     </span>
-    <!-- LOẠI QUÁN ĂN - Modified to select only one at a time -->
+    <!-- Phần lọc loại cửa hàng - Chỉ cho phép chọn một loại tại một thời điểm -->
     <div class="mb-6">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Loại cửa hàng</span>
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <!-- KHU VỰC - Modified to select only one at a time -->
+    <!-- Phần lọc khu vực - Chỉ cho phép chọn một khu vực tại một thời điểm -->
     <div class="mb-6">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Khu vực</span>
@@ -82,7 +82,7 @@
       </div>
     </div>
 
-    <!-- NÚT ĐẶT LẠI -->
+    <!-- Nút đặt lại bộ lọc -->
     <div class="p-2 text-white">
       <button
         class="flex items-center space-x-2 font-bold border border-red-400 px-5 py-2 rounded bg-red-400 hover:bg-red-500 text-white hover:border-red-500 transition"
@@ -96,17 +96,14 @@
 </template>
 
 <script setup>
-import { ref, watch, defineEmits } from "vue";
+import { ref, defineEmits } from "vue";
 
-import {
-  Filter as FilterIcon,
-  Check as CheckIcon,
-  RefreshCw as ResetIcon,
-} from "lucide-vue-next";
+import { Filter as FilterIcon, RefreshCw as ResetIcon } from "lucide-vue-next";
 
-// Sử dụng emit để gửi dữ liệu bộ lọc cho component cha khi có thay đổi
+// Khai báo emit để gửi dữ liệu bộ lọc cho component cha
 const emit = defineEmits(["update:filters"]);
 
+// Danh sách các khu vực
 const districtOptions = [
   { label: "An Đào", value: "An Đào" },
   { label: "Đào Nguyên", value: "Đào Nguyên" },
@@ -117,6 +114,7 @@ const districtOptions = [
   { label: "Khu vực khác", value: "Khác" },
 ];
 
+// Danh sách các loại cửa hàng
 const secondMotelOptions = [
   { label: "Tạp hóa", value: "Tạp hóa" },
   { label: "Cửa hàng tiện lợi", value: "Cửa hàng tiện lợi" },
@@ -132,37 +130,36 @@ const secondMotelOptions = [
   { label: "Kính mắt", value: "Kính mắt" },
 ];
 
-// Thay đổi từ mảng thành một giá trị duy nhất cho Khu vực và Loại quán ăn
+// Khai báo biến lưu trữ giá trị được chọn
 const selectedDistrict = ref(null);
 const selectedSecondMotel = ref(null);
-// Đặc điểm vẫn cho phép chọn nhiều
 const selectedFeatures = ref([]);
 
-// Hàm xử lý chọn khu vực (chỉ một giá trị)
+// Xử lý chọn khu vực (chỉ được chọn một)
 function selectDistrict(value) {
   if (selectedDistrict.value === value) {
-    // Nếu click vào cùng một giá trị đã chọn, bỏ chọn nó
+    // Bỏ chọn nếu click vào giá trị đã được chọn
     selectedDistrict.value = null;
   } else {
-    // Chọn giá trị mới, tự động bỏ chọn giá trị cũ
+    // Chọn giá trị mới
     selectedDistrict.value = value;
   }
   updateFilters();
 }
 
-// Hàm xử lý chọn loại quán ăn (chỉ một giá trị)
+// Xử lý chọn loại cửa hàng (chỉ được chọn một)
 function selectSecondMotel(value) {
   if (selectedSecondMotel.value === value) {
-    // Nếu click vào cùng một giá trị đã chọn, bỏ chọn nó
+    // Bỏ chọn nếu click vào giá trị đã được chọn
     selectedSecondMotel.value = null;
   } else {
-    // Chọn giá trị mới, tự động bỏ chọn giá trị cũ
+    // Chọn giá trị mới
     selectedSecondMotel.value = value;
   }
   updateFilters();
 }
 
-// Hàm xử lý khi người dùng click chọn đặc điểm (cho phép nhiều lựa chọn)
+// Xử lý chọn đặc điểm (có thể chọn nhiều)
 function toggleFeature(value) {
   const index = selectedFeatures.value.indexOf(value);
   if (index === -1) {
@@ -173,11 +170,12 @@ function toggleFeature(value) {
   updateFilters();
 }
 
+// Kiểm tra xem đặc điểm có được chọn không
 function isFeatureSelected(value) {
   return selectedFeatures.value.includes(value);
 }
 
-// Hàm đặt lại toàn bộ bộ lọc
+// Đặt lại tất cả các bộ lọc về giá trị mặc định
 function resetAll() {
   selectedDistrict.value = null;
   selectedSecondMotel.value = null;
@@ -192,7 +190,7 @@ function resetAll() {
   });
 }
 
-// Hàm gửi state bộ lọc về cho component cha
+// Cập nhật và gửi trạng thái bộ lọc về component cha
 function updateFilters() {
   emit("update:filters", {
     districtSelected: selectedDistrict.value,
@@ -203,5 +201,5 @@ function updateFilters() {
 </script>
 
 <style scoped>
-/* Tuỳ chỉnh style nếu cần */
+/* Phần style trống - thêm khi cần */
 </style>

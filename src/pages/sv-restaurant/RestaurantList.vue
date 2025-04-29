@@ -12,7 +12,7 @@
     </div>
     <!-- Wrapper toàn trang: hướng cột trên mobile, hướng hàng ngang từ md trở lên -->
     <div class="flex flex-col md:flex-row min-h-screen py-6 bg-white">
-      <!-- Bộ lọc: chiếm toàn bộ chiều rộng trên mobile, tự động shrink trên desktop -->
+      <!-- Bộ lọc: chiếm toàn bộ chiều rộng trên mobile, tự động co lại trên desktop -->
       <div class="w-full md:w-auto md:mr-4 mb-4 md:mb-0">
         <RestaurantFilter @update:filters="handleFilterUpdate" />
       </div>
@@ -37,7 +37,7 @@
         <!-- Danh sách tin đăng -->
         <div class="p-2 pb-20 flex-1 overflow-y-auto">
           <template v-if="posts.length">
-            <!-- Sử dụng grid 1 cột để mỗi dòng chỉ có 1 card -->
+            <!-- Grid hiển thị: 1 cột trên mobile, 2 cột từ md trở lên -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <router-link
                 v-for="post in posts"
@@ -52,7 +52,7 @@
                 />
               </router-link>
             </div>
-            <!-- Phân trang (Ant Design Vue) -->
+            <!-- Phân trang -->
             <div class="pt-10">
               <a-pagination
                 :current="pagination.current"
@@ -79,20 +79,15 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import DefaultWhiteLayout from "../../layouts/DefaultWhiteLayout.vue";
-
 import { getListPost } from "@/apis/postService.js";
-// Nếu dùng Ant Design Vue, import Pagination component
-import { Pagination, Empty } from "ant-design-vue";
+import { Empty } from "ant-design-vue";
 import RestaurantFilter from "../../components/filter/RestaurantFilter.vue";
 import RestaurantCard from "../../components/card/RestaurantCard.vue";
 import { Search } from "lucide-vue-next";
 
-const aEmpty = Empty;
-
-// State bộ lọc - Cập nhật theo cấu trúc mới
+// Khởi tạo bộ lọc với các giá trị mặc định
 const filters = ref({
   keywords: "",
-  // Cập nhật từ mảng sang giá trị đơn cho khu vực và loại quán ăn
   districtSelected: null,
   secondMotelSelected: null,
   featuresSelected: [],
@@ -104,49 +99,56 @@ const posts = ref([]);
 // Thông báo lỗi
 const errorMsg = ref("");
 
-// Biến pagination (giống logic user)
+// Cấu hình phân trang
 const pagination = ref({
   current: 1,
   pageSize: 6,
   total: 0,
 });
 
-// Hàm xử lý sự kiện nhận bộ lọc từ RestaurantFilter
+// Cập nhật bộ lọc từ component con và tải lại dữ liệu
 function handleFilterUpdate(newFilters) {
   filters.value = {
     ...filters.value,
     ...newFilters,
-    // Giữ lại keywords vì nó không được truyền từ RestaurantFilter
     keywords: filters.value.keywords,
   };
-  // Reset về trang 1 mỗi khi filter thay đổi
+  // Reset về trang 1 khi thay đổi bộ lọc
   pagination.value.current = 1;
   fetchPosts();
 }
 
-// Hàm chuyển đổi bộ lọc FE sang query params cho backend - Đã cập nhật
+// Chuyển đổi bộ lọc thành tham số query cho API
 function buildQueryParams() {
   const params = {};
-  // Luôn gán motel là "QUAN_AN"
+  // Cố định loại tin đăng là quán ăn
   params.motel = "QUAN_AN";
 
-  // Thêm start, limit cho phân trang
+  // Chỉ lấy tin đã được duyệt và đang hiển thị
+  params.approved = true;
+  params.notApproved = false;
+  params.del = false;
+
+  // Thêm thông số phân trang
   params.start = Math.max(pagination.value.current - 1, 0);
   params.limit = pagination.value.pageSize;
 
+  // Thêm từ khóa tìm kiếm nếu có
   if (filters.value.keywords && filters.value.keywords.trim() !== "") {
     params.keywords = filters.value.keywords.trim();
   }
 
-  // Cập nhật xử lý cho district và secondMotel từ giá trị đơn
+  // Thêm bộ lọc khu vực
   if (filters.value.districtSelected) {
     params.districtName = filters.value.districtSelected;
   }
 
+  // Thêm bộ lọc loại quán ăn
   if (filters.value.secondMotelSelected) {
     params.secondMotel = filters.value.secondMotelSelected;
   }
 
+  // Ánh xạ tên tính năng từ UI sang API
   const featureMapping = {
     has_aircon: "airConditioner",
     has_internet: "internet",
@@ -157,6 +159,7 @@ function buildQueryParams() {
     has_bigSpace: "bigSpace",
   };
 
+  // Thêm các tính năng được chọn vào tham số
   filters.value.featuresSelected.forEach((feature) => {
     const mappedField = featureMapping[feature];
     if (mappedField) {
@@ -167,17 +170,16 @@ function buildQueryParams() {
   return params;
 }
 
-// Hàm gọi API và cập nhật danh sách bài đăng
+// Lấy danh sách quán ăn từ API
 async function fetchPosts() {
   try {
     errorMsg.value = "";
     const queryParams = buildQueryParams();
     const response = await getListPost(queryParams);
-    const data = response.data; // Giả sử API trả về {success, error, total, items}
+    const data = response.data;
 
     if (data && data.items) {
       posts.value = data.items;
-      // Lấy tổng số items để cập nhật pagination
       pagination.value.total = data.total || 0;
     } else {
       posts.value = [];
@@ -186,26 +188,27 @@ async function fetchPosts() {
   } catch (error) {
     console.error("Error fetching posts:", error);
     errorMsg.value =
-      "Có lỗi xảy ra khi lấy danh sách bài đăng. Vui lòng kiểm tra lại log!";
+      "Có lỗi xảy ra khi lấy danh sách bài đăng. Vui lòng thử lại sau!";
   }
 }
 
-// Xử lý khi người dùng chuyển trang
+// Xử lý chuyển trang
 function handlePageChange(page) {
   pagination.value.current = page;
   fetchPosts();
-  // Cuộn lên đầu trang
+  // Cuộn lên đầu trang khi chuyển trang
   window.scrollTo({
     top: 0,
-    behavior: "smooth", // hoặc bỏ "smooth" nếu không muốn hiệu ứng
+    behavior: "smooth",
   });
 }
 
+// Tải dữ liệu khi component được mount
 onMounted(() => {
   fetchPosts();
 });
 
-// Nếu bạn muốn lắng nghe thay đổi filter để auto load
+// Theo dõi thay đổi của bộ lọc để tự động cập nhật danh sách
 watch(
   filters,
   () => {
@@ -214,7 +217,3 @@ watch(
   { deep: true }
 );
 </script>
-
-<style scoped>
-/* Tuỳ chỉnh style nếu cần */
-</style>

@@ -21,14 +21,13 @@
         </span>
       </div>
     </div>
-    <!-- HẾT KHỐI BREADCRUMB -->
     <!-- Bọc toàn bộ trang bằng flex để chia 2 cột -->
     <div class="flex min-h-screen">
-      <!-- CỘT TRÁI -->
+      <!-- CỘT TRÁI - Chứa nội dung chính -->
       <div class="flex-1 p-4 bg-gray-100">
-        <!-- GALLERY Ở ĐẦU TRANG -->
-        <!-- Vùng ảnh chính, có mũi tên trái/phải -->
+        <!-- GALLERY - Hiển thị ảnh của quán ăn -->
         <div class="bg-white rounded-xl p-4 text-4xl shadow-lg">
+          <!-- Vùng ảnh chính, có mũi tên trái/phải để điều hướng -->
           <div
             v-if="galleryImages.length > 0"
             class="relative w-full h-96 bg-black text-white flex items-center justify-center mb-4 rounded-xl"
@@ -55,7 +54,7 @@
               &gt;
             </button>
           </div>
-          <!-- Hàng thumbnail, cuộn ngang -->
+          <!-- Hàng thumbnail, cuộn ngang để chọn ảnh -->
           <div
             class="flex space-x-2 overflow-x-auto mb-6 items-center justify-center"
           >
@@ -63,10 +62,10 @@
               v-for="(img, index) in galleryImages"
               :key="index"
               @click="currentImageIndex = index"
-              class="cursor-pointer flex-shrink-0 w-20 h-20 border rounded"
+              class="cursor-pointer flex-shrink-0 w-20 h-20 rounded overflow-hidden"
               :class="{
-                'border-blue-500': currentImageIndex === index,
-                'border-gray-300': currentImageIndex !== index,
+                'border-3 border-red-500': currentImageIndex === index,
+                'border border-gray-300': currentImageIndex !== index,
               }"
             >
               <img
@@ -81,7 +80,7 @@
         <!-- Hiển thị thông báo lỗi nếu có -->
         <div v-if="errorMsg" class="text-red-600">{{ errorMsg }}</div>
 
-        <!-- Hiển thị chi tiết bài đăng nếu có dữ liệu -->
+        <!-- Hiển thị chi tiết bài đăng -->
         <div v-else-if="post" class="pt-4">
           <div class="bg-white rounded-xl p-4 text-left shadow-lg">
             <div>
@@ -96,20 +95,16 @@
                   <span class="text-2xl font-bold">{{ post.title }}</span>
                 </div>
 
-                <!-- Địa chỉ -->
+                <!-- Địa chỉ và thông tin khu vực -->
                 <div class="flex justify-between text-sm text-gray-600 mb-2">
-                  <!-- Icon địa chỉ -->
                   <div class="flex items-center">
                     <MapPinIcon class="w-4 h-4 mr-1" />
-                    <!-- Nội dung địa chỉ -->
                     <span class="text-black">
                       {{ post.accomodationDTO?.address }}
                     </span>
 
-                    <!-- Dấu chấm giữa -->
                     <span class="mx-2">·</span>
 
-                    <!-- Tên quận/huyện -->
                     <span>
                       Khu vực:
                       {{ post.accomodationDTO?.district?.name }}
@@ -128,6 +123,7 @@
                   class="flex items-center justify-between flex-wrap gap-4 mb-4"
                 >
                   <div class="flex items-center flex-wrap gap-4">
+                    <!-- Giờ mở cửa -->
                     <div class="flex items-center">
                       <Clock class="w-4 h-4 mr-1 mt-0.5" />
                       <span
@@ -138,7 +134,7 @@
                     </div>
                   </div>
 
-                  <!-- Bên phải: Ngày đăng (có icon) -->
+                  <!-- Ngày đăng bài -->
                   <div class="flex items-center text-sm">
                     <span>Ngày đăng: {{ formatDate(post.createAt) }}</span>
                   </div>
@@ -147,14 +143,14 @@
 
               <hr class="my-3 mx-6 border-gray-100" />
 
-              <!-- Thông tin chi tiết-->
+              <!-- Thông tin chi tiết về quán ăn -->
               <div class="py-2">
                 <span class="text-lg font-semibold">Thông tin chi tiết</span>
                 <span class="block py-2 break-words">{{ post.content }}</span>
               </div>
               <hr class="my-3 mx-6 border-gray-100" />
 
-              <!-- Đặc điểm -->
+              <!-- Đặc điểm của quán ăn -->
               <div class="py-2">
                 <span class="text-lg font-semibold">Đặc điểm</span>
                 <div class="grid grid-cols-2 gap-4 p-2">
@@ -217,7 +213,7 @@
 
               <hr class="my-3 mx-6 border-gray-100" />
 
-              <!-- Bản đồ -->
+              <!-- Hiển thị bản đồ vị trí của quán ăn -->
               <div v-if="mapUrl" class="py-2">
                 <span class="text-lg font-semibold">Vị trí & bản đồ</span>
                 <div class="flex py-2">
@@ -239,7 +235,7 @@
             </div>
           </div>
         </div>
-        <!-- Bình luận -->
+        <!-- Phần bình luận -->
         <div class="mt-4">
           <div v-if="post">
             <div class="mt-4 shadow-lg">
@@ -249,14 +245,14 @@
         </div>
       </div>
 
-      <!-- CỘT PHẢI: chỉ chứa khối thông tin người đăng -->
+      <!-- CỘT PHẢI - Thông tin người đăng và các nút tương tác -->
       <div class="w-80 p-4 bg-gray-100">
-        <!-- Nếu post đã có dữ liệu userDTO -->
+        <!-- Thông tin người đăng bài -->
         <div
           v-if="post && post.userDTO"
           class="rounded-md p-4 shadow-md text-center bg-white"
         >
-          <!-- Ảnh đại diện -->
+          <!-- Ảnh đại diện người đăng -->
           <div
             class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden bg-gray-100"
           >
@@ -277,12 +273,14 @@
             ></span>
             Đang hoạt động
           </span>
+          <!-- Địa chỉ người đăng -->
           <div class="flex pt-2 items-center justify-center">
             <MapPin class="w-4 h-4 mr-2" />
             <span class="text-sm text-gray-500">
               {{ post.userDTO.address }}
             </span>
           </div>
+          <!-- Email người đăng -->
           <div class="flex pb-3 items-center justify-center">
             <Mail class="w-4 h-4 mr-2" />
             <span class="text-sm text-gray-500">
@@ -298,7 +296,7 @@
               <span class="font-medium">{{ post.userDTO.phone }}</span>
             </button>
           </div>
-          <!-- Nút zalo -->
+          <!-- Nút liên hệ qua Zalo -->
           <div class="text-white">
             <a
               :href="`https://zalo.me/${post.userDTO.phone}`"
@@ -314,6 +312,7 @@
             </a>
           </div>
 
+          <!-- Nút liên kết Shopee Food (chỉ hiển thị nếu có) -->
           <div
             v-if="
               post.accomodationDTO.linkShopeeFood &&
@@ -328,16 +327,19 @@
             >
               <img
                 src="@/assets/shopee-food-logo.svg"
-                alt="Zalo Icon"
+                alt="Shopee Food Icon"
                 class="w-25"
               />
             </a>
           </div>
         </div>
-        <!-- 2 nút mới chỉ hiển thị khi người đăng trùng với người xem -->
+        <!-- Phần chỉ hiển thị cho chủ bài đăng -->
         <div class="py-8">
           <div v-if="isOwner" class="p-4 bg-white rounded-xl shadow-xl">
-            <div><span class="font-semibold text-lg">Thao tác</span></div>
+            <div class="text-center">
+              <span class="font-semibold text-lg">Thao tác</span>
+            </div>
+            <!-- Nút cập nhật bài đăng -->
             <div class="py-4">
               <router-link
                 :to="`/update-post/${post.id}`"
@@ -346,6 +348,7 @@
                 <span class="font-medium">Cập nhật</span>
               </router-link>
             </div>
+            <!-- Nút ẩn/hiện bài đăng -->
             <div class="text-white">
               <button
                 @click="toggleHidePost"
@@ -376,14 +379,12 @@ import Comment from "../../components/comment/Comment.vue";
 import { getDetailPost, hidePost } from "@/apis/postService.js";
 import { getImageByPost } from "@/apis/imageService.js";
 import { useAuthStore } from "@/stores/store";
-
 import { getProfile } from "@/apis/authService.js";
 import { message } from "ant-design-vue";
 import {
   Phone,
   MapPin,
   Mail,
-  Toilet,
   Clock,
   CircleParking,
   Truck,
@@ -394,42 +395,31 @@ import {
 } from "lucide-vue-next";
 import {
   MapPin as MapPinIcon,
-  Scan as ScanIcon,
-  Zap as ZapIcon,
-  Droplet as DropletIcon,
-  Calendar as CalendarIcon,
-  Bed as BedIcon,
   Snowflake as SnowflakeIcon,
   Wifi as WifiIcon,
-  User as UserIcon,
-  Shield as ShieldIcon,
-  Coffee as CoffeeIcon,
-  Thermometer as ThermometerIcon,
-  Clock as ClockIcon,
-  Car as CarIcon,
 } from "lucide-vue-next";
 
 const route = useRoute();
 const router = useRouter();
 
-const post = ref(null);
-const errorMsg = ref("");
-const currentUser = ref(null);
+const post = ref(null); // Lưu trữ thông tin chi tiết bài đăng
+const errorMsg = ref(""); // Lưu trữ thông báo lỗi nếu có
+const currentUser = ref(null); // Lưu trữ thông tin người dùng hiện tại
 
-// Hàm định dạng ngày
+// Hàm định dạng ngày tháng
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   return date.toLocaleDateString();
 }
 
-// Tạo URL Google Maps (không dùng API Key)
+// Tạo URL Google Maps từ địa chỉ
 const mapUrl = computed(() => {
   if (!post.value?.accomodationDTO?.address) return "";
   const encodedAddress = encodeURIComponent(post.value.accomodationDTO.address);
   return `https://maps.google.com/maps?q=${encodedAddress}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
 });
 
-// Xử lý avatar
+// Xử lý hiển thị avatar
 const finalAvatar = computed(() => {
   const avatar = post.value?.userDTO?.b64;
   if (avatar) {
@@ -440,60 +430,57 @@ const finalAvatar = computed(() => {
   return null;
 });
 
-// ====================== GALLERY CODE ======================
+// Quản lý hình ảnh gallery
 const galleryImages = ref([]);
-
 const currentImageIndex = ref(0);
 
+// Chuyển đến ảnh trước đó
 function prevImage() {
   currentImageIndex.value =
     (currentImageIndex.value - 1 + galleryImages.value.length) %
     galleryImages.value.length;
 }
 
+// Chuyển đến ảnh tiếp theo
 function nextImage() {
   currentImageIndex.value =
     (currentImageIndex.value + 1) % galleryImages.value.length;
 }
-// ====================== END GALLERY CODE ======================
 
-// API: Lấy chi tiết bài đăng
+// Lấy thông tin chi tiết bài đăng từ API
 async function fetchPost() {
   const id = route.params.id;
-  console.log("Fetching post id =", id);
   try {
     const { data: result } = await getDetailPost(id);
-    console.log("Post API returned:", result);
     post.value = result;
     await loadGalleryImages(result.id);
   } catch (error) {
-    console.error("Error fetching post:", error);
     errorMsg.value = "Có lỗi khi tải bài đăng";
   }
 }
+
+// Tải danh sách hình ảnh của bài đăng
 async function loadGalleryImages(postId) {
-  console.log("Calling getImageByPost for postId =", postId);
   try {
     const urls = await getImageByPost(postId);
-    console.log("getImageByPost returned URLs array:", urls);
     galleryImages.value = Array.isArray(urls) ? urls : [];
     currentImageIndex.value = 0;
   } catch (err) {
-    console.error("Error loading gallery images:", err);
+    // Xử lý lỗi khi tải hình ảnh (giữ mảng rỗng mặc định)
   }
 }
 
-// API: Lấy thông tin hồ sơ người dùng hiện tại
+// Lấy thông tin hồ sơ người dùng hiện tại
 async function fetchProfile() {
   try {
     const response = await getProfile();
     currentUser.value = response.data;
   } catch (error) {
-    console.error("Lỗi khi tải thông tin hồ sơ", error);
+    // Không cần hiển thị lỗi, vẫn có thể xem bài viết nếu chưa đăng nhập
   }
 }
 
-// Computed kiểm tra xem người xem có phải là chủ bài đăng không
+// Kiểm tra người xem có phải là chủ bài đăng không
 const isOwner = computed(() => {
   return (
     currentUser.value &&
@@ -503,27 +490,25 @@ const isOwner = computed(() => {
   );
 });
 
-// Hàm xử lý Ẩn/Hiện tin đăng
+// Xử lý ẩn/hiện bài đăng
 async function toggleHidePost() {
   try {
     const response = await hidePost(post.value.id);
     message.success(response.data.message);
-    // Cập nhật trạng thái post.del: nếu 0 chuyển thành 1, nếu 1 chuyển thành 0
-    post.value.del = post.value.del === false ? true : false;
+    // Đảo ngược trạng thái ẩn/hiện
+    post.value.del = !post.value.del;
   } catch (error) {
     message.error("Có lỗi xảy ra khi ẩn/hiện tin đăng");
   }
 }
 
+// Khởi tạo trang
 onMounted(() => {
   fetchPost();
 
   const authStore = useAuthStore();
   if (authStore.isAuthenticated && authStore.token?.trim() !== "") {
-    console.log("Đã đăng nhập, gọi fetchProfile()");
     fetchProfile();
-  } else {
-    console.log("Chưa đăng nhập, không gọi fetchProfile()");
   }
 });
 </script>

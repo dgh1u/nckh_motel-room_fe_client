@@ -3,7 +3,7 @@
     <div class="pb-6">
       <span class="text-xl font-bold">Bình luận</span>
     </div>
-    <!-- New comment -->
+    <!-- Thêm bình luận mới -->
     <div class="flex items-start space-x-4 mb-6">
       <img
         v-if="currentUser?.avatar || currentUser?.b64"
@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <!-- Comments list -->
+    <!-- Danh sách bình luận -->
     <div v-if="comments.length">
       <div
         v-for="comment in comments"
@@ -45,7 +45,7 @@
         <div class="flex-1">
           <div class="flex justify-between items-start">
             <div class="flex flex-col items-start space-y-2">
-              <div class="] bg-blue-50 rounded-2xl px-3 py-2">
+              <div class="bg-blue-50 rounded-2xl px-3 py-2">
                 <span class="font-semibold text-gray-800">
                   {{ comment.userDTO.fullName }}
                 </span>
@@ -69,7 +69,7 @@
               </div>
             </div>
 
-            <!-- Dropdown menu chỉ hiển thị khi comment thuộc về currentUser -->
+            <!-- Menu dropdown cho chỉnh sửa/xóa bình luận của chính người dùng -->
             <a-dropdown
               v-if="
                 currentUser &&
@@ -94,6 +94,7 @@
             </a-dropdown>
           </div>
 
+          <!-- Form chỉnh sửa bình luận -->
           <div
             v-if="editingComment && editingComment.id === comment.id"
             class="mt-3 relative"
@@ -103,7 +104,6 @@
               rows="2"
               class="w-full bg-gray-100 rounded-3xl px-6 py-4 pr-12 focus:ring-2 focus:ring-teal-300 resize-none"
             />
-            <!-- nút Hủy -->
             <button
               @click="cancelEditing"
               class="absolute right-10 bottom-4 focus:outline-none"
@@ -111,7 +111,6 @@
               <CircleX class="w-5 h-5 text-red-500 hover:text-red-600" />
             </button>
 
-            <!-- nút Lưu -->
             <button
               @click="submitEditing(comment.id)"
               class="absolute right-4 bottom-4 focus:outline-none"
@@ -123,7 +122,7 @@
           </div>
         </div>
       </div>
-      <!-- Pagination -->
+      <!-- Phân trang -->
       <div class="pt-5 items-center justify-center flex">
         <a-pagination
           size="small"
@@ -135,6 +134,7 @@
       </div>
     </div>
 
+    <!-- Hiển thị khi không có bình luận -->
     <div v-else class="text-center py-6 text-gray-400">
       Chưa có bình luận nào.
     </div>
@@ -143,8 +143,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { message, Modal, Pagination } from "ant-design-vue";
-import viVN from "ant-design-vue/es/locale/vi_VN";
+import { message, Modal } from "ant-design-vue";
 import {
   ThumbsUpIcon,
   MoreHorizontalIcon,
@@ -164,25 +163,26 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
 
-// Props
+// Props từ component cha
 const props = defineProps({
   postId: { type: Number, required: true },
 });
 
-// Reactive state
+// Các biến reactive
 const comments = ref([]);
 const newComment = ref("");
 const editingComment = ref(null);
 const currentUser = ref(null);
 const likedComments = ref([]);
 
-// Pagination state
+// Cấu hình phân trang
 const pagination = ref({ current: 1, pageSize: 5, total: 0 });
 
+// Cấu hình dayjs để hiển thị thời gian tương đối
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
 
-// Fetch current user
+// Lấy thông tin người dùng hiện tại
 async function fetchProfile() {
   try {
     currentUser.value = (await getProfile()).data;
@@ -191,89 +191,61 @@ async function fetchProfile() {
   }
 }
 
-// Fetch comments with pagination (với log)
-// Fetch comments with pagination
+// Lấy danh sách bình luận với phân trang
 async function fetchComments() {
-  console.log("🌀 fetchComments called", {
-    postId: props.postId,
-    page: pagination.value.current,
-    pageSize: pagination.value.pageSize,
-  });
-
   const params = {
     postId: props.postId,
     start: pagination.value.current - 1,
     limit: pagination.value.pageSize,
   };
-  console.log("➡️ Request params for getListComment:", params);
 
   try {
     const { data } = await getListComment(params);
-    console.log("⬅️ API response data:", data);
+    // Lọc bình luận theo bài viết
+    const filtered = data.items || [];
 
-    // === CHỖ SỬA ===
-    // trước kia bạn filter theo c.postId nên luôn ra 0
-    // đúng ra là c.idPost, hoặc bỏ filter nếu API đã đúng
-    const filtered = (data.items || []).filter(
-      (c) => c.idPost === props.postId
-    );
-    console.log("🔍 Filtered comments count:", filtered.length);
-
+    // Gán trạng thái đã like
     comments.value = filtered.map((c) => ({
       ...c,
       liked: likedComments.value.includes(c.id),
     }));
-    console.log("✅ Mapped comments:", comments.value);
 
     pagination.value.total = data.total ?? filtered.length;
-    console.log("📊 Updated pagination.total:", pagination.value.total);
   } catch (error) {
     message.error("Lỗi tải bình luận");
-    console.error("❌ fetchComments error:", error);
+    console.error("Lỗi fetchComments:", error);
   }
 }
 
-// Handle page change (với log)
+// Xử lý chuyển trang
 function handlePageChange(page) {
-  console.log("↔️ handlePageChange: new page =", page);
   pagination.value.current = page;
   fetchComments();
 }
 
-// Create comment
+// Thêm bình luận mới
 async function handleAddComment() {
-  console.log("📝 handleAddComment start", { newComment: newComment.value });
   const authStore = useAuthStore();
-  console.log("🔑 AuthStore:", {
-    isAuthenticated: authStore.isAuthenticated,
-    token: authStore.token,
-  });
 
   // Kiểm tra đăng nhập
   if (!authStore.isAuthenticated || !authStore.token?.trim()) {
-    console.warn("⚠️ Chưa đăng nhập, không thể bình luận");
     return message.warning("Bạn cần đăng nhập để bình luận.");
   }
 
   // Kiểm tra nội dung
   if (!newComment.value.trim()) {
-    console.warn("⚠️ newComment trống");
     return message.warning("Vui lòng nhập nội dung bình luận.");
   }
 
   try {
-    console.log("⏳ Gửi request createComment...");
-    const response = await createComment(
+    await createComment(
       { content: newComment.value, idPost: props.postId, rate: 0 },
       authStore.token
     );
-    console.log("🚀 createComment response:", response);
     message.success("Bình luận đã được đăng");
     newComment.value = "";
     fetchComments();
   } catch (error) {
-    console.error("❌ handleAddComment error:", error);
-    // hiển thị thêm thông tin lỗi nếu cần
     message.error(
       `Lỗi khi đăng bình luận${
         error?.response?.data?.message ? ": " + error.response.data.message : ""
@@ -282,13 +254,16 @@ async function handleAddComment() {
   }
 }
 
-// Edit comment
+// Các hàm xử lý chỉnh sửa bình luận
 function startEditing(comment) {
   editingComment.value = { ...comment };
 }
+
 function cancelEditing() {
   editingComment.value = null;
 }
+
+// Cập nhật bình luận
 async function submitEditing(id) {
   if (!editingComment.value.content.trim()) {
     return message.warning("Nội dung bình luận không được để trống");
@@ -310,7 +285,7 @@ async function submitEditing(id) {
   }
 }
 
-// Delete comment
+// Xóa bình luận
 async function handleDeleteComment(id) {
   try {
     await deleteComment(id);
@@ -321,6 +296,8 @@ async function handleDeleteComment(id) {
     message.error("Lỗi khi xóa bình luận");
   }
 }
+
+// Hiển thị xác nhận xóa
 function confirmDelete(id) {
   Modal.confirm({
     title: "Xác nhận xóa bình luận?",
@@ -332,7 +309,7 @@ function confirmDelete(id) {
   });
 }
 
-// Like/unlike
+// Xử lý thích/bỏ thích bình luận
 async function handleLike(comment) {
   const authStore = useAuthStore();
   if (!authStore.isAuthenticated || !authStore.token?.trim()) {
@@ -341,6 +318,8 @@ async function handleLike(comment) {
 
   try {
     const newRate = comment.liked ? comment.rate - 1 : comment.rate + 1;
+
+    // Cập nhật trạng thái like trong danh sách
     comment.liked
       ? (likedComments.value = likedComments.value.filter(
           (id) => id !== comment.id
@@ -348,6 +327,7 @@ async function handleLike(comment) {
       : likedComments.value.push(comment.id);
     comment.liked = !comment.liked;
 
+    // Cập nhật API
     await updateComment(
       { id: comment.id, content: comment.content, rate: newRate },
       authStore.token
@@ -363,31 +343,24 @@ async function handleLike(comment) {
   }
 }
 
-// Date formatting
+// Định dạng thời gian tương đối
 function formatDate(dateStr) {
   return dateStr ? dayjs(dateStr).fromNow() : "";
 }
 
-// Lifecycle
+// Khởi tạo component
 onMounted(async () => {
-  console.log("🚀 Component mounted, postId =", props.postId);
   const authStore = useAuthStore();
   if (authStore.isAuthenticated && authStore.token?.trim() !== "") {
-    console.log("🔑 Đã đăng nhập, fetchProfile()");
     await fetchProfile();
-  } else {
-    console.log("🔓 Chưa đăng nhập");
   }
   fetchComments();
 });
 
-// Watch postId để reset phân trang (với log)
+// Theo dõi thay đổi postId để reset phân trang
 watch(
   () => props.postId,
-  (newId, oldId) => {
-    console.log(
-      `🔄 props.postId changed from ${oldId} to ${newId}, reset page → 1`
-    );
+  () => {
     pagination.value.current = 1;
     fetchComments();
   }

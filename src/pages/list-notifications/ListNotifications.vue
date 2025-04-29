@@ -6,7 +6,7 @@ import { getListAction, markActionAsRead } from "@/apis/actionService";
 import { getPostsByUserId } from "@/apis/postService";
 import DefaultLayout from "../../layouts/DefaultLayout.vue";
 
-// Lấy userId từ localStorage (dựa vào key "auth")
+// Lấy userId từ localStorage
 let userId = null;
 try {
   const authStr = localStorage.getItem("auth");
@@ -19,62 +19,62 @@ try {
 }
 
 const actions = ref([]);
+const router = useRouter();
 
-// Tính số thông báo chưa đọc (nếu cần hiển thị)
+// Tính số thông báo chưa đọc
 const unreadCount = computed(
   () => actions.value.filter((action) => !action.isRead).length
 );
 
-const router = useRouter();
-
-// Khai báo biến phân trang
+// Cấu hình phân trang
 const pagination = ref({
   current: 1,
   pageSize: 6,
   total: 0,
 });
 
+// Xử lý chuyển đến trang chi tiết bài đăng và đánh dấu thông báo đã đọc
 function goToPost(action) {
-  // Đánh dấu thông báo là đã đọc và điều hướng tới chi tiết bài đăng
   markActionAsRead(action.id)
     .then(() => {
       action.isRead = true;
-      if (action.motel === "O_GHEP") {
-        router.push(`/post/roommate/${action.postId}`);
-      } else if (action.motel === "PHONG_TRO") {
-        router.push(`/post/motel/${action.postId}`);
-      } else {
-        router.push(`/post/motel/${action.postId}`);
-      }
+      navigateToPostDetail(action);
     })
     .catch((error) => {
-      console.error("Error marking notification as read:", error);
-      if (action.motel === "O_GHEP") {
-        router.push(`/post/roommate/${action.postId}`);
-      } else if (action.motel === "PHONG_TRO") {
-        router.push(`/post/motel/${action.postId}`);
-      } else {
-        router.push(`/post/motel/${action.postId}`);
-      }
+      console.error("Lỗi khi đánh dấu thông báo đã đọc:", error);
+      navigateToPostDetail(action);
     });
 }
 
+// Điều hướng tới trang chi tiết bài đăng theo loại
+function navigateToPostDetail(action) {
+  if (action.motel === "O_GHEP") {
+    router.push(`/post/roommate/${action.postId}`);
+  } else {
+    router.push(`/post/motel/${action.postId}`);
+  }
+}
+
+// Lấy danh sách thông báo
 function fetchActions() {
   if (!userId) {
     console.warn("Chưa có userId -> không thể tải thông báo.");
     return;
   }
-  // Lấy danh sách bài đăng của người dùng với limit cao (ví dụ 50)
+
+  // Lấy danh sách bài đăng của người dùng
   getPostsByUserId(userId, { start: 0, limit: 50 })
     .then((postRes) => {
       const postData = postRes.data.data || postRes.data;
       const postItems = postData.items || [];
       const postIdsCsv = postItems.map((p) => p.id).join(",");
+
       if (!postIdsCsv) {
-        console.info("User chưa có bài đăng -> không có action nào.");
+        console.info("User chưa có bài đăng -> không có thông báo.");
         return;
       }
-      // Lấy danh sách action theo các postId với phân trang
+
+      // Lấy danh sách thông báo theo các postId với phân trang
       getListAction({
         start: pagination.value.current - 1,
         limit: pagination.value.pageSize,
@@ -86,25 +86,27 @@ function fetchActions() {
           pagination.value.total = actionResult.total || 0;
         })
         .catch((error) => {
-          console.error("Error fetching actions:", error);
+          console.error("Lỗi khi lấy danh sách thông báo:", error);
         });
     })
     .catch((error) => {
-      console.error("Error fetching posts:", error);
+      console.error("Lỗi khi lấy danh sách bài đăng:", error);
     });
 }
 
+// Xử lý thay đổi trang
 function handlePageChange(page) {
   pagination.value.current = page;
   fetchActions();
 }
 
+// Khởi tạo dữ liệu khi component được tạo
 onMounted(() => {
   fetchActions();
 });
 
 /**
- * Hàm chuyển đổi thời gian từ mảng [YYYY,MM,DD,hh,mm,ss] sang định dạng "X phút/giờ/ngày trước"
+ * Chuyển đổi thời gian từ mảng [YYYY,MM,DD,hh,mm,ss] sang định dạng "X phút/giờ/ngày trước"
  */
 function formatTime(arr) {
   if (!Array.isArray(arr) || arr.length !== 6) return "";
@@ -116,6 +118,7 @@ function formatTime(arr) {
   const diffMin = Math.floor(diffSec / 60);
   const diffHour = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHour / 24);
+
   if (diffSec < 60) {
     return "Vừa xong";
   } else if (diffMin < 60) {
@@ -132,7 +135,7 @@ function formatTime(arr) {
   }
 }
 
-// Chọn icon và màu sắc theo kiểu thông báo
+// Lấy icon theo loại thông báo
 function actionIcon(type) {
   return (
     {
@@ -142,6 +145,8 @@ function actionIcon(type) {
     }[type] || PlusCircle
   );
 }
+
+// Lấy màu nền cho icon theo loại thông báo
 function actionColor(type) {
   return (
     {
@@ -215,7 +220,3 @@ function actionColor(type) {
     </div>
   </DefaultLayout>
 </template>
-
-<style scoped>
-/* Bạn có thể thêm style bổ sung nếu cần */
-</style>

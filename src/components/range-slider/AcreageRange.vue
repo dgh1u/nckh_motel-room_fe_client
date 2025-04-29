@@ -4,7 +4,7 @@
       <span class="font-bold text-lg">Chọn diện tích</span>
     </div>
 
-    <!-- Slider -->
+    <!-- Slider chọn khoảng diện tích -->
     <Slider
       :range="true"
       :min="min"
@@ -19,7 +19,7 @@
       <strong>{{ modelValue[1] }} m²</strong>
     </p>
 
-    <!-- Checkbox chọn nhanh -->
+    <!-- Các tùy chọn nhanh cho khoảng diện tích -->
     <div class="mt-3 grid grid-cols-2 gap-3">
       <div
         v-for="(range, idx) in quickAcreageRanges"
@@ -77,7 +77,7 @@ const props = defineProps({
 
 const emits = defineEmits(["update:modelValue"]);
 
-// Các quick range cho diện tích
+// Danh sách các khoảng diện tích nhanh
 const quickAcreageRanges = [
   { label: "Dưới 15m²", min: 0, max: 15 },
   { label: "15 - 20m²", min: 15, max: 20 },
@@ -86,12 +86,13 @@ const quickAcreageRanges = [
   { label: "Trên 50m²", min: 50, max: 100 },
 ];
 
+// Lưu trữ khoảng diện tích nhanh đang được chọn
 const quickAcreageSelected = ref(null);
 
 /**
- * Cập nhật giá trị slider.
- * @param {Array} val - Giá trị mới của slider.
- * @param {Boolean} [resetQuick=true]
+ * Cập nhật giá trị slider và thông báo cho component cha
+ * @param {Array} val - Giá trị mới của slider
+ * @param {Boolean} resetQuick - Có reset lựa chọn nhanh hay không
  */
 function updateValue(val, resetQuick = true) {
   emits("update:modelValue", val);
@@ -100,7 +101,10 @@ function updateValue(val, resetQuick = true) {
   }
 }
 
-// Xử lý khi tick checkbox chọn nhanh
+/**
+ * Áp dụng khoảng diện tích nhanh khi người dùng chọn
+ * Nếu chọn lại cùng một khoảng thì sẽ hủy chọn
+ */
 function applyQuickAcreage(range) {
   if (
     quickAcreageSelected.value &&
@@ -114,7 +118,9 @@ function applyQuickAcreage(range) {
   }
 }
 
-// Kiểm tra xem range này có đang được chọn không
+/**
+ * Kiểm tra xem một khoảng diện tích có đang được chọn không
+ */
 function isQuickRangeSelected(range) {
   return (
     quickAcreageSelected.value &&
@@ -122,18 +128,21 @@ function isQuickRangeSelected(range) {
   );
 }
 
-// Thêm phương thức reset để component cha có thể gọi
+/**
+ * Reset lựa chọn khoảng diện tích nhanh
+ * Được expose để component cha có thể gọi
+ */
 function resetQuickAcreage() {
   quickAcreageSelected.value = null;
 }
 
-// Expose các phương thức để component cha có thể gọi
+// Đưa các phương thức ra ngoài để component cha có thể sử dụng
 defineExpose({
   resetQuickAcreage,
 });
 </script>
 
-<!-- Import theme mặc định -->
+<!-- Import theme của slider -->
 <style src="@vueform/slider/themes/default.css"></style>
 
 <style scoped>

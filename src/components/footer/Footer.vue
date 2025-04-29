@@ -2,7 +2,7 @@
   <footer class="bg-white text-white pt-8 pb-4">
     <div class="container mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-14 gap-4">
-        <!-- Company Info (1.5x width) -->
+        <!-- Thông tin công ty (chiếm 5 cột) -->
         <div class="md:col-span-5 pl-4">
           <div class="flex flex-col mb-4">
             <img
@@ -22,7 +22,7 @@
           </p>
         </div>
 
-        <!-- Privacy Policy -->
+        <!-- Chính sách bảo mật -->
         <div class="md:col-span-2">
           <h6 class="text-lg text-black font-semibold mb-4">
             Chính sách bảo mật
@@ -79,7 +79,7 @@
           </ul>
         </div>
 
-        <!-- Privacy Policy (continued) -->
+        <!-- Các tính năng của website -->
         <div class="md:col-span-2">
           <h6 class="text-lg text-black font-semibold mb-4">Tính năng</h6>
           <ul class="space-y-2 text-base text-black">
@@ -118,7 +118,7 @@
           </ul>
         </div>
 
-        <!-- Quick Links -->
+        <!-- Các đường dẫn nhanh -->
         <div class="md:col-span-2">
           <h6 class="text-lg text-black font-semibold mb-4">Link nhanh</h6>
           <ul class="space-y-2 text-base text-black">
@@ -154,7 +154,6 @@
                 Giao hàng
               </a>
             </li>
-
             <li>
               <a
                 href="#"
@@ -166,7 +165,7 @@
           </ul>
         </div>
 
-        <!-- Contact Info -->
+        <!-- Thông tin liên hệ -->
         <div class="md:col-span-3">
           <h6 class="text-lg text-black font-semibold mb-4">Liên Hệ</h6>
           <ul class="space-y-3 text-base text-black">
@@ -194,7 +193,7 @@
             </li>
           </ul>
 
-          <!-- Social Media Links -->
+          <!-- Liên kết mạng xã hội -->
           <div class="flex space-x-4 mt-6">
             <a
               href="https://www.facebook.com/ngao.hieu.16100?locale=vi_VN"
@@ -218,7 +217,7 @@
         </div>
       </div>
 
-      <!-- Copyright -->
+      <!-- Thông tin bản quyền -->
       <div class="border-gray-700 mt-8 text-center text-base text-gray-400">
         Copyright © 2025. Toàn bộ bản quyền thuộc UCK Team.
       </div>
@@ -227,5 +226,6 @@
 </template>
 
 <script setup>
+// Import các biểu tượng từ thư viện lucide-vue-next
 import { Facebook, MessageSquare, Mail, Phone, MapPin } from "lucide-vue-next";
 </script>

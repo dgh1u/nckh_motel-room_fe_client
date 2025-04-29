@@ -5,7 +5,7 @@
       <span>Bộ lọc</span>
     </span>
 
-    <!-- KHOẢNG GIÁ -->
+    <!-- Bộ lọc khoảng giá -->
     <div class="mb-6">
       <PriceRange
         ref="priceRangeRef"
@@ -17,7 +17,7 @@
       />
     </div>
 
-    <!-- DIỆN TÍCH -->
+    <!-- Bộ lọc diện tích -->
     <div class="mb-6">
       <AcreageRange
         ref="acreageRangeRef"
@@ -29,7 +29,7 @@
       />
     </div>
 
-    <!-- KHU VỰC - Modified for single selection -->
+    <!-- Bộ lọc khu vực - Chỉ chọn một -->
     <div class="mb-6">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Khu vực</span>
@@ -67,7 +67,7 @@
       </div>
     </div>
 
-    <!-- ĐẶC ĐIỂM -->
+    <!-- Bộ lọc đặc điểm - Chọn nhiều -->
     <div class="mb-4">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Đặc điểm</span>
@@ -104,7 +104,7 @@
       </div>
     </div>
 
-    <!-- NÚT ĐẶT LẠI -->
+    <!-- Nút đặt lại bộ lọc -->
     <div class="p-2 text-white">
       <button
         class="flex items-center space-x-2 font-bold border border-red-400 px-5 py-2 rounded bg-red-400 hover:bg-red-500 text-white hover:border-red-500 transition"
@@ -127,17 +127,18 @@ import {
   RefreshCw as ResetIcon,
 } from "lucide-vue-next";
 
-// Sử dụng emit để gửi dữ liệu bộ lọc cho component cha khi có thay đổi
+// Định nghĩa emit để gửi thông tin bộ lọc đến component cha
 const emit = defineEmits(["update:filters"]);
 
-// Thêm ref đến các component range
+// Tham chiếu đến các component slider
 const priceRangeRef = ref(null);
 const acreageRangeRef = ref(null);
 
-// Khai báo state riêng cho bộ lọc trong component con
+// Giá trị mặc định cho các bộ lọc
 const priceRangeLocal = ref([0, 30]);
 const acreageRangeLocal = ref([5, 95]);
 
+// Danh sách các khu vực
 const districtOptions = [
   { label: "An Đào", value: "An Đào" },
   { label: "Đào Nguyên", value: "Đào Nguyên" },
@@ -148,6 +149,7 @@ const districtOptions = [
   { label: "Khu vực khác", value: "Khác" },
 ];
 
+// Danh sách các đặc điểm
 const featureOptions = [
   { label: "Đầy đủ nội thất", value: "full_furniture" },
   { label: "Kệ bếp", value: "has_kitchen" },
@@ -161,55 +163,60 @@ const featureOptions = [
   { label: "Có chỗ để xe", value: "has_parking" },
 ];
 
-// Thay đổi từ mảng thành một giá trị duy nhất cho Khu vực
+// Khu vực - chỉ chọn một giá trị duy nhất
 const selectedDistrict = ref(null);
-// Đặc điểm vẫn cho phép chọn nhiều
+// Đặc điểm - cho phép chọn nhiều giá trị
 const selectedFeatures = ref([]);
 
-// Hàm xử lý chọn khu vực (chỉ một giá trị)
+// Xử lý chọn khu vực
 function selectDistrict(value) {
+  // Nếu click vào cùng giá trị đã chọn thì bỏ chọn
   if (selectedDistrict.value === value) {
-    // Nếu click vào cùng một giá trị đã chọn, bỏ chọn nó
     selectedDistrict.value = null;
   } else {
-    // Chọn giá trị mới, tự động bỏ chọn giá trị cũ
+    // Chọn giá trị mới
     selectedDistrict.value = value;
   }
   updateFilters();
 }
 
-// Hàm xử lý khi người dùng click chọn đặc điểm
+// Xử lý chọn đặc điểm
 function toggleFeature(value) {
   const index = selectedFeatures.value.indexOf(value);
   if (index === -1) {
+    // Thêm nếu chưa có trong danh sách
     selectedFeatures.value.push(value);
   } else {
+    // Xóa nếu đã có trong danh sách
     selectedFeatures.value.splice(index, 1);
   }
   updateFilters();
 }
 
+// Kiểm tra đặc điểm đã được chọn chưa
 function isFeatureSelected(value) {
   return selectedFeatures.value.includes(value);
 }
 
-// Hàm đặt lại toàn bộ bộ lọc
+// Đặt lại toàn bộ bộ lọc về giá trị mặc định
 function resetAll() {
+  // Đặt lại giá trị các bộ lọc
   priceRangeLocal.value = [0, 30];
   acreageRangeLocal.value = [0, 100];
   selectedDistrict.value = null;
   selectedFeatures.value = [];
 
-  // Reset quickPriceSelected trong PriceRange component
+  // Đặt lại lựa chọn nhanh trong component PriceRange
   if (priceRangeRef.value) {
     priceRangeRef.value.resetQuickPrice();
   }
 
-  // Nếu có component AcreageRange tương tự cần reset thì thêm ở đây
+  // Đặt lại lựa chọn nhanh trong component AcreageRange
   if (acreageRangeRef.value) {
     acreageRangeRef.value.resetQuickAcreage();
   }
 
+  // Cập nhật bộ lọc sau khi đặt lại
   updateFilters();
 
   // Cuộn trang lên đầu
@@ -219,7 +226,7 @@ function resetAll() {
   });
 }
 
-// Hàm gửi state bộ lọc về cho component cha
+// Cập nhật và gửi thông tin bộ lọc đến component cha
 function updateFilters() {
   emit("update:filters", {
     priceRange: priceRangeLocal.value,
@@ -229,11 +236,11 @@ function updateFilters() {
   });
 }
 
-// Theo dõi thay đổi của slider để cập nhật bộ lọc
+// Theo dõi thay đổi của các bộ lọc để cập nhật
 watch(priceRangeLocal, updateFilters);
 watch(acreageRangeLocal, updateFilters);
 </script>
 
 <style scoped>
-/* Tuỳ chỉnh style nếu cần */
+/* Có thể thêm CSS tùy chỉnh nếu cần */
 </style>

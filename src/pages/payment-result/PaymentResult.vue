@@ -4,6 +4,7 @@
       <div
         class="bg-white shadow-xl rounded-lg overflow-hidden max-w-4xl h-100 w-full grid grid-cols-1 md:grid-cols-2"
       >
+        <!-- Phần hiển thị trạng thái giao dịch -->
         <div class="flex flex-col justify-center items-center p-8">
           <component
             :is="paymentStatus ? CircleCheck : XCircle"
@@ -24,6 +25,7 @@
             </button>
           </div>
         </div>
+        <!-- Phần hiển thị chi tiết giao dịch -->
         <div class="bg-gray-50 p-6 flex flex-col justify-center">
           <h1 class="text-5xl font-bold text-gray-900 text-right">
             {{ paymentResult.amount }}₫
@@ -78,11 +80,9 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { CheckCircle, CircleCheck, XCircle } from "lucide-vue-next";
+import { CircleCheck, XCircle } from "lucide-vue-next";
 import DefaultLayout from "../../layouts/DefaultLayout.vue";
-// Import hàm getPaymentResult từ paymentService
 import { getPaymentResult } from "@/apis/paymentService.js";
-// Import hàm getBankData từ file bankMapping.js
 import { getBankData } from "../../components/bank-name/bankName";
 
 const route = useRoute();
@@ -92,17 +92,16 @@ const paymentResult = ref({});
 const loading = ref(true);
 const error = ref("");
 
-// Tạo thuộc tính computed để lấy dữ liệu ngân hàng dựa vào paymentResult.counterAccountBankId
+// Lấy thông tin ngân hàng dựa vào mã ngân hàng từ kết quả giao dịch
 const bankData = computed(() => {
   return getBankData(paymentResult.value.counterAccountBankId);
 });
 
+// Lấy kết quả giao dịch từ API dựa vào ID trong params
 const fetchPaymentResult = async () => {
   try {
     const { id } = route.params;
-    // Gọi API thông qua paymentService
     const res = await getPaymentResult(id);
-    // Nếu API trả về dữ liệu, cập nhật paymentResult
     paymentResult.value = res;
     paymentStatus.value = res.success;
   } catch (err) {
@@ -112,8 +111,10 @@ const fetchPaymentResult = async () => {
   }
 };
 
+// Điều hướng về trang chủ
 const goBack = () => router.push("/home");
 
+// Tự động lấy kết quả giao dịch khi component được tạo
 onMounted(fetchPaymentResult);
 </script>
 

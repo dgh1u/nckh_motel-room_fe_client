@@ -1,9 +1,9 @@
 <template>
   <ProfileLayout>
     <div>
-      <!-- (A) Bộ lọc: Trạng thái + Hình thức + Hiển thị -->
+      <!-- Bộ lọc: Trạng thái + Hình thức + Hiển thị -->
       <div class="mb-4 flex items-center space-x-8">
-        <!-- (A1) Bộ lọc trạng thái -->
+        <!-- Bộ lọc trạng thái -->
         <div class="flex items-center space-x-2">
           <label class="font-bold">Trạng thái:</label>
           <div
@@ -45,7 +45,7 @@
           </div>
         </div>
 
-        <!-- (A2) Bộ lọc hình thức -->
+        <!-- Bộ lọc hình thức -->
         <div class="flex items-center space-x-2">
           <label class="font-bold">Hình thức:</label>
           <div
@@ -75,10 +75,62 @@
             >
               Ở ghép
             </button>
+            <!-- Tab "Quán ăn" -->
+            <button
+              @click="
+                (selectedMotelType = 'QUAN_AN'), resetPage(), fetchPosts()
+              "
+              :class="
+                selectedMotelType === 'QUAN_AN'
+                  ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
+                  : 'px-4 py-2 rounded-md text-gray-400 font-medium text-sm hover:text-gray-600'
+              "
+            >
+              Quán ăn
+            </button>
+            <!-- Tab "Quán nước" -->
+            <button
+              @click="
+                (selectedMotelType = 'QUAN_NUOC'), resetPage(), fetchPosts()
+              "
+              :class="
+                selectedMotelType === 'QUAN_NUOC'
+                  ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
+                  : 'px-4 py-2 rounded-md text-gray-400 font-medium text-sm hover:text-gray-600'
+              "
+            >
+              Quán nước
+            </button>
+            <!-- Tab "Cửa hàng" -->
+            <button
+              @click="
+                (selectedMotelType = 'CUA_HANG'), resetPage(), fetchPosts()
+              "
+              :class="
+                selectedMotelType === 'CUA_HANG'
+                  ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
+                  : 'px-4 py-2 rounded-md text-gray-400 font-medium text-sm hover:text-gray-600'
+              "
+            >
+              Cửa hàng
+            </button>
+            <!-- Tab "Tiện ích" -->
+            <button
+              @click="
+                (selectedMotelType = 'TIEN_ICH'), resetPage(), fetchPosts()
+              "
+              :class="
+                selectedMotelType === 'TIEN_ICH'
+                  ? 'px-4 py-2 rounded-md bg-white text-gray-900 font-semibold text-sm'
+                  : 'px-4 py-2 rounded-md text-gray-400 font-medium text-sm hover:text-gray-600'
+              "
+            >
+              Tiện ích
+            </button>
           </div>
         </div>
 
-        <!-- (A3) Bộ lọc Hiển thị -->
+        <!-- Bộ lọc Hiển thị -->
         <div class="flex items-center space-x-2">
           <label class="font-bold">Hiển thị:</label>
           <div
@@ -110,7 +162,7 @@
         </div>
       </div>
 
-      <!-- (B) Danh sách bài đăng -->
+      <!-- Danh sách bài đăng -->
       <div v-if="posts.length">
         <router-link
           v-for="post in posts"
@@ -119,17 +171,42 @@
             name:
               selectedMotelType === 'O_GHEP'
                 ? 'RoommateFindDetail'
+                : selectedMotelType === 'QUAN_AN'
+                ? 'RestaurantDetail'
+                : selectedMotelType === 'QUAN_NUOC'
+                ? 'BeverageDetail'
+                : selectedMotelType === 'CUA_HANG'
+                ? 'StoreDetail'
+                : selectedMotelType === 'TIEN_ICH'
+                ? 'UtilityDetail'
                 : 'MotelDetail',
             params: { id: post.id },
           }"
           class="block"
         >
           <div class="py-2">
-            <Card :post="post" data-aos="fade-left" data-aos-duration="800" />
+            <!-- Sử dụng RestaurantCard cho các loại quán ăn, nước, cửa hàng và tiện ích -->
+            <RestaurantCard
+              v-if="
+                ['QUAN_AN', 'QUAN_NUOC', 'CUA_HANG', 'TIEN_ICH'].includes(
+                  selectedMotelType
+                )
+              "
+              :post="post"
+              data-aos="fade-left"
+              data-aos-duration="800"
+            />
+            <!-- Sử dụng Card cho loại phòng trọ và ở ghép -->
+            <Card
+              v-else
+              :post="post"
+              data-aos="fade-left"
+              data-aos-duration="800"
+            />
           </div>
         </router-link>
 
-        <!-- Component phân trang (Ant Design Vue) -->
+        <!-- Phân trang -->
         <div class="pt-10 flex items-center justify-center">
           <a-pagination
             :current="pagination.current"
@@ -151,11 +228,10 @@
 import { ref, onMounted } from "vue";
 import ProfileLayout from "../../../layouts/ProfileLayout.vue";
 import Card from "@/components/card/Card.vue";
+import RestaurantCard from "../../../components/card/RestaurantCard.vue";
 import { getProfile } from "@/apis/authService";
 import { getPostsByUserId } from "@/apis/postService";
-import { Empty, Pagination } from "ant-design-vue";
-
-const aEmpty = Empty;
+import { Empty } from "ant-design-vue";
 
 // State cho bài đăng và bộ lọc
 const posts = ref([]);
@@ -177,7 +253,7 @@ function resetPage() {
 }
 
 /**
- * Hàm fetchPosts() gọi API getPostsByUser với params dựa vào các bộ lọc đã chọn.
+ * Lấy danh sách bài đăng theo userId và các bộ lọc đã chọn
  */
 async function fetchPosts() {
   if (!userId.value) return;
@@ -197,12 +273,12 @@ async function fetchPosts() {
       params.notApproved = true;
       break;
   }
-  // Thêm param cho hình thức (motel)
+  // Thêm param cho hình thức
   params.motel = selectedMotelType.value;
-  // Thêm param cho bộ lọc Hiển thị: del=false (Hiển thị) hay del=true (Bị ẩn)
+  // Thêm param cho trạng thái hiển thị
   params.del = selectedDel.value;
 
-  // Thêm tham số phân trang: API dùng start là số thứ tự trang (0-based) và limit là số item trên 1 trang
+  // Thêm tham số phân trang
   params.start = Math.max(pagination.value.current - 1, 0);
   params.limit = pagination.value.pageSize;
 
@@ -210,8 +286,8 @@ async function fetchPosts() {
     const postResponse = await getPostsByUserId(userId.value, params);
     const responseData =
       postResponse && postResponse.data ? postResponse.data : {};
-    console.log("Posts API full data:", responseData);
 
+    // Xử lý dữ liệu trả về
     if (typeof responseData.success !== "undefined") {
       if (responseData.success) {
         if (responseData.data && responseData.data.items) {
@@ -226,7 +302,6 @@ async function fetchPosts() {
           pagination.value.total = 0;
         }
       } else {
-        console.error("Server error:", responseData.error);
         posts.value = [];
         pagination.value.total = 0;
       }
@@ -241,12 +316,13 @@ async function fetchPosts() {
       }
     }
   } catch (error) {
-    console.error("Error fetching posts:", error);
+    posts.value = [];
+    pagination.value.total = 0;
   }
 }
 
 /**
- * Xử lý khi người dùng chuyển trang
+ * Xử lý sự kiện chuyển trang và cuộn lên đầu trang
  */
 function handlePageChange(page) {
   pagination.value.current = page;
@@ -258,20 +334,16 @@ function handlePageChange(page) {
 }
 
 /**
- * Khi component mount:
- * - Gọi getProfile để lấy userId.
- * - Sau đó gọi fetchPosts() với các bộ lọc mặc định.
+ * Khởi tạo component: lấy thông tin người dùng và danh sách bài đăng
  */
 onMounted(async () => {
   try {
     const profileResponse = await getProfile();
-    console.log("User Profile:", profileResponse);
     const profileData = profileResponse.data;
     userId.value = profileData.data ? profileData.data.id : profileData.id;
-    console.log("User ID:", userId.value);
     await fetchPosts();
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    // Xử lý lỗi khi không lấy được thông tin người dùng
   }
 });
 </script>

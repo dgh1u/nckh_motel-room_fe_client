@@ -137,10 +137,10 @@ import { reactive } from "vue";
 import emailjs from "emailjs-com";
 import Header from "@/components/header/Header.vue";
 import Footer from "@/components/footer/Footer.vue";
-// Import hàm message của Ant Design Vue
+// Import thông báo từ Ant Design Vue
 import { message } from "ant-design-vue";
 
-// Khởi tạo form với reactive
+// Khởi tạo form dữ liệu liên hệ
 const form = reactive({
   name: "",
   email: "",
@@ -148,6 +148,7 @@ const form = reactive({
   text: "",
 });
 
+// Xử lý gửi form liên hệ qua EmailJS
 const handleSubmit = async () => {
   const templateParams = {
     name: form.name,
@@ -158,22 +159,22 @@ const handleSubmit = async () => {
 
   try {
     await emailjs.send(
-      "service_hq8gusf", // Thay thế bằng Service ID từ EmailJS
-      "template_nrdfm9n", // Thay thế bằng Template ID từ EmailJS
+      "service_hq8gusf",
+      "template_nrdfm9n",
       templateParams,
-      "-dwlFHLIdUwP6a7_x" // Thay thế bằng User ID (hoặc Public Key) từ EmailJS
+      "-dwlFHLIdUwP6a7_x"
     );
 
-    // Thông báo thành công
+    // Hiển thị thông báo thành công
     message.success("Email đã được gửi thành công!");
 
-    // Reset lại form
+    // Xóa dữ liệu form sau khi gửi
     form.name = "";
     form.email = "";
     form.phone = "";
     form.text = "";
   } catch (error) {
-    // Thông báo lỗi
+    // Ghi log lỗi và hiển thị thông báo lỗi
     console.error("Gửi email thất bại:", error);
     message.error("Gửi email thất bại, vui lòng thử lại!");
   }

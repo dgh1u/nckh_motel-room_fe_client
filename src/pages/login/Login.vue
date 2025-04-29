@@ -8,7 +8,7 @@
     >
       <div class="flex-grow flex flex-col items-center justify-center w-full">
         <div class="max-w-lg w-full text-center md:text-left">
-          <!-- Tiêu đề + Link đăng ký -->
+          <!-- Tiêu đề và link đăng ký -->
           <div class="mb-12">
             <h1 class="text-3xl md:text-4xl font-bold mb-4">Đăng nhập</h1>
             <p class="text-gray-600 text-base md:text-base">
@@ -21,7 +21,7 @@
 
           <!-- Form đăng nhập -->
           <form @submit.prevent="handleLogin" class="space-y-7">
-            <!-- Email -->
+            <!-- Trường nhập email -->
             <div>
               <label
                 for="email"
@@ -42,7 +42,7 @@
               </p>
             </div>
 
-            <!-- Password -->
+            <!-- Trường nhập mật khẩu -->
             <div>
               <label
                 for="password"
@@ -59,7 +59,7 @@
                   @input="clearError('password')"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400 focus:shadow-md focus:shadow-blue-200 outline-none transition duration-300 text-base"
                 />
-                <!-- Nút toggle hiển thị mật khẩu dùng lucide-vue-next -->
+                <!-- Nút ẩn/hiện mật khẩu -->
                 <button
                   type="button"
                   class="absolute inset-y-0 right-4 flex items-center"
@@ -73,7 +73,8 @@
                 {{ errors.password }}
               </p>
             </div>
-            <!-- Thông báo lỗi chung (nếu có) -->
+
+            <!-- Hiển thị lỗi chung -->
             <p
               v-if="generalError"
               class="text-red-500 text-center md:text-center text-base mb-4"
@@ -93,7 +94,7 @@
               </button>
             </div>
 
-            <!-- Quên mật khẩu -->
+            <!-- Link quên mật khẩu -->
             <div>
               <router-link
                 to="/forgot-password"
@@ -115,14 +116,14 @@
       </div>
     </div>
 
-    <!-- Cột phải: Nền gradient (chỉ hiển thị trên màn hình lớn) -->
+    <!-- Cột phải: Nền gradient (responsive) -->
     <div
       class="hidden xl:flex w-1/2 bg-gradient-to-br from-purple-500 to-blue-500 items-center justify-center"
     >
-      <!-- Thay bằng hình nền hoặc hoạ tiết tùy ý -->
+      <!-- Vùng dành cho hình nền hoặc nội dung bổ sung -->
     </div>
 
-    <!-- Nút Zalo cố định -->
+    <!-- Nút liên hệ Zalo -->
     <a
       href="https://zalo.me/0981266403"
       target="_blank"
@@ -139,6 +140,7 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/store";
 import { Eye, EyeOff } from "lucide-vue-next";
 
+// Khai báo các biến reactive
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
@@ -148,6 +150,7 @@ const generalError = ref("");
 const router = useRouter();
 const authStore = useAuthStore();
 
+// Kiểm tra tính hợp lệ của dữ liệu đầu vào
 const validateInput = () => {
   errors.value = {};
 
@@ -166,6 +169,7 @@ const validateInput = () => {
   return Object.keys(errors.value).length === 0;
 };
 
+// Xóa thông báo lỗi khi người dùng nhập lại
 const clearError = (field) => {
   if (errors.value[field]) {
     errors.value[field] = "";
@@ -173,10 +177,12 @@ const clearError = (field) => {
   generalError.value = "";
 };
 
+// Bật/tắt hiển thị mật khẩu
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
+// Xử lý đăng nhập
 const handleLogin = async () => {
   loading.value = true;
   generalError.value = "";
@@ -192,10 +198,10 @@ const handleLogin = async () => {
     // Lấy URL chuyển hướng từ localStorage (nếu có)
     const redirectPath = localStorage.getItem("redirectAfterLogin") || "/home";
 
-    // Xóa dữ liệu chuyển hướng đã lưu
+    // Xóa dữ liệu chuyển hướng
     localStorage.removeItem("redirectAfterLogin");
 
-    // Chuyển hướng người dùng đến trang đích
+    // Chuyển hướng người dùng
     router.push(redirectPath);
   } catch (err) {
     generalError.value = err?.message || "Đăng nhập thất bại!";

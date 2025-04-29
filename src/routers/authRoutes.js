@@ -1,4 +1,3 @@
-// Import các component cần thiết
 import Login from "../pages/login/Login.vue";
 import Register from "../pages/register/Register.vue";
 import ForgotPassword from "../pages/forgot-password/ForgotPassword.vue";
@@ -27,7 +26,7 @@ export default [
     name: "Verify",
     component: Verify,
     meta: {
-      requiresAuth: false, // Không yêu cầu đăng nhập
+      requiresAuth: false,
     },
   },
   {
@@ -35,7 +34,7 @@ export default [
     name: "ForgotPassword",
     component: ForgotPassword,
     meta: {
-      requiresAuth: false, // Không yêu cầu đăng nhập
+      requiresAuth: false,
     },
   },
 ];

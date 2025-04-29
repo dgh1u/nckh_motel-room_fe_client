@@ -83,18 +83,14 @@ import DefaultLayout from "../../layouts/DefaultLayout.vue";
 import MotelFilter from "@/components/filter/MotelFilter.vue";
 import Card from "@/components/card/Card.vue";
 import { getListPost } from "@/apis/postService.js";
-// Nếu dùng Ant Design Vue, import Pagination component
-import { Pagination, Empty } from "ant-design-vue";
+import { Empty } from "ant-design-vue";
 import { Search } from "lucide-vue-next";
 
-const aEmpty = Empty;
-
-// State bộ lọc - Cập nhật theo cấu trúc mới
+// Khởi tạo state cho bộ lọc tìm kiếm
 const filters = ref({
   keywords: "",
   priceRange: [0, 30],
   acreageRange: [5, 95],
-  // Thay đổi từ mảng sang giá trị đơn cho khu vực
   districtSelected: null,
   featuresSelected: [],
 });
@@ -105,14 +101,14 @@ const posts = ref([]);
 // Thông báo lỗi
 const errorMsg = ref("");
 
-// Biến pagination (giống logic user)
+// Cấu hình phân trang
 const pagination = ref({
   current: 1,
   pageSize: 5,
   total: 0,
 });
 
-// Hàm xử lý sự kiện nhận bộ lọc từ MotelFilter
+// Xử lý cập nhật bộ lọc từ component MotelFilter
 function handleFilterUpdate(newFilters) {
   filters.value = {
     ...filters.value,
@@ -125,35 +121,44 @@ function handleFilterUpdate(newFilters) {
   fetchPosts();
 }
 
-// Hàm chuyển đổi bộ lọc FE sang query params cho backend - Đã cập nhật
+// Chuyển đổi bộ lọc từ frontend sang query params cho backend
 function buildQueryParams() {
   const params = {};
-  // Luôn gán motel là "PHONG_TRO"
+  // Loại phòng trọ mặc định
   params.motel = "PHONG_TRO";
 
-  // Thêm start, limit cho phân trang
+  // Trạng thái lấy List: Đã duyệt và hiển thị
+  params.approved = true;
+  params.notApproved = false;
+  params.del = false;
+
+  // Tham số phân trang
   params.start = Math.max(pagination.value.current - 1, 0);
   params.limit = pagination.value.pageSize;
 
+  // Xử lý từ khóa tìm kiếm
   if (filters.value.keywords && filters.value.keywords.trim() !== "") {
     params.keywords = filters.value.keywords.trim();
   }
 
+  // Xử lý khoảng giá (đơn vị triệu đồng -> đồng)
   if (filters.value.priceRange && filters.value.priceRange.length === 2) {
     params.minPrice = filters.value.priceRange[0] * 1000000;
     params.maxPrice = filters.value.priceRange[1] * 1000000;
   }
 
+  // Xử lý khoảng diện tích
   if (filters.value.acreageRange && filters.value.acreageRange.length === 2) {
     params.minAcreage = filters.value.acreageRange[0];
     params.maxAcreage = filters.value.acreageRange[1];
   }
 
-  // Cập nhật xử lý cho district từ giá trị đơn thay vì mảng
+  // Xử lý khu vực
   if (filters.value.districtSelected) {
     params.districtName = filters.value.districtSelected;
   }
 
+  // Ánh xạ tính năng từ frontend sang backend
   const featureMapping = {
     full_furniture: "interior",
     has_kitchen: "kitchen",
@@ -167,6 +172,7 @@ function buildQueryParams() {
     has_parking: "parking",
   };
 
+  // Xử lý các tính năng đã chọn
   filters.value.featuresSelected.forEach((feature) => {
     const mappedField = featureMapping[feature];
     if (mappedField) {
@@ -177,17 +183,16 @@ function buildQueryParams() {
   return params;
 }
 
-// Hàm gọi API và cập nhật danh sách bài đăng
+// Gọi API lấy danh sách phòng trọ
 async function fetchPosts() {
   try {
     errorMsg.value = "";
     const queryParams = buildQueryParams();
     const response = await getListPost(queryParams);
-    const data = response.data; // Giả sử API trả về {success, error, total, items}
+    const data = response.data;
 
     if (data && data.items) {
       posts.value = data.items;
-      // Lấy tổng số items để cập nhật pagination
       pagination.value.total = data.total || 0;
     } else {
       posts.value = [];
@@ -200,22 +205,23 @@ async function fetchPosts() {
   }
 }
 
-// Xử lý khi người dùng chuyển trang
+// Xử lý chuyển trang
 function handlePageChange(page) {
   pagination.value.current = page;
   fetchPosts();
-  // Cuộn lên đầu trang
+  // Cuộn lên đầu trang khi chuyển trang
   window.scrollTo({
     top: 0,
-    behavior: "smooth", // hoặc bỏ "smooth" nếu không muốn hiệu ứng
+    behavior: "smooth",
   });
 }
 
+// Gọi API lấy dữ liệu khi component được mount
 onMounted(() => {
   fetchPosts();
 });
 
-// Nếu bạn muốn lắng nghe thay đổi filter để auto load
+// Theo dõi thay đổi của bộ lọc để tự động tải lại dữ liệu
 watch(
   filters,
   () => {

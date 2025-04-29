@@ -4,7 +4,7 @@
       <span class="font-bold text-lg">Chọn Giá</span>
     </div>
 
-    <!-- Slider -->
+    <!-- Thanh slider điều chỉnh giá -->
     <Slider
       :range="true"
       :min="min"
@@ -19,7 +19,7 @@
       <strong>{{ modelValue[1] }} Triệu</strong>
     </p>
 
-    <!-- Checkbox chọn nhanh  -->
+    <!-- Checkbox chọn khoảng giá nhanh -->
     <div class="mt-3 grid grid-cols-2 gap-3">
       <div
         v-for="(range, idx) in quickPriceRanges"
@@ -77,7 +77,7 @@ const props = defineProps({
 
 const emits = defineEmits(["update:modelValue"]);
 
-// Các quick range cho giá
+// Danh sách các khoảng giá nhanh
 const quickPriceRanges = [
   { label: "Dưới 1 Triệu", min: 0, max: 1 },
   { label: "1 - 2 Triệu", min: 1, max: 2 },
@@ -87,12 +87,13 @@ const quickPriceRanges = [
   { label: "Trên 10 Triệu", min: 10, max: 30 },
 ];
 
+// Lưu trạng thái khoảng giá nhanh được chọn
 const quickPriceSelected = ref(null);
 
 /**
- * Cập nhật giá trị slider.
- * @param {Array} val - Giá trị mới của slider.
- * @param {Boolean} [resetQuick=true]
+ * Cập nhật giá trị slider và phát ra sự kiện
+ * @param {Array} val - Giá trị mới của slider [min, max]
+ * @param {Boolean} resetQuick - Có reset lựa chọn nhanh hay không
  */
 function updateValue(val, resetQuick = true) {
   emits("update:modelValue", val);
@@ -101,7 +102,10 @@ function updateValue(val, resetQuick = true) {
   }
 }
 
-// Xử lý khi tick checkbox chọn nhanh
+/**
+ * Áp dụng khoảng giá nhanh khi người dùng chọn
+ * Nếu chọn lại khoảng giá đang active thì sẽ bỏ chọn
+ */
 function applyQuickPrice(range) {
   if (
     quickPriceSelected.value &&
@@ -115,25 +119,31 @@ function applyQuickPrice(range) {
   }
 }
 
-// Kiểm tra xem range này có đang được chọn không
+/**
+ * Kiểm tra xem khoảng giá nhanh có đang được chọn không
+ * @param {Object} range - Khoảng giá cần kiểm tra
+ * @returns {Boolean} - True nếu đang được chọn
+ */
 function isQuickRangeSelected(range) {
   return (
     quickPriceSelected.value && quickPriceSelected.value.label === range.label
   );
 }
 
-// Thêm phương thức reset để component cha có thể gọi
+/**
+ * Reset lựa chọn khoảng giá nhanh về trạng thái ban đầu
+ */
 function resetQuickPrice() {
   quickPriceSelected.value = null;
 }
 
-// Expose các phương thức để component cha có thể gọi
+// Cung cấp các phương thức cho component cha sử dụng
 defineExpose({
   resetQuickPrice,
 });
 </script>
 
-<!-- Import theme mặc định -->
+<!-- Import theme mặc định cho slider -->
 <style src="@vueform/slider/themes/default.css"></style>
 
 <style scoped>

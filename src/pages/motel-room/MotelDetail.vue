@@ -19,13 +19,14 @@
       </div>
     </div>
     <!-- HẾT KHỐI BREADCRUMB -->
+
     <!-- Bọc toàn bộ trang bằng flex để chia 2 cột -->
     <div class="flex min-h-screen">
       <!-- CỘT TRÁI -->
       <div class="flex-1 p-4 bg-gray-100">
         <!-- GALLERY Ở ĐẦU TRANG -->
-        <!-- Vùng ảnh chính, có mũi tên trái/phải -->
         <div class="bg-white rounded-xl p-4 text-4xl shadow-lg">
+          <!-- Vùng ảnh chính, có mũi tên trái/phải -->
           <div
             v-if="galleryImages.length > 0"
             class="relative w-full h-96 bg-black text-white flex items-center justify-center mb-4 rounded-xl"
@@ -60,10 +61,10 @@
               v-for="(img, index) in galleryImages"
               :key="index"
               @click="currentImageIndex = index"
-              class="cursor-pointer flex-shrink-0 w-20 h-20 border rounded"
+              class="cursor-pointer flex-shrink-0 w-20 h-20 rounded overflow-hidden"
               :class="{
-                'border-blue-500': currentImageIndex === index,
-                'border-gray-300': currentImageIndex !== index,
+                'border-3 border-red-500': currentImageIndex === index,
+                'border border-gray-300': currentImageIndex !== index,
               }"
             >
               <img
@@ -95,41 +96,34 @@
 
                 <!-- Địa chỉ -->
                 <div class="flex items-center text-sm text-gray-600 mb-2">
-                  <!-- Icon địa chỉ -->
                   <MapPinIcon class="w-4 h-4 mr-1" />
-                  <!-- Nội dung địa chỉ -->
                   <span class="text-black">
                     {{ post.accomodationDTO?.address }}
                   </span>
 
-                  <!-- Dấu chấm giữa -->
                   <span class="mx-2">·</span>
 
-                  <!-- Tên quận/huyện -->
                   <span>
                     Khu vực:
                     {{ post.accomodationDTO?.district?.name }}
                   </span>
                 </div>
 
-                <!-- (Giá, diện tích, giá điện, giá nước, ngày đăng) trên cùng 1 dòng -->
+                <!-- Hiển thị thông tin giá, diện tích, giá điện nước, ngày đăng -->
                 <div
                   class="flex items-center justify-between flex-wrap gap-4 mb-4"
                 >
                   <!-- Bên trái: Giá, diện tích, giá điện, giá nước -->
                   <div class="flex items-center flex-wrap gap-4">
-                    <!-- Giá (màu đỏ) -->
                     <span class="text-red-500 text-xl font-bold">
                       {{ formatPrice(post.accomodationDTO.price) }}
                     </span>
 
-                    <!-- Diện tích (có icon) -->
                     <div class="flex items-center ml-5">
                       <ScanIcon class="w-4 h-4 mr-1 mt-0.5" />
                       <span>{{ post.accomodationDTO.acreage }}m²</span>
                     </div>
 
-                    <!-- Giá điện (có icon) -->
                     <div class="flex items-center ml-5">
                       <ZapIcon class="w-4 h-4 mr-1 mt-0.5" />
                       <span
@@ -142,7 +136,6 @@
                       >
                     </div>
 
-                    <!-- Giá nước (có icon) -->
                     <div class="flex items-center ml-5">
                       <DropletIcon class="w-4 h-4 mr-1 mt-0.5" />
                       <span
@@ -156,7 +149,7 @@
                     </div>
                   </div>
 
-                  <!-- Bên phải: Ngày đăng (có icon) -->
+                  <!-- Bên phải: Ngày đăng -->
                   <div class="flex items-center text-sm">
                     <span>Ngày đăng: {{ formatDate(post.createAt) }}</span>
                   </div>
@@ -172,7 +165,6 @@
               </div>
               <hr class="my-3 mx-6 border-gray-100" />
 
-              <!-- Đặc điểm -->
               <!-- Đặc điểm -->
               <div class="py-2">
                 <span class="text-lg font-semibold">Đặc điểm</span>
@@ -295,7 +287,7 @@
 
       <!-- CỘT PHẢI: chỉ chứa khối thông tin người đăng -->
       <div class="w-80 p-4 bg-gray-100">
-        <!-- Nếu post đã có dữ liệu userDTO -->
+        <!-- Thông tin người đăng -->
         <div
           v-if="post && post.userDTO"
           class="rounded-md p-4 shadow-md text-center bg-white"
@@ -358,10 +350,12 @@
             </a>
           </div>
         </div>
-        <!-- 2 nút mới chỉ hiển thị khi người đăng trùng với người xem -->
+        <!-- Nút thao tác chỉ hiển thị khi người đăng trùng với người xem -->
         <div class="py-8">
           <div v-if="isOwner" class="p-4 bg-white rounded-xl shadow-xl">
-            <div><span class="font-semibold text-lg">Thao tác</span></div>
+            <div class="text-center">
+              <span class="font-semibold text-lg">Thao tác</span>
+            </div>
             <div class="py-4">
               <router-link
                 :to="`/update-post/${post.id}`"
@@ -400,7 +394,6 @@ import Comment from "../../components/comment/Comment.vue";
 import { getDetailPost, hidePost } from "@/apis/postService.js";
 import { getImageByPost } from "@/apis/imageService.js";
 import { useAuthStore } from "@/stores/store";
-
 import { getProfile } from "@/apis/authService.js";
 import { message } from "ant-design-vue";
 import { Phone, MapPin, Mail, Toilet } from "lucide-vue-next";
@@ -409,7 +402,6 @@ import {
   Scan as ScanIcon,
   Zap as ZapIcon,
   Droplet as DropletIcon,
-  Calendar as CalendarIcon,
   Bed as BedIcon,
   Snowflake as SnowflakeIcon,
   Wifi as WifiIcon,
@@ -428,13 +420,13 @@ const post = ref(null);
 const errorMsg = ref("");
 const currentUser = ref(null);
 
-// Hàm định dạng ngày
+// Hàm định dạng ngày thành chuỗi
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   return date.toLocaleDateString();
 }
 
-// Hàm định dạng giá tiền theo VND
+// Hàm định dạng giá điện nước theo VND
 function formatElectricWaterPrice(price) {
   if (!price) return "";
   return new Intl.NumberFormat("vi-VN", {
@@ -443,14 +435,14 @@ function formatElectricWaterPrice(price) {
   }).format(price);
 }
 
-// Tạo URL Google Maps (không dùng API Key)
+// Tạo URL Google Maps từ địa chỉ
 const mapUrl = computed(() => {
   if (!post.value?.accomodationDTO?.address) return "";
   const encodedAddress = encodeURIComponent(post.value.accomodationDTO.address);
   return `https://maps.google.com/maps?q=${encodedAddress}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
 });
 
-// Xử lý avatar
+// Xử lý avatar người dùng
 const finalAvatar = computed(() => {
   const avatar = post.value?.userDTO?.b64;
   if (avatar) {
@@ -461,11 +453,11 @@ const finalAvatar = computed(() => {
   return null;
 });
 
-// ====================== GALLERY CODE ======================
+// Xử lý gallery ảnh
 const galleryImages = ref([]);
-
 const currentImageIndex = ref(0);
 
+// Định dạng giá phòng (triệu/tháng hoặc đồng/tháng)
 function formatPrice(price) {
   if (!price) return "";
   if (price >= 1000000) {
@@ -480,55 +472,53 @@ function formatPrice(price) {
   }
 }
 
+// Chuyển đến ảnh trước đó trong gallery
 function prevImage() {
   currentImageIndex.value =
     (currentImageIndex.value - 1 + galleryImages.value.length) %
     galleryImages.value.length;
 }
 
+// Chuyển đến ảnh tiếp theo trong gallery
 function nextImage() {
   currentImageIndex.value =
     (currentImageIndex.value + 1) % galleryImages.value.length;
 }
-// ====================== END GALLERY CODE ======================
 
-// API: Lấy chi tiết bài đăng
+// Lấy chi tiết bài đăng từ API
 async function fetchPost() {
   const id = route.params.id;
-  console.log("Fetching post id =", id);
   try {
     const { data: result } = await getDetailPost(id);
-    console.log("Post API returned:", result);
     post.value = result;
     await loadGalleryImages(result.id);
   } catch (error) {
-    console.error("Error fetching post:", error);
     errorMsg.value = "Có lỗi khi tải bài đăng";
   }
 }
+
+// Lấy danh sách ảnh của bài đăng
 async function loadGalleryImages(postId) {
-  console.log("Calling getImageByPost for postId =", postId);
   try {
     const urls = await getImageByPost(postId);
-    console.log("getImageByPost returned URLs array:", urls);
     galleryImages.value = Array.isArray(urls) ? urls : [];
     currentImageIndex.value = 0;
   } catch (err) {
-    console.error("Error loading gallery images:", err);
+    // Xử lý lỗi khi tải ảnh
   }
 }
 
-// API: Lấy thông tin hồ sơ người dùng hiện tại
+// Lấy thông tin người dùng hiện tại
 async function fetchProfile() {
   try {
     const response = await getProfile();
     currentUser.value = response.data;
   } catch (error) {
-    console.error("Lỗi khi tải thông tin hồ sơ", error);
+    // Xử lý lỗi khi tải thông tin người dùng
   }
 }
 
-// Computed kiểm tra xem người xem có phải là chủ bài đăng không
+// Kiểm tra người xem có phải chủ bài đăng không
 const isOwner = computed(() => {
   return (
     currentUser.value &&
@@ -538,27 +528,24 @@ const isOwner = computed(() => {
   );
 });
 
-// Hàm xử lý Ẩn/Hiện tin đăng
+// Xử lý ẩn/hiện bài đăng
 async function toggleHidePost() {
   try {
     const response = await hidePost(post.value.id);
     message.success(response.data.message);
-    // Cập nhật trạng thái post.del: nếu 0 chuyển thành 1, nếu 1 chuyển thành 0
     post.value.del = post.value.del === false ? true : false;
   } catch (error) {
     message.error("Có lỗi xảy ra khi ẩn/hiện tin đăng");
   }
 }
 
+// Khởi tạo dữ liệu khi component được mount
 onMounted(() => {
   fetchPost();
 
   const authStore = useAuthStore();
   if (authStore.isAuthenticated && authStore.token?.trim() !== "") {
-    console.log("Đã đăng nhập, gọi fetchProfile()");
     fetchProfile();
-  } else {
-    console.log("Chưa đăng nhập, không gọi fetchProfile()");
   }
 });
 </script>

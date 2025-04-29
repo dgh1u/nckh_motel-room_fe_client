@@ -5,7 +5,7 @@
       <span>Bộ lọc</span>
     </span>
 
-    <!-- KHOẢNG GIÁ -->
+    <!-- Thanh trượt khoảng giá -->
     <div class="mb-6">
       <PriceRange
         v-model="priceRangeLocal"
@@ -16,7 +16,7 @@
       />
     </div>
 
-    <!-- DIỆN TÍCH -->
+    <!-- Thanh trượt diện tích -->
     <div class="mb-6">
       <AcreageRange
         v-model="acreageRangeLocal"
@@ -27,7 +27,7 @@
       />
     </div>
 
-    <!-- GIỚI TÍNH -->
+    <!-- Bộ lọc giới tính -->
     <div class="mb-6">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Giới tính</span>
@@ -88,7 +88,7 @@
       </div>
     </div>
 
-    <!-- KHU VỰC - Modified for single selection -->
+    <!-- Bộ lọc khu vực - Chỉ chọn một -->
     <div class="mb-6">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Khu vực</span>
@@ -126,7 +126,7 @@
       </div>
     </div>
 
-    <!-- ĐẶC ĐIỂM -->
+    <!-- Bộ lọc đặc điểm - Chọn nhiều -->
     <div class="mb-4">
       <div class="p-3 text-left">
         <span class="font-bold text-lg mb-2">Đặc điểm</span>
@@ -163,7 +163,7 @@
       </div>
     </div>
 
-    <!-- NÚT ĐẶT LẠI -->
+    <!-- Nút đặt lại bộ lọc -->
     <div class="p-2 text-white">
       <button
         class="flex items-center space-x-2 font-bold border border-red-400 px-5 py-2 rounded bg-red-400 hover:bg-red-500 text-white hover:border-red-500 transition"
@@ -186,13 +186,14 @@ import {
   RefreshCw as ResetIcon,
 } from "lucide-vue-next";
 
-// Sử dụng emit để gửi dữ liệu bộ lọc cho component cha khi có thay đổi
+// Định nghĩa emit để truyền dữ liệu bộ lọc cho component cha
 const emit = defineEmits(["update:filters"]);
 
-// Khai báo state riêng cho bộ lọc trong component con
+// Khai báo các giá trị mặc định cho bộ lọc
 const priceRangeLocal = ref([0, 30]);
 const acreageRangeLocal = ref([5, 95]);
 
+// Danh sách các khu vực có thể chọn
 const districtOptions = [
   { label: "An Đào", value: "An Đào" },
   { label: "Đào Nguyên", value: "Đào Nguyên" },
@@ -203,6 +204,7 @@ const districtOptions = [
   { label: "Khu vực khác", value: "Khác" },
 ];
 
+// Danh sách các đặc điểm phòng trọ có thể chọn
 const featureOptions = [
   { label: "Đầy đủ nội thất", value: "full_furniture" },
   { label: "Kệ bếp", value: "has_kitchen" },
@@ -216,52 +218,54 @@ const featureOptions = [
   { label: "Có chỗ để xe", value: "has_parking" },
 ];
 
-// Thay đổi từ mảng thành một giá trị duy nhất cho Khu vực
-const selectedDistrict = ref(null);
-// Đặc điểm vẫn cho phép chọn nhiều
-const selectedFeatures = ref([]);
+// Khai báo biến lưu giá trị đã chọn cho từng bộ lọc
+const selectedDistrict = ref(null); // Chỉ chọn một khu vực
+const selectedFeatures = ref([]); // Chọn nhiều đặc điểm
+const genderSelected = ref(null); // Giới tính (true: Nam, false: Nữ, null: Không chọn)
 
-// Thêm state cho bộ lọc giới tính
-const genderSelected = ref(null);
-
-// Hàm xử lý chọn khu vực (chỉ một giá trị)
+// Xử lý chọn khu vực (chỉ chọn một)
 function selectDistrict(value) {
   if (selectedDistrict.value === value) {
-    // Nếu click vào cùng một giá trị đã chọn, bỏ chọn nó
+    // Nếu chọn lại khu vực đã chọn, bỏ chọn nó
     selectedDistrict.value = null;
   } else {
-    // Chọn giá trị mới, tự động bỏ chọn giá trị cũ
+    // Chọn khu vực mới
     selectedDistrict.value = value;
   }
   updateFilters();
 }
 
-// Hàm xử lý khi người dùng click chọn đặc điểm
+// Xử lý chọn đặc điểm (chọn nhiều)
 function toggleFeature(value) {
   const index = selectedFeatures.value.indexOf(value);
   if (index === -1) {
+    // Nếu chưa chọn, thêm vào danh sách
     selectedFeatures.value.push(value);
   } else {
+    // Nếu đã chọn, loại bỏ khỏi danh sách
     selectedFeatures.value.splice(index, 1);
   }
   updateFilters();
 }
 
+// Kiểm tra đặc điểm đã được chọn hay chưa
 function isFeatureSelected(value) {
   return selectedFeatures.value.includes(value);
 }
 
-// Hàm xử lý khi người dùng click chọn giới tính
+// Xử lý chọn giới tính
 function toggleGender(value) {
   if (genderSelected.value === value) {
+    // Nếu chọn lại giới tính đã chọn, bỏ chọn nó
     genderSelected.value = null;
   } else {
+    // Chọn giới tính mới
     genderSelected.value = value;
   }
   updateFilters();
 }
 
-// Hàm đặt lại toàn bộ bộ lọc
+// Đặt lại tất cả bộ lọc về giá trị mặc định
 function resetAll() {
   priceRangeLocal.value = [0, 30];
   acreageRangeLocal.value = [0, 100];
@@ -271,7 +275,7 @@ function resetAll() {
   updateFilters();
 }
 
-// Hàm gửi state bộ lọc về cho component cha
+// Gửi dữ liệu bộ lọc hiện tại tới component cha
 function updateFilters() {
   emit("update:filters", {
     priceRange: priceRangeLocal.value,
@@ -282,11 +286,11 @@ function updateFilters() {
   });
 }
 
-// Theo dõi thay đổi của slider để cập nhật bộ lọc
+// Theo dõi thay đổi của các thanh trượt để cập nhật bộ lọc
 watch(priceRangeLocal, updateFilters);
 watch(acreageRangeLocal, updateFilters);
 </script>
 
 <style scoped>
-/* Tuỳ chỉnh style nếu cần */
+/* Có thể thêm các tùy chỉnh CSS nếu cần */
 </style>

@@ -3,6 +3,7 @@
     class="bg-white rounded-lg shadow p-4 hover:scale-[1.03] hover:shadow-lg transition flex gap-4"
   >
     <div class="w-1/3 flex flex-col gap-2">
+      <!-- Phần hiển thị ảnh chính -->
       <div class="w-full h-40 bg-gray-200 rounded overflow-hidden">
         <img
           :src="threeImages[0]"
@@ -11,6 +12,7 @@
           class="object-cover w-full h-full"
         />
       </div>
+      <!-- Phần hiển thị 2 ảnh phụ -->
       <div class="flex gap-2 h-20">
         <img
           :src="threeImages[1]"
@@ -28,9 +30,11 @@
     </div>
 
     <div class="flex-1 flex flex-col py-5">
+      <!-- Tiêu đề bài đăng -->
       <span class="text-lg font-bold text-gray-800 mb-1 text-left">{{
         post.title
       }}</span>
+      <!-- Hiển thị giá và diện tích -->
       <div class="flex items-center text-red-500 mb-2 gap-3 text-left">
         <span class="font-bold text-lg">{{ formattedPrice }}</span>
         <div class="flex gap-1 text-gray-600 mt-1 ml-5">
@@ -40,6 +44,7 @@
           >
         </div>
       </div>
+      <!-- Hiển thị địa chỉ và khu vực -->
       <div class="flex items-center gap-1 text-sm text-gray-600 mb-2 text-left">
         <MapPinIcon class="w-4 h-4 text-gray-600" />
         <span class="text-black">{{
@@ -48,11 +53,13 @@
         <span class="mx-1">·</span>
         <span>{{ post.accomodationDTO?.district?.name || "Khu vực?" }}</span>
       </div>
+      <!-- Nội dung bài đăng (giới hạn 2 dòng) -->
       <p
         class="line-clamp-2 text-sm text-gray-600 mb-2 leading-relaxed text-left flex-1"
       >
         {{ post.content }}
       </p>
+      <!-- Phần footer hiển thị thông tin người đăng và liên hệ -->
       <div class="flex items-center justify-between mt-3">
         <div class="flex items-center gap-2">
           <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
@@ -94,6 +101,7 @@ import {
 import { getImageByPost } from "@/apis/imageService";
 
 const props = defineProps({ post: { type: Object, required: true } });
+// Ảnh mặc định khi không có ảnh thực
 const placeholders = [
   "https://dummyimage.com/400x300/cccccc/000000.png&text=No+Image",
   "https://dummyimage.com/400x300/cccccc/000000.png&text=No+Image",
@@ -101,6 +109,7 @@ const placeholders = [
 ];
 const fetchedImages = ref([]);
 
+// Hàm lấy ảnh từ API theo ID bài đăng
 async function fetchImages() {
   if (!props.post.id) return;
   try {
@@ -113,17 +122,19 @@ async function fetchImages() {
 onMounted(fetchImages);
 watch(() => props.post.id, fetchImages);
 
-// Lấy 3 ảnh cố định (first 3) không thay đổi khi reload
+// Lấy 3 ảnh đầu tiên, nếu không đủ thì dùng ảnh placeholder
 const threeImages = computed(() => {
   const imgs = fetchedImages.value.slice(0, 3);
   while (imgs.length < 3) imgs.push(placeholders[imgs.length]);
   return imgs;
 });
 
+// Xử lý khi ảnh không tải được
 function onImgError(event) {
   console.error("⚠️ Image failed to load:", event.target.src);
 }
 
+// Định dạng giá tiền (triệu/tháng hoặc đồng/tháng)
 const formattedPrice = computed(() => {
   const price = props.post.accomodationDTO?.price;
   if (!price) return "Giá: Thoả thuận";
@@ -132,6 +143,7 @@ const formattedPrice = computed(() => {
     : `${new Intl.NumberFormat("vi-VN").format(price)} đồng/tháng`;
 });
 
+// Tính thời gian đã đăng (phút, giờ, ngày)
 const postedAgo = computed(() => {
   if (!props.post.createAt) return "";
   const createTime = new Date(props.post.createAt).getTime();
@@ -151,6 +163,7 @@ const postedAgo = computed(() => {
   return `Đăng ${diffDays} ngày trước`;
 });
 
+// Xử lý hiển thị avatar người dùng
 const finalAvatar = computed(() => {
   const avatar = props.post.userDTO?.b64;
   return avatar
