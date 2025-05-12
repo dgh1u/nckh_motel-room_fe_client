@@ -3,7 +3,7 @@
     <!-- Room Search and Roommate Finding Section -->
     <div class="pb-12 bg-white">
       <div class="container mx-auto px-4">
-        <div class="text-center mb-10">
+        <div class="text-center mb-10" data-aos="zoom-out">
           <div class="pb-3">
             <span class="text-center text-3xl font-bold">
               Tìm nhà trọ hoặc tìm người ở ghép
@@ -18,7 +18,7 @@
         <!-- Split layout - Image on left, Content on right -->
         <div class="flex flex-col md:flex-row gap-8 mt-6">
           <!-- Left side - Image -->
-          <div class="w-full md:w-3/5">
+          <div class="w-full md:w-3/5" data-aos="fade-right">
             <div class="h-full overflow-hidden">
               <img
                 src="@/assets/motel.png"
@@ -29,7 +29,7 @@
           </div>
 
           <!-- Right side - Content -->
-          <div class="w-full md:w-2/5">
+          <div class="w-full md:w-2/5" data-aos="fade-left">
             <div class="bg-white pt-4 h-full">
               <span class="text-2xl font-bold mb-8 text-gray-800 block">
                 Tìm nhà trọ hoặc tìm người ở ghép khu vực Học viện Nông nghiệp
@@ -82,7 +82,7 @@
     <!-- Local Shops Information Section -->
     <div class="py-24">
       <div class="container mx-auto px-4">
-        <div class="text-center mb-10">
+        <div class="text-center mb-10" data-aos="zoom-out">
           <div class="pb-3">
             <span class="text-center text-3xl font-bold">
               Các dịch vụ tiện ích khu vực Học viện Nông nghiệp Việt Nam
@@ -98,8 +98,9 @@
           <router-link
             to="/post/restaurant"
             class="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl hover:scale-105"
+            data-aos="zoom-in"
           >
-            <div class="h-40 overflow-hidden">
+            <div class="h-40 overflow-hidden" data-aos="zoom-in">
               <img
                 src="@/assets/home-page/nem-nuong.jpg"
                 alt="Nhà hàng & Quán ăn"
@@ -126,6 +127,7 @@
           <router-link
             to="/post/store"
             class="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl hover:scale-105"
+            data-aos="zoom-in"
           >
             <div class="h-40 overflow-hidden">
               <img
@@ -154,6 +156,7 @@
           <router-link
             to="/post/beverage"
             class="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl hover:scale-105"
+            data-aos="zoom-in"
           >
             <div class="h-40 overflow-hidden">
               <img
@@ -182,6 +185,7 @@
           <router-link
             to="/post/utility"
             class="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl hover:scale-105"
+            data-aos="zoom-in"
           >
             <div class="h-40 overflow-hidden">
               <img
@@ -211,6 +215,7 @@
           <router-link
             to="/post/restaurant"
             class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg inline-flex items-center transition-all"
+            data-aos="fade-right"
           >
             Xem tất cả dịch vụ
             <ArrowRight class="w-4 h-4 ml-2" />
@@ -220,7 +225,7 @@
     </div>
 
     <!-- Logo Marquee Section (Preserved) -->
-    <div class="pb-16">
+    <div class="pb-16" data-aos="zoom-out">
       <div class="container mx-auto px-4">
         <div class="pb-10">
           <span class="text-center text-3xl font-bold">
@@ -242,12 +247,12 @@
     <div class="py-16">
       <div class="py-8 bg-teal-500 rounded-2xl text-white">
         <div class="container mx-auto px-4">
-          <div class="pb-3">
+          <div class="pb-3" data-aos="zoom-out">
             <span class="text-3xl font-bold text-center mb-4">
               Phản hồi từ mọi người
             </span>
           </div>
-          <div class="pb-10 mx-auto">
+          <div class="pb-10 mx-auto" data-aos="zoom-out">
             <span class="text-center text-base mx-auto mb-12">
               Nhiều người thường chia sẻ về trải nghiệm sử dụng tại VNUA
               Services - một kênh thông tin Dịch vụ đầy hữu ích khu vực Học viện
@@ -277,6 +282,7 @@
                 <div class="w-full md:w-1/2 lg:w-1/2 flex-shrink-0 px-4">
                   <div
                     class="bg-mint-50 rounded-3xl overflow-hidden text-gray-800 h-full max-w-xl mx-auto"
+                    data-aos="zoom-in"
                   >
                     <div class="p-6">
                       <div class="p-2 mb-3 inline-block rounded text-sm">
@@ -339,6 +345,7 @@
                 <div class="w-full md:w-1/2 lg:w-1/2 flex-shrink-0 px-4">
                   <div
                     class="bg-mint-50 rounded-3xl overflow-hidden text-gray-800 h-full max-w-xl mx-auto"
+                    data-aos="zoom-in"
                   >
                     <div class="p-6">
                       <div class="p-2 mb-3 inline-block rounded text-sm">

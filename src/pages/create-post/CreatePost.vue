@@ -2,7 +2,7 @@
   <ProfileLayout>
     <div class="create-post max-w-3xl mx-auto space-y-4">
       <div class="block items-center pb-4 justify-center flex">
-        <span class="font-bold text-3xl text-teal-500">Đăng tin cho thuê</span>
+        <span class="font-bold text-3xl text-teal-500">Đăng tin</span>
       </div>
       <div class="block bg-white p-4 pb-6 rounded-xl">
         <div class="py-2">
@@ -16,7 +16,9 @@
             placeholder="Chọn hình thức"
             class="w-full"
           >
-            <a-select-option value="PHONG_TRO">Tìm phòng trọ</a-select-option>
+            <a-select-option value="PHONG_TRO"
+              >Cho thuê phòng trọ</a-select-option
+            >
             <a-select-option value="O_GHEP">Tìm người ở ghép</a-select-option>
             <a-select-option value="QUAN_AN">Quán ăn</a-select-option>
             <a-select-option value="QUAN_NUOC">Quán nước</a-select-option>
@@ -450,30 +452,217 @@
       </div>
 
       <div class="block bg-white p-4 rounded-xl">
-        <div class="py-2">
+        <div class="py-2 pb-6">
           <span class="font-bold text-base">Hình ảnh</span>
         </div>
 
-        <div
-          class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
-        >
-          <FolderUp class="w-12 h-12 text-teal-500" />
-          <span class="mt-2 text-gray-500">Tải ảnh từ thiết bị</span>
+        <!-- Image upload boxes - 2 rows of 2 boxes with specific labels based on property type -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <!-- Upload Box 1 -->
+          <div
+            v-if="!files[0]"
+            class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
+          >
+            <FolderUp class="w-10 h-10 text-teal-500" />
+            <span class="mt-2 text-gray-500 text-sm text-center">
+              <span
+                v-if="
+                  formData.accomodation.motel === 'PHONG_TRO' ||
+                  formData.accomodation.motel === 'O_GHEP'
+                "
+              >
+                Tải ảnh Phòng chính
+              </span>
+              <span
+                v-else-if="
+                  formData.accomodation.motel === 'QUAN_AN' ||
+                  formData.accomodation.motel === 'QUAN_NUOC' ||
+                  formData.accomodation.motel === 'CUA_HANG' ||
+                  formData.accomodation.motel === 'TIEN_ICH'
+                "
+              >
+                Tải ảnh Không gian 1
+              </span>
+              <span v-else> Tải ảnh từ thiết bị </span>
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              @change="(e) => handleFileChange(e, 0)"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+          <div v-else class="relative h-40 rounded-lg overflow-hidden">
+            <img
+              :src="files[0].preview"
+              alt="preview"
+              class="w-full h-full object-cover"
+            />
+            <button
+              @click="removeImage(0)"
+              class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 px-2 py-1 bg-white bg-opacity-70 rounded-md text-red-500 hover:text-red-600"
+            >
+              <Trash2 class="w-4 h-4" />
+              <span class="text-xs">Xóa</span>
+            </button>
+          </div>
 
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            @change="handleFileChange"
-            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
+          <!-- Upload Box 2 -->
+          <div
+            v-if="!files[1]"
+            class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
+          >
+            <FolderUp class="w-10 h-10 text-teal-500" />
+            <span class="mt-2 text-gray-500 text-sm text-center">
+              <span
+                v-if="
+                  formData.accomodation.motel === 'PHONG_TRO' ||
+                  formData.accomodation.motel === 'O_GHEP'
+                "
+              >
+                Tải ảnh Nhà bếp
+              </span>
+              <span
+                v-else-if="
+                  formData.accomodation.motel === 'QUAN_AN' ||
+                  formData.accomodation.motel === 'QUAN_NUOC' ||
+                  formData.accomodation.motel === 'CUA_HANG' ||
+                  formData.accomodation.motel === 'TIEN_ICH'
+                "
+              >
+                Tải ảnh Không gian 2
+              </span>
+              <span v-else> Tải ảnh từ thiết bị </span>
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              @change="(e) => handleFileChange(e, 1)"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+          <div v-else class="relative h-40 rounded-lg overflow-hidden">
+            <img
+              :src="files[1].preview"
+              alt="preview"
+              class="w-full h-full object-cover"
+            />
+            <button
+              @click="removeImage(1)"
+              class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 px-2 py-1 bg-white bg-opacity-70 rounded-md text-red-500 hover:text-red-600"
+            >
+              <Trash2 class="w-4 h-4" />
+              <span class="text-xs">Xóa</span>
+            </button>
+          </div>
+
+          <!-- Upload Box 3 -->
+          <div
+            v-if="!files[2]"
+            class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
+          >
+            <FolderUp class="w-10 h-10 text-teal-500" />
+            <span class="mt-2 text-gray-500 text-sm text-center">
+              <span
+                v-if="
+                  formData.accomodation.motel === 'PHONG_TRO' ||
+                  formData.accomodation.motel === 'O_GHEP'
+                "
+              >
+                Tải ảnh Nhà vệ sinh
+              </span>
+              <span
+                v-else-if="
+                  formData.accomodation.motel === 'QUAN_AN' ||
+                  formData.accomodation.motel === 'QUAN_NUOC' ||
+                  formData.accomodation.motel === 'CUA_HANG' ||
+                  formData.accomodation.motel === 'TIEN_ICH'
+                "
+              >
+                Tải ảnh Menu
+              </span>
+              <span v-else> Tải ảnh từ thiết bị </span>
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              @change="(e) => handleFileChange(e, 2)"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+          <div v-else class="relative h-40 rounded-lg overflow-hidden">
+            <img
+              :src="files[2].preview"
+              alt="preview"
+              class="w-full h-full object-cover"
+            />
+            <button
+              @click="removeImage(2)"
+              class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 px-2 py-1 bg-white bg-opacity-70 rounded-md text-red-500 hover:text-red-600"
+            >
+              <Trash2 class="w-4 h-4" />
+              <span class="text-xs">Xóa</span>
+            </button>
+          </div>
+
+          <!-- Upload Box 4 -->
+          <div
+            v-if="!files[3]"
+            class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
+          >
+            <FolderUp class="w-10 h-10 text-teal-500" />
+            <span class="mt-2 text-gray-500 text-sm text-center">
+              <span
+                v-if="
+                  formData.accomodation.motel === 'PHONG_TRO' ||
+                  formData.accomodation.motel === 'O_GHEP'
+                "
+              >
+                Tải ảnh Mặt tiền
+              </span>
+              <span
+                v-else-if="
+                  formData.accomodation.motel === 'QUAN_AN' ||
+                  formData.accomodation.motel === 'QUAN_NUOC' ||
+                  formData.accomodation.motel === 'CUA_HANG' ||
+                  formData.accomodation.motel === 'TIEN_ICH'
+                "
+              >
+                Tải ảnh Mặt tiền
+              </span>
+              <span v-else> Tải ảnh từ thiết bị </span>
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              @change="(e) => handleFileChange(e, 3)"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+          <div v-else class="relative h-40 rounded-lg overflow-hidden">
+            <img
+              :src="files[3].preview"
+              alt="preview"
+              class="w-full h-full object-cover"
+            />
+            <button
+              @click="removeImage(3)"
+              class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 px-2 py-1 bg-white bg-opacity-70 rounded-md text-red-500 hover:text-red-600"
+            >
+              <Trash2 class="w-4 h-4" />
+              <span class="text-xs">Xóa</span>
+            </button>
+          </div>
         </div>
 
         <small
-          v-if="files.length < 5 || files.length > 8"
+          v-if="
+            isImagesRequired &&
+            (!files[0] || !files[1] || !files[2] || !files[3])
+          "
           class="text-red-500 block mt-2"
         >
-          Vui lòng chọn ít nhất 5 và tối đa 8 ảnh.
+          Vui lòng tải đủ 4 ảnh theo yêu cầu
         </small>
 
         <ul class="mt-4 text-gray-500 text-xs list-disc list-inside space-y-1">
@@ -483,22 +672,20 @@
               formData.accomodation.motel === 'O_GHEP'
             "
           >
-            Tối thiểu 5 ảnh gồm các khu vực: 2 ảnh Phòng chính, 1 ảnh Nhà vệ
-            sinh, 1 ảnh Bếp, 1 ảnh Mặt tiền
+            Cần 4 ảnh gồm các khu vực: Phòng chính, Nhà bếp, Nhà vệ sinh, Mặt
+            tiền
           </li>
           <li
-            v-if="
+            v-else-if="
               formData.accomodation.motel === 'QUAN_AN' ||
               formData.accomodation.motel === 'QUAN_NUOC' ||
               formData.accomodation.motel === 'CUA_HANG' ||
               formData.accomodation.motel === 'TIEN_ICH'
             "
           >
-            Tối thiểu 5 ảnh gồm các khu vực: 1 ảnh Mặt tiền hoặc Biển hiệu, 2
-            ảnh Không gian trong quán, 2 ảnh Menu hoặc Danh sách sản phẩm kinh
-            doanh.
+            Cần 4 ảnh gồm các khu vực: Không gian 1, Không gian 2, Menu, Mặt
+            tiền
           </li>
-
           <li>Dung lượng mỗi ảnh tối đa 10MB</li>
           <li
             v-if="
@@ -510,31 +697,9 @@
           </li>
           <li>Không chèn văn bản hoặc số điện thoại lên ảnh</li>
         </ul>
-
-        <!-- Preview ảnh -->
-        <div v-if="files.length" class="mt-6 grid grid-cols-3 gap-4">
-          <div
-            v-for="(file, idx) in files"
-            :key="idx"
-            class="relative bg-white rounded-lg shadow overflow-hidden"
-          >
-            <img
-              :src="file.preview"
-              alt="preview"
-              class="w-full h-32 object-cover"
-            />
-            <button
-              @click="removeImage(idx)"
-              class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 text-red-500 hover:text-red-600"
-            >
-              <Trash2 class="w-4 h-4" />
-              <span class="text-xs">Xóa</span>
-            </button>
-          </div>
-        </div>
       </div>
 
-      <div class="text-white font-semibold">
+      <div class="text-white font-semibold mt-4">
         <button
           class="submit-btn bg-teal-500 px-4 py-2 rounded hover:bg-teal-600 w-full flex items-center justify-center"
           :disabled="loading"
@@ -573,7 +738,7 @@ const ASelect = Select;
 const ASelectOptionComponent = ASelectOption;
 const ASpin = Spin;
 
-const files = ref([]);
+const files = ref([null, null, null, null]);
 
 // Khai báo các biến reactive
 const formData = reactive({
@@ -661,23 +826,50 @@ watch(
   }
 );
 
-// Methods
-const handleFileChange = (e) => {
-  const selected = Array.from(e.target.files);
-  for (const file of selected) {
-    if (files.value.length < 8) {
-      file.preview = URL.createObjectURL(file);
-      files.value.push(file);
-    } else {
-      message.error("Chỉ được tải lên tối đa 8 ảnh");
-      break;
+// Computed property to check if all 4 images are required based on property type
+const isImagesRequired = computed(() => {
+  return (
+    formData.accomodation.motel === "PHONG_TRO" ||
+    formData.accomodation.motel === "O_GHEP" ||
+    formData.accomodation.motel === "QUAN_AN" ||
+    formData.accomodation.motel === "QUAN_NUOC" ||
+    formData.accomodation.motel === "CUA_HANG" ||
+    formData.accomodation.motel === "TIEN_ICH"
+  );
+});
+
+const handleFileChange = (e, index) => {
+  // Get the selected file
+  const file = e.target.files[0];
+
+  if (file) {
+    // Check file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      message.error("Dung lượng ảnh không được vượt quá 10MB");
+      e.target.value = null;
+      return;
     }
+
+    // Create a preview URL for the file
+    const preview = URL.createObjectURL(file);
+
+    // Update the file at the specific index
+    files.value[index] = { file, preview };
   }
+
+  // Reset file input
   e.target.value = null;
 };
-const removeImage = (idx) => {
-  URL.revokeObjectURL(files.value[idx].preview);
-  files.value.splice(idx, 1);
+
+const removeImage = (index) => {
+  // Make sure there's a file at this index
+  if (files.value[index]) {
+    // Revoke the object URL to prevent memory leaks
+    URL.revokeObjectURL(files.value[index].preview);
+
+    // Set the slot back to null (doesn't shift other images)
+    files.value[index] = null;
+  }
 };
 
 const handleTimeChange = (time) => {
@@ -753,9 +945,16 @@ const handleCreatePost = () => {
       message.error("Địa chỉ không được để trống");
       return;
     }
-    if (files.value.length < 5) {
-      message.error("Bạn phải tải lên ít nhất 5 ảnh");
-      return;
+    if (isImagesRequired.value) {
+      if (
+        !files.value[0] ||
+        !files.value[1] ||
+        !files.value[2] ||
+        !files.value[3]
+      ) {
+        message.error("Bạn phải tải lên đủ 4 ảnh theo yêu cầu");
+        return;
+      }
     }
   }
 
@@ -803,9 +1002,16 @@ const handleCreatePost = () => {
       message.error("Địa chỉ không được để trống");
       return;
     }
-    if (files.value.length < 5) {
-      message.error("Bạn phải tải lên ít nhất 5 ảnh");
-      return;
+    if (isImagesRequired.value) {
+      if (
+        !files.value[0] ||
+        !files.value[1] ||
+        !files.value[2] ||
+        !files.value[3]
+      ) {
+        message.error("Bạn phải tải lên đủ 4 ảnh theo yêu cầu");
+        return;
+      }
     }
   }
 
@@ -819,11 +1025,17 @@ const handleCreatePost = () => {
         // Tạo bài viết
         const { data: post } = await createPost(formData);
         const postId = post.id;
+
+        // Filter out null values and prepare files for upload
+        const filesToUpload = files.value
+          .filter((f) => f !== null)
+          .map((f) => f.file);
+
         // Upload ảnh
-        await uploadMultipleImages(postId, files.value);
+        await uploadMultipleImages(postId, filesToUpload);
         message.success("Đăng tin thành công!");
         resetForm();
-        files.value = [];
+        files.value = [null, null, null, null]; // Reset to 4 empty slots
       } catch (error) {
         const errorMessage = error.message;
 

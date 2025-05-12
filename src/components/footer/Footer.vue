@@ -3,7 +3,11 @@
     <div class="container mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-14 gap-4">
         <!-- Thông tin công ty (chiếm 5 cột) -->
-        <div class="md:col-span-5 pl-4">
+        <div
+          class="md:col-span-5 pl-4"
+          data-aos="fade-up"
+          data-aos-duration="1200"
+        >
           <div class="flex flex-col mb-4">
             <img
               src="@/assets/vnua-sv-logo.jpg"
@@ -23,7 +27,7 @@
         </div>
 
         <!-- Chính sách bảo mật -->
-        <div class="md:col-span-2">
+        <div class="md:col-span-2" data-aos="fade-up" data-aos-duration="1200">
           <h6 class="text-lg text-black font-semibold mb-4">
             Chính sách bảo mật
           </h6>
@@ -80,7 +84,7 @@
         </div>
 
         <!-- Các tính năng của website -->
-        <div class="md:col-span-2">
+        <div class="md:col-span-2" data-aos="fade-up" data-aos-duration="1200">
           <h6 class="text-lg text-black font-semibold mb-4">Tính năng</h6>
           <ul class="space-y-2 text-base text-black">
             <li>
@@ -119,7 +123,7 @@
         </div>
 
         <!-- Các đường dẫn nhanh -->
-        <div class="md:col-span-2">
+        <div class="md:col-span-2" data-aos="fade-up" data-aos-duration="1200">
           <h6 class="text-lg text-black font-semibold mb-4">Link nhanh</h6>
           <ul class="space-y-2 text-base text-black">
             <li>
@@ -166,7 +170,7 @@
         </div>
 
         <!-- Thông tin liên hệ -->
-        <div class="md:col-span-3">
+        <div class="md:col-span-3" data-aos="fade-up" data-aos-duration="1200">
           <h6 class="text-lg text-black font-semibold mb-4">Liên Hệ</h6>
           <ul class="space-y-3 text-base text-black">
             <li class="flex items-center">

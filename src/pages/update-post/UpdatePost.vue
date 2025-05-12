@@ -18,7 +18,9 @@
             placeholder="Chọn hình thức"
             class="w-full"
           >
-            <a-select-option value="PHONG_TRO">Tìm phòng trọ</a-select-option>
+            <a-select-option value="PHONG_TRO"
+              >Cho thuê phòng trọ</a-select-option
+            >
             <a-select-option value="O_GHEP">Tìm người ở ghép</a-select-option>
             <a-select-option value="QUAN_AN">Quán ăn</a-select-option>
             <a-select-option value="QUAN_NUOC">Quán nước</a-select-option>
@@ -447,56 +449,149 @@
 
       <!-- PHẦN HÌNH ẢNH (UPLOAD, PREVIEW, XOÁ) -->
       <div class="block bg-white p-4 rounded-xl">
-        <h3 class="font-bold text-base">Hình ảnh</h3>
-        <div
-          class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
-        >
-          <FolderUp class="w-12 h-12 text-teal-500" />
-          <span class="mt-2 text-gray-500">Tải ảnh từ thiết bị</span>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            @change="handleFileChange"
-            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
+        <div class="py-2 pb-6">
+          <span class="font-bold text-base">Hình ảnh</span>
         </div>
-        <small
-          v-if="newFiles.length < 5 && existingImages.length === 0"
-          class="text-red-500 block mt-2"
-        >
-          Vui lòng chọn ít nhất 5 ảnh.
+
+        <!-- 4 Box hình ảnh riêng biệt -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <!-- Box 1 -->
+          <div
+            class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
+          >
+            <FolderUp class="w-12 h-12 text-teal-500" />
+            <span class="mt-2 text-gray-500">
+              {{
+                formData.accomodation.motel === "PHONG_TRO" ||
+                formData.accomodation.motel === "O_GHEP"
+                  ? "Tải ảnh Phòng chính"
+                  : "Tải ảnh Không gian 1"
+              }}
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              @change="(e) => handleFileChange(e, 0)"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <!-- Hiển thị ảnh đã chọn cho vị trí này -->
+            <div v-if="imageBoxes[0]" class="absolute inset-0 w-full h-full">
+              <img
+                :src="imageBoxes[0].preview"
+                class="w-full h-full object-cover rounded-lg"
+              />
+              <button
+                @click.stop="removeImage(0)"
+                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 px-2 py-1 bg-white bg-opacity-70 rounded-md text-red-500 hover:text-red-600"
+              >
+                <Trash2 class="w-4 h-4" />
+                <span class="text-xs">Xóa</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Box 2 -->
+          <div
+            class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
+          >
+            <FolderUp class="w-12 h-12 text-teal-500" />
+            <span class="mt-2 text-gray-500">
+              {{
+                formData.accomodation.motel === "PHONG_TRO" ||
+                formData.accomodation.motel === "O_GHEP"
+                  ? "Tải ảnh Nhà bếp"
+                  : "Tải ảnh Không gian 2"
+              }}
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              @change="(e) => handleFileChange(e, 1)"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <!-- Hiển thị ảnh đã chọn cho vị trí này -->
+            <div v-if="imageBoxes[1]" class="absolute inset-0 w-full h-full">
+              <img
+                :src="imageBoxes[1].preview"
+                class="w-full h-full object-cover rounded-lg"
+              />
+              <button
+                @click.stop="removeImage(1)"
+                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 px-2 py-1 bg-white bg-opacity-70 rounded-md text-red-500 hover:text-red-600"
+              >
+                <Trash2 class="w-4 h-4" />
+                <span class="text-xs">Xóa</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Box 3 -->
+          <div
+            class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
+          >
+            <FolderUp class="w-12 h-12 text-teal-500" />
+            <span class="mt-2 text-gray-500">
+              {{
+                formData.accomodation.motel === "PHONG_TRO" ||
+                formData.accomodation.motel === "O_GHEP"
+                  ? "Tải ảnh Nhà vệ sinh"
+                  : "Tải ảnh Menu"
+              }}
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              @change="(e) => handleFileChange(e, 2)"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <!-- Hiển thị ảnh đã chọn cho vị trí này -->
+            <div v-if="imageBoxes[2]" class="absolute inset-0 w-full h-full">
+              <img
+                :src="imageBoxes[2].preview"
+                class="w-full h-full object-cover rounded-lg"
+              />
+              <button
+                @click.stop="removeImage(2)"
+                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 px-2 py-1 bg-white bg-opacity-70 rounded-md text-red-500 hover:text-red-600"
+              >
+                <Trash2 class="w-4 h-4" />
+                <span class="text-xs">Xóa</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Box 4 -->
+          <div
+            class="relative border-2 border-dashed border-teal-500 rounded-lg h-40 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-50 transition"
+          >
+            <FolderUp class="w-12 h-12 text-teal-500" />
+            <span class="mt-2 text-gray-500">Tải ảnh Mặt tiền</span>
+            <input
+              type="file"
+              accept="image/*"
+              @change="(e) => handleFileChange(e, 3)"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <!-- Hiển thị ảnh đã chọn cho vị trí này -->
+            <div v-if="imageBoxes[3]" class="absolute inset-0 w-full h-full">
+              <img
+                :src="imageBoxes[3].preview"
+                class="w-full h-full object-cover rounded-lg"
+              />
+              <button
+                @click.stop="removeImage(3)"
+                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 px-2 py-1 bg-white bg-opacity-70 rounded-md text-red-500 hover:text-red-600"
+              >
+                <Trash2 class="w-4 h-4" />
+                <span class="text-xs">Xóa</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <small v-if="!isAllBoxesFilled()" class="text-red-500 block mt-2">
+          Vui lòng tải đủ 4 ảnh theo yêu cầu.
         </small>
-        <div class="mt-6 grid grid-cols-3 gap-4">
-          <!-- Ảnh cũ (base64) -->
-          <div
-            v-for="(img, idx) in existingImages"
-            :key="idx"
-            class="relative bg-white rounded-lg shadow overflow-hidden"
-          >
-            <img :src="img.preview" class="w-full h-32 object-cover" />
-            <button
-              @click="removeExisting(idx)"
-              class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-red-500"
-            >
-              <Trash2 class="w-4 h-4" /><span class="text-xs">Xóa</span>
-            </button>
-          </div>
-          <!-- Ảnh mới -->
-          <div
-            v-for="(file, idx) in newFiles"
-            :key="idx"
-            class="relative bg-white rounded-lg shadow overflow-hidden"
-          >
-            <img :src="file.preview" class="w-full h-32 object-cover" />
-            <button
-              @click="removeNew(idx)"
-              class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-red-500"
-            >
-              <Trash2 class="w-4 h-4" /><span class="text-xs">Xóa</span>
-            </button>
-          </div>
-        </div>
       </div>
 
       <!-- NÚT SUBMIT VÀ TRỞ VỀ -->
@@ -547,7 +642,7 @@ import { Check as CheckIcon, FolderUp, Trash2 } from "lucide-vue-next";
 import dayjs from "dayjs";
 import { updatePost, getDetailPost } from "@/apis/postService.js";
 import {
-  getImageDTOByPost, // Lấy mảng ImageDTO (base64)
+  getImageDTOByPost,
   deleteImagesByPost,
   uploadMultipleImages,
 } from "@/apis/imageService.js";
@@ -657,18 +752,15 @@ const route = useRoute();
 const router = useRouter();
 const postId = route.params.id;
 
+// Mảng imageBoxes lưu trạng thái của 4 box ảnh
+const imageBoxes = ref([null, null, null, null]);
+
 /**
- * Mảng ảnh cũ: Lưu dưới dạng ImageDTO -> { id, fileName, fileType, base64, preview }
+ * Kiểm tra xem đã đủ 4 ảnh chưa
  */
-const existingImages = ref([]);
-/**
- * Mảng ảnh mới (File)
- */
-const newFiles = ref([]);
-/**
- * Số lượng ảnh ban đầu (để biết người dùng có xóa ảnh cũ không)
- */
-const initialImageCount = ref(0);
+function isAllBoxesFilled() {
+  return imageBoxes.value.every((box) => box !== null);
+}
 
 /**
  * onMounted: Lấy chi tiết bài đăng + mảng ImageDTO (base64) ảnh cũ
@@ -705,27 +797,30 @@ onMounted(async () => {
     // 2) Gọi API getImageDTOByPost => lấy ảnh cũ dạng base64
     const imgRes = await getImageDTOByPost(postId);
     console.log("Response từ getImageDTOByPost:", imgRes);
-    console.log("Data từ getImageDTOByPost:", imgRes.data);
 
-    // Kiểm tra xem mảng ImageDTO nằm ở imgRes.data hay sâu hơn (vd. imgRes.data.data)
-    const imageArray = imgRes; // Nếu backend trả về { data: [...] } thì thay bằng: imgRes.data.data
+    // Kiểm tra xem mảng ImageDTO nằm ở imgRes.data hay sâu hơn
+    const imageArray = imgRes;
     if (imageArray && Array.isArray(imageArray)) {
-      existingImages.value = imageArray.map((img) => {
+      // Xử lý tối đa 4 ảnh và gán vào các vị trí tương ứng
+      const processedImages = imageArray.slice(0, 4).map((img) => {
         const previewUrl = `data:${img.fileType};base64,${img.uri}`;
-        console.log("Item ImageDTO:", img, "=> preview:", previewUrl);
         return {
           id: img.id,
           fileName: img.fileName,
           fileType: img.fileType,
           base64: img.uri,
           preview: previewUrl,
+          isExisting: true,
         };
       });
-      initialImageCount.value = existingImages.value.length;
-      console.log("Số ảnh cũ ban đầu:", initialImageCount.value);
+
+      // Phân bổ ảnh vào các box
+      for (let i = 0; i < Math.min(processedImages.length, 4); i++) {
+        imageBoxes.value[i] = processedImages[i];
+      }
+
+      console.log("Đã phân bổ ảnh vào các box:", imageBoxes.value);
     } else {
-      existingImages.value = [];
-      initialImageCount.value = 0;
       console.warn("API không trả về mảng ImageDTO, data nhận:", imgRes.data);
     }
   } catch (error) {
@@ -735,37 +830,48 @@ onMounted(async () => {
 });
 
 /**
- * Khi user chọn file mới
+ * Khi user chọn file mới cho một box cụ thể
  */
-function handleFileChange(e) {
-  const files = Array.from(e.target.files);
-  files.forEach((file) => {
-    if (existingImages.value.length + newFiles.value.length < 8) {
-      file.preview = URL.createObjectURL(file);
-      newFiles.value.push(file);
-      console.log("Đã thêm file mới:", file.name);
-    } else {
-      message.error("Tối đa 8 ảnh");
+function handleFileChange(e, boxIndex) {
+  const file = e.target.files[0];
+  if (file) {
+    // Nếu đã có ảnh cũ ở vị trí này, xóa nó
+    if (imageBoxes.value[boxIndex]) {
+      if (
+        imageBoxes.value[boxIndex].preview &&
+        !imageBoxes.value[boxIndex].isExisting
+      ) {
+        URL.revokeObjectURL(imageBoxes.value[boxIndex].preview);
+      }
     }
-  });
+
+    // Tạo preview và lưu vào vị trí tương ứng
+    file.preview = URL.createObjectURL(file);
+    imageBoxes.value[boxIndex] = {
+      preview: file.preview,
+      file: file,
+      isExisting: false,
+    };
+
+    console.log(`Đã thêm ảnh mới vào box ${boxIndex}:`, file.name);
+  }
   e.target.value = null;
 }
 
 /**
- * Xoá ảnh cũ (base64) ra khỏi existingImages
+ * Xóa ảnh ở một box cụ thể
  */
-function removeExisting(idx) {
-  console.log("Xoá ảnh cũ tại idx =", idx, ":", existingImages.value[idx]);
-  existingImages.value.splice(idx, 1);
-}
-
-/**
- * Xoá file mới ra khỏi newFiles
- */
-function removeNew(idx) {
-  console.log("Xoá ảnh mới tại idx =", idx, ":", newFiles.value[idx].name);
-  URL.revokeObjectURL(newFiles.value[idx].preview);
-  newFiles.value.splice(idx, 1);
+function removeImage(boxIndex) {
+  if (imageBoxes.value[boxIndex]) {
+    if (
+      imageBoxes.value[boxIndex].preview &&
+      !imageBoxes.value[boxIndex].isExisting
+    ) {
+      URL.revokeObjectURL(imageBoxes.value[boxIndex].preview);
+    }
+    imageBoxes.value[boxIndex] = null;
+    console.log(`Đã xóa ảnh tại box ${boxIndex}`);
+  }
 }
 
 /**
@@ -929,10 +1035,10 @@ async function handleUpdatePost() {
       return;
     }
   }
-  // Validate số lượng ảnh (tổng số ảnh cũ và ảnh mới) phải >= 5
-  const totalImages = existingImages.value.length + newFiles.value.length;
-  if (totalImages < 5) {
-    message.error("Bạn phải tải lên ít nhất 5 ảnh");
+
+  // Validate phải có đủ 4 ảnh
+  if (!isAllBoxesFilled()) {
+    message.error("Bạn phải tải đủ 4 ảnh theo yêu cầu");
     return;
   }
 
@@ -942,36 +1048,30 @@ async function handleUpdatePost() {
     await updatePost(postId, buildPayload());
     console.log("Cập nhật bài đăng thành công.");
 
-    // Kiểm tra thay đổi ảnh
-    const hasChanges =
-      existingImages.value.length < initialImageCount.value ||
-      newFiles.value.length > 0;
-    console.log("Kiểm tra thay đổi ảnh:", {
-      existingLength: existingImages.value.length,
-      initialCount: initialImageCount.value,
-      newFilesCount: newFiles.value.length,
-      hasChanges,
-    });
+    // Xoá toàn bộ ảnh cũ trên server
+    await deleteImagesByPost(postId);
 
-    if (hasChanges) {
-      console.log("Có thay đổi ảnh => Xoá toàn bộ trên server + re-upload");
-      await deleteImagesByPost(postId);
+    // Chuẩn bị file ảnh để upload
+    const filesToUpload = [];
 
-      // Chuyển các ảnh cũ (base64) còn lại thành File
-      const reuploadOldFiles = existingImages.value.map((img) => {
-        const file = base64ToFile(img.base64, img.fileName, img.fileType);
-        console.log("Convert base64 -> File:", file);
-        return file;
-      });
-
-      // Gộp ảnh cũ + ảnh mới
-      const finalFiles = [...reuploadOldFiles, ...newFiles.value];
-      console.log("finalFiles để upload:", finalFiles);
-
-      if (finalFiles.length) {
-        console.log("Upload lại ảnh cũ + mới...");
-        await uploadMultipleImages(postId, finalFiles);
+    // Xử lý từng vị trí ảnh
+    for (let i = 0; i < 4; i++) {
+      const box = imageBoxes.value[i];
+      if (box) {
+        if (box.isExisting) {
+          // Nếu là ảnh cũ (base64) -> chuyển thành File
+          const file = base64ToFile(box.base64, box.fileName, box.fileType);
+          filesToUpload.push(file);
+        } else if (box.file) {
+          // Nếu là file mới đã upload -> thêm vào mảng
+          filesToUpload.push(box.file);
+        }
       }
+    }
+
+    console.log("Upload tất cả ảnh:", filesToUpload);
+    if (filesToUpload.length) {
+      await uploadMultipleImages(postId, filesToUpload);
     }
 
     message.success("Cập nhật tin thành công!");
