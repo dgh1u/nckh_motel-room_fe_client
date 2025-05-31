@@ -127,7 +127,7 @@ const clearError = (field) => {
     <div class="min-h-screen flex">
       <!-- Cột phải: Nền gradient -->
       <div
-        class="hidden xl:flex w-1/2 bg-gradient-to-br from-purple-500 to-blue-500 items-center justify-center"
+        class="hidden xl:flex w-1/2 bg-gradient-to-br from-teal-300 to-blue-300 items-center justify-center"
       >
         <!-- Tuỳ ý chèn hình nền -->
       </div>
@@ -281,16 +281,12 @@ const clearError = (field) => {
                   v-model="agreeTerms"
                   class="w-4 h-4 accent-blue-500 cursor-pointer"
                 />
-                <label for="terms" class="text-gray-700 text-base">
-                  Tôi đồng ý với
-                  <a
-                    href="#"
-                    class="text-blue-500 hover:underline"
-                    target="_blank"
-                  >
+                <span for="terms" class="text-gray-700 text-base">
+                  &nbsp;Tôi đồng ý với
+                  <span class="text-blue-500 hover:underline">
                     Điều khoản & Điều kiện
-                  </a>
-                </label>
+                  </span>
+                </span>
               </div>
 
               <!-- Lỗi chung -->

@@ -15,7 +15,7 @@
     <!-- Wrapper toàn trang: hướng cột trên mobile, hướng hàng ngang từ md trở lên -->
     <div class="flex flex-col md:flex-row min-h-screen py-6">
       <!-- Bộ lọc: chiếm toàn bộ chiều rộng trên mobile, tự động shrink trên desktop -->
-      <div class="w-full md:w-auto md:mr-4 mb-4 md:mb-0">
+      <div class="w-full md:w-auto mr-8 mb-4 md:mb-0">
         <RoommateFilter @update:filters="handleFilterUpdate" />
       </div>
 

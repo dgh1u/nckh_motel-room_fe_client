@@ -2,7 +2,9 @@
   <ProfileLayout>
     <div>
       <!-- Bộ lọc: Trạng thái + Hình thức + Hiển thị -->
-      <div class="mb-4 flex items-center space-x-8">
+      <div
+        class="mb-4 flex flex-col space-y-4 md:flex-row md:items-center md:space-y-0 md:space-x-8"
+      >
         <!-- Bộ lọc trạng thái -->
         <div class="flex items-center space-x-2">
           <label class="font-bold">Trạng thái:</label>
@@ -49,7 +51,7 @@
         <div class="flex items-center space-x-2">
           <label class="font-bold">Hình thức:</label>
           <div
-            class="inline-flex items-center space-x-2 rounded-md border border-gray-200 bg-gray-100 p-1"
+            class="inline-flex items-center space-x-2 rounded-md border border-gray-200 bg-gray-100 p-1 overflow-x-auto"
           >
             <!-- Tab "Phòng trọ" -->
             <button

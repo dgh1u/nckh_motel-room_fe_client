@@ -710,8 +710,10 @@ const imgArray = [
   "src/assets/marquee-items/logo2.svg",
   "src/assets/marquee-items/logo3.svg",
   "src/assets/marquee-items/logo4.svg",
-  "src/assets/marquee-items/logo5.svg",
+
+  "src/assets/marquee-items/payos.svg",
   "src/assets/marquee-items/vnua-logo.png",
+  "src/assets/marquee-items/fita-vnua.png",
 ];
 
 // Testimonials data

@@ -129,53 +129,6 @@ const clearError = (field) => {
         </div>
       </div>
 
-      <!-- Popup xác thực -->
-      <transition name="fade">
-        <div
-          v-if="showVerifyPopup"
-          class="fixed inset-0 flex items-center backdrop-blur-md justify-center"
-        >
-          <Verify :email="email" @verified="handleOtpVerified" />
-        </div>
-      </transition>
-
-      <!-- Popup Nhập mật khẩu mới -->
-      <div
-        v-if="showNewPasswordPopup"
-        class="fixed inset-0 flex items-center backdrop-blur-md justify-center"
-      >
-        <PopupNewPassword
-          :email="email"
-          :otp="otpValue"
-          @password-changed="handlePasswordChanged"
-        />
-      </div>
-
-      <div
-        v-if="showSuccessAlert"
-        class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-lg z-50"
-      >
-        <div
-          class="bg-green-200 p-12 rounded-2xl shadow-2xl text-center flex flex-col items-center gap-6 opacity-0 animate-fade-in scale-150"
-        >
-          <!-- SVG dấu tick với hiệu ứng vẽ dần nhưng giữ nét đã vẽ -->
-          <svg
-            class="w-24 h-24 text-green-800 animate-draw"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="4"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path class="tick-path" d="M5 13l4 4L19 7"></path>
-          </svg>
-
-          <p class="text-4xl font-extrabold text-green-900">
-            Đổi mật khẩu thành công!
-          </p>
-        </div>
-      </div>
       <!-- Footer -->
       <div class="text-sm text-gray-500 text-center">
         &copy; All rights reserved. Made by
@@ -187,7 +140,7 @@ const clearError = (field) => {
 
     <!-- Cột phải: Nền gradient (chỉ hiển thị trên màn hình lớn) -->
     <div
-      class="hidden xl:flex w-1/2 bg-gradient-to-br from-purple-500 to-blue-500 items-center justify-center"
+      class="hidden xl:flex w-1/2 bg-gradient-to-br from-teal-300 to-blue-300 items-center justify-center"
     >
       <!-- Thay bằng hình nền hoặc hoạ tiết tùy ý -->
     </div>
@@ -200,6 +153,53 @@ const clearError = (field) => {
     >
       <img src="@/assets/zalo-icon.svg" alt="Zalo contact" class="w-15 h-15" />
     </a>
+    <!-- Popup xác thực -->
+    <transition name="fade">
+      <div
+        v-if="showVerifyPopup"
+        class="fixed inset-0 flex items-center backdrop-blur-md justify-center"
+      >
+        <Verify :email="email" @verified="handleOtpVerified" />
+      </div>
+    </transition>
+
+    <!-- Popup Nhập mật khẩu mới -->
+    <div
+      v-if="showNewPasswordPopup"
+      class="fixed inset-0 flex items-center backdrop-blur-md justify-center"
+    >
+      <PopupNewPassword
+        :email="email"
+        :otp="otpValue"
+        @password-changed="handlePasswordChanged"
+      />
+    </div>
+
+    <div
+      v-if="showSuccessAlert"
+      class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-lg z-50"
+    >
+      <div
+        class="bg-green-200 p-12 rounded-2xl shadow-2xl text-center flex flex-col items-center gap-6 opacity-0 animate-fade-in scale-150"
+      >
+        <!-- SVG dấu tick với hiệu ứng vẽ dần nhưng giữ nét đã vẽ -->
+        <svg
+          class="w-24 h-24 text-green-800 animate-draw"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path class="tick-path" d="M5 13l4 4L19 7"></path>
+        </svg>
+
+        <p class="text-4xl font-extrabold text-green-900">
+          Đổi mật khẩu thành công!
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 <style scoped>

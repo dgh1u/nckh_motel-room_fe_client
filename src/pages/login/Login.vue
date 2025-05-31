@@ -118,7 +118,7 @@
 
     <!-- Cột phải: Nền gradient (responsive) -->
     <div
-      class="hidden xl:flex w-1/2 bg-gradient-to-br from-purple-500 to-blue-500 items-center justify-center"
+      class="hidden xl:flex w-1/2 bg-gradient-to-br from-teal-300 to-blue-300 items-center justify-center"
     >
       <!-- Vùng dành cho hình nền hoặc nội dung bổ sung -->
     </div>

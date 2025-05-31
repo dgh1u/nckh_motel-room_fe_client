@@ -710,7 +710,7 @@
             class="loader mr-2 animate-spin rounded-full h-5 w-5 border-b-2 border-white"
           ></div>
           <span>
-            <span v-if="!loading">Tạo bài viết</span>
+            <span v-if="!loading">Đăng tin</span>
             <span v-if="loading">Đang tạo...</span>
           </span>
         </button>

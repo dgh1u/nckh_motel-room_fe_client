@@ -223,7 +223,7 @@
 
       <!-- Thông tin bản quyền -->
       <div class="border-gray-700 mt-8 text-center text-base text-gray-400">
-        Copyright © 2025. Toàn bộ bản quyền thuộc UCK Team.
+        Copyright © 2025. Toàn bộ bản quyền thuộc Dương Minh Hiếu.
       </div>
     </div>
   </footer>

@@ -20,8 +20,8 @@
     </div>
     <!-- HẾT KHỐI BREADCRUMB -->
 
-    <!-- Bọc toàn bộ trang bằng flex để chia 2 cột -->
-    <div class="flex min-h-screen">
+    <!-- Bọc toàn bộ trang bằng flex để chia 2 cột trên desktop, 1 cột trên mobile -->
+    <div class="flex min-h-screen flex-col lg:flex-row">
       <!-- CỘT TRÁI -->
       <div class="flex-1 p-4 bg-gray-100">
         <!-- GALLERY Ở ĐẦU TRANG -->
@@ -29,10 +29,10 @@
           <!-- Vùng ảnh chính, có mũi tên trái/phải -->
           <div
             v-if="galleryImages.length > 0"
-            class="relative w-full h-96 bg-black text-white flex items-center justify-center mb-4 rounded-xl"
+            class="relative w-full h-64 sm:h-80 lg:h-96 bg-black text-white flex items-center justify-center mb-4 rounded-xl"
           >
             <button
-              class="absolute left-0 px-4 py-2 text-3xl"
+              class="absolute left-0 px-2 sm:px-4 py-2 text-2xl sm:text-3xl z-10"
               @click="prevImage"
               :disabled="galleryImages.length === 0"
             >
@@ -42,11 +42,11 @@
             <img
               :src="galleryImages[currentImageIndex]"
               alt="gallery image"
-              class="max-w-3xl max-h-full object-contain"
+              class="max-w-full max-h-full object-contain"
             />
 
             <button
-              class="absolute right-0 px-4 py-2 text-3xl"
+              class="absolute right-0 px-2 sm:px-4 py-2 text-2xl sm:text-3xl z-10"
               @click="nextImage"
               :disabled="galleryImages.length === 0"
             >
@@ -61,7 +61,7 @@
               v-for="(img, index) in galleryImages"
               :key="index"
               @click="currentImageIndex = index"
-              class="cursor-pointer flex-shrink-0 w-20 h-20 rounded overflow-hidden"
+              class="cursor-pointer flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded overflow-hidden"
               :class="{
                 'border-3 border-red-500': currentImageIndex === index,
                 'border border-gray-300': currentImageIndex !== index,
@@ -91,19 +91,23 @@
                 </div>
                 <div class="py-2">
                   <!-- Tiêu đề bài đăng -->
-                  <span class="text-2xl font-bold">{{ post.title }}</span>
+                  <span class="text-xl sm:text-2xl font-bold">{{
+                    post.title
+                  }}</span>
                 </div>
 
                 <!-- Địa chỉ -->
-                <div class="flex items-center text-sm text-gray-600 mb-2">
-                  <MapPinIcon class="w-4 h-4 mr-1" />
-                  <span class="text-black">
+                <div
+                  class="flex items-center text-sm text-gray-600 mb-2 flex-wrap"
+                >
+                  <MapPinIcon class="w-4 h-4 mr-1 flex-shrink-0" />
+                  <span class="text-black break-words">
                     {{ post.accomodationDTO?.address }}
                   </span>
 
-                  <span class="mx-2">·</span>
+                  <span class="mx-2 hidden sm:inline">·</span>
 
-                  <span>
+                  <span class="w-full sm:w-auto mt-1 sm:mt-0">
                     Khu vực:
                     {{ post.accomodationDTO?.district?.name }}
                   </span>
@@ -111,22 +115,24 @@
 
                 <!-- Hiển thị thông tin giá, diện tích, giá điện nước, ngày đăng -->
                 <div
-                  class="flex items-center justify-between flex-wrap gap-4 mb-4"
+                  class="flex items-center justify-between flex-wrap gap-2 sm:gap-4 mb-4"
                 >
                   <!-- Bên trái: Giá, diện tích, giá điện, giá nước -->
-                  <div class="flex items-center flex-wrap gap-4">
-                    <span class="text-red-500 text-xl font-bold">
+                  <div class="flex items-center flex-wrap gap-2 sm:gap-4">
+                    <span class="text-red-500 text-lg sm:text-xl font-bold">
                       {{ formatPrice(post.accomodationDTO.price) }}
                     </span>
 
-                    <div class="flex items-center ml-5">
+                    <div class="flex items-center">
                       <ScanIcon class="w-4 h-4 mr-1 mt-0.5" />
-                      <span>{{ post.accomodationDTO.acreage }}m²</span>
+                      <span class="text-sm sm:text-base"
+                        >{{ post.accomodationDTO.acreage }}m²</span
+                      >
                     </div>
 
-                    <div class="flex items-center ml-5">
+                    <div class="flex items-center">
                       <ZapIcon class="w-4 h-4 mr-1 mt-0.5" />
-                      <span
+                      <span class="text-sm sm:text-base"
                         >{{
                           formatElectricWaterPrice(
                             post.accomodationDTO.electricPrice
@@ -136,9 +142,9 @@
                       >
                     </div>
 
-                    <div class="flex items-center ml-5">
+                    <div class="flex items-center">
                       <DropletIcon class="w-4 h-4 mr-1 mt-0.5" />
-                      <span
+                      <span class="text-sm sm:text-base"
                         >{{
                           formatElectricWaterPrice(
                             post.accomodationDTO.waterPrice
@@ -150,28 +156,32 @@
                   </div>
 
                   <!-- Bên phải: Ngày đăng -->
-                  <div class="flex items-center text-sm">
+                  <div
+                    class="flex items-center text-sm w-full sm:w-auto mt-2 sm:mt-0"
+                  >
                     <span>Ngày đăng: {{ formatDate(post.createAt) }}</span>
                   </div>
                 </div>
               </div>
 
-              <hr class="my-3 mx-6 border-gray-100" />
+              <hr class="my-3 mx-2 sm:mx-6 border-gray-100" />
 
               <!-- Thông tin chi tiết-->
               <div class="py-2">
                 <span class="text-lg font-semibold">Thông tin chi tiết</span>
-                <span class="block py-2 break-words">{{ post.content }}</span>
+                <span class="block py-2 break-words text-sm sm:text-base">{{
+                  post.content
+                }}</span>
               </div>
-              <hr class="my-3 mx-6 border-gray-100" />
+              <hr class="my-3 mx-2 sm:mx-6 border-gray-100" />
 
               <!-- Đặc điểm -->
               <div class="py-2">
                 <span class="text-lg font-semibold">Đặc điểm</span>
-                <div class="grid grid-cols-2 gap-4 p-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 p-2">
                   <div class="flex items-center">
-                    <BedIcon class="w-4 h-4 mr-1" />
-                    <span>
+                    <BedIcon class="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span class="text-sm sm:text-base">
                       Nội thất:
                       {{
                         post.accomodationDTO.interior ? "Đầy đủ" : "Phòng trống"
@@ -179,15 +189,15 @@
                     </span>
                   </div>
                   <div class="flex items-center">
-                    <SnowflakeIcon class="w-4 h-4 mr-1" />
-                    <span>
+                    <SnowflakeIcon class="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span class="text-sm sm:text-base">
                       Điều hoà:
                       {{ post.accomodationDTO.airConditioner ? "Có" : "Không" }}
                     </span>
                   </div>
                   <div class="flex items-center">
-                    <UserIcon class="w-4 h-4 mr-1" />
-                    <span>
+                    <UserIcon class="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span class="text-sm sm:text-base">
                       Hình thức:
                       {{
                         post.accomodationDTO.owner
@@ -198,52 +208,52 @@
                   </div>
 
                   <div class="flex items-center">
-                    <ThermometerIcon class="w-4 h-4 mr-1" />
-                    <span>
+                    <ThermometerIcon class="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span class="text-sm sm:text-base">
                       Nóng lạnh:
                       {{ post.accomodationDTO.heater ? "Có" : "Không" }}
                     </span>
                   </div>
 
                   <div class="flex items-center">
-                    <ShieldIcon class="w-4 h-4 mr-1" />
-                    <span>
+                    <ShieldIcon class="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span class="text-sm sm:text-base">
                       An ninh:
                       {{ post.accomodationDTO.security ? "Tốt" : "Không tốt" }}
                     </span>
                   </div>
                   <div class="flex items-center">
-                    <WifiIcon class="w-4 h-4 mr-1" />
-                    <span>
+                    <WifiIcon class="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span class="text-sm sm:text-base">
                       Internet:
                       {{ post.accomodationDTO.internet ? "Có" : "Không" }}
                     </span>
                   </div>
 
                   <div class="flex items-center">
-                    <ClockIcon class="w-4 h-4 mr-1" />
-                    <span>
+                    <ClockIcon class="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span class="text-sm sm:text-base">
                       Giờ giấc:
                       {{ post.accomodationDTO.time ? "Tự do" : "Không tự do" }}
                     </span>
                   </div>
                   <div class="flex items-center">
-                    <CoffeeIcon class="w-4 h-4 mr-1" />
-                    <span>
+                    <CoffeeIcon class="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span class="text-sm sm:text-base">
                       Kệ bếp:
                       {{ post.accomodationDTO.kitchen ? "Có" : "Không" }}
                     </span>
                   </div>
                   <div class="flex items-center">
-                    <CarIcon class="w-4 h-4 mr-1" />
-                    <span>
+                    <CarIcon class="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span class="text-sm sm:text-base">
                       Chỗ để xe:
                       {{ post.accomodationDTO.parking ? "Có" : "Không" }}
                     </span>
                   </div>
                   <div class="flex items-center">
-                    <Toilet class="w-4 h-4 mr-1" />
-                    <span>
+                    <Toilet class="w-4 h-4 mr-1 flex-shrink-0" />
+                    <span class="text-sm sm:text-base">
                       Vệ sinh:
                       {{ post.accomodationDTO.toilet ? "Khép kín" : "Chung" }}
                     </span>
@@ -251,19 +261,22 @@
                 </div>
               </div>
 
-              <hr class="my-3 mx-6 border-gray-100" />
+              <hr class="my-3 mx-2 sm:mx-6 border-gray-100" />
 
               <!-- Bản đồ -->
               <div v-if="mapUrl" class="py-2">
                 <span class="text-lg font-semibold">Vị trí & bản đồ</span>
                 <div class="flex py-2">
-                  <MapPin class="w-4 h-4 mt-0.5 mr-1" />
-                  <span> Địa chỉ: {{ post.accomodationDTO.address }} </span>
+                  <MapPin class="w-4 h-4 mt-0.5 mr-1 flex-shrink-0" />
+                  <span class="text-sm sm:text-base break-words">
+                    Địa chỉ: {{ post.accomodationDTO.address }}
+                  </span>
                 </div>
                 <div class="p-2">
                   <iframe
                     width="100%"
-                    height="400"
+                    height="250"
+                    class="sm:h-80 lg:h-96"
                     style="border: 0"
                     loading="lazy"
                     allowfullscreen
@@ -286,7 +299,7 @@
       </div>
 
       <!-- CỘT PHẢI: chỉ chứa khối thông tin người đăng -->
-      <div class="w-80 p-4 bg-gray-100">
+      <div class="w-full lg:w-80 p-4 bg-gray-100">
         <!-- Thông tin người đăng -->
         <div
           v-if="post && post.userDTO"
@@ -294,7 +307,7 @@
         >
           <!-- Ảnh đại diện -->
           <div
-            class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden bg-gray-100"
+            class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 rounded-full overflow-hidden bg-gray-100"
           >
             <img
               v-if="finalAvatar"
@@ -304,33 +317,33 @@
             />
           </div>
           <!-- Tên + Trạng thái -->
-          <span class="text-lg font-semibold">
+          <span class="text-base sm:text-lg font-semibold block">
             {{ post.userDTO.fullName }}
           </span>
-          <span class="text-xs flex items-center justify-center">
+          <span class="text-xs flex items-center justify-center mb-2">
             <span
               class="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"
             ></span>
             Đang hoạt động
           </span>
           <div class="flex pt-2 items-center justify-center">
-            <MapPin class="w-4 h-4 mr-2" />
-            <span class="text-sm text-gray-500">
+            <MapPin class="w-4 h-4 mr-1 flex-shrink-0" />
+            <span class="text-sm text-gray-500 break-words">
               {{ post.userDTO.address }}
             </span>
           </div>
           <div class="flex pb-3 items-center justify-center">
-            <Mail class="w-4 h-4 mr-2" />
-            <span class="text-sm text-gray-500">
+            <Mail class="w-4 h-4 mr-1 flex-shrink-0" />
+            <span class="text-sm text-gray-500 break-words">
               {{ post.userDTO.email }}
             </span>
           </div>
           <!-- Nút gọi điện -->
-          <div class="text-white">
+          <div class="text-white pt-2">
             <button
-              class="bg-teal-500 w-full py-2 rounded-xl mt-4 flex items-center justify-center"
+              class="bg-teal-500 w-full py-2 sm:py-3 rounded-xl mt-4 flex items-center justify-center text-sm sm:text-base"
             >
-              <Phone class="w-5 h-6 mr-1.5" fill="currentColor" />
+              <Phone class="w-4 h-4 sm:w-5 sm:h-6 mr-1.5" fill="currentColor" />
               <span class="font-medium">{{ post.userDTO.phone }}</span>
             </button>
           </div>
@@ -339,27 +352,43 @@
             <a
               :href="`https://zalo.me/${post.userDTO.phone}`"
               target="_blank"
-              class="bg-blue-500 w-full py-2 rounded-xl mt-2 flex items-center justify-center"
+              class="bg-blue-500 w-full py-2 sm:py-3 rounded-xl mt-2 flex items-center justify-center text-sm sm:text-base"
             >
               <img
                 src="@/assets/zalo-icon.svg"
                 alt="Zalo Icon"
-                class="w-6 h-6 mr-1.5"
+                class="w-5 h-5 sm:w-6 sm:h-6 mr-1.5"
               />
               <span class="font-medium">Nhắn Zalo</span>
             </a>
           </div>
         </div>
         <!-- Nút thao tác chỉ hiển thị khi người đăng trùng với người xem -->
-        <div class="py-8">
+        <div class="py-4 sm:py-8">
           <div v-if="isOwner" class="p-4 bg-white rounded-xl shadow-xl">
             <div class="text-center">
-              <span class="font-semibold text-lg">Thao tác</span>
+              <span class="font-semibold text-base sm:text-lg">Thao tác</span>
             </div>
-            <div class="py-4">
+            <div class="pt-4">
+              <div
+                class="w-full py-2 rounded-xl flex items-center justify-center font-medium bg-sky-100 text-sm sm:text-base"
+              >
+                <span class="font-normal">Trạng thái:&nbsp;</span>
+                <span
+                  :class="{
+                    'text-green-500': displayStatus === 'Đã duyệt',
+                    'text-yellow-500': displayStatus === 'Chờ duyệt',
+                    'text-red-500': displayStatus === 'Bị khóa',
+                  }"
+                >
+                  {{ displayStatus }}
+                </span>
+              </div>
+            </div>
+            <div class="py-2">
               <router-link
                 :to="`/update-post/${post.id}`"
-                class="bg-yellow-500 hover:bg-yellow-600 w-full py-2 rounded-xl mt-2 flex items-center justify-center text-white"
+                class="bg-yellow-500 hover:bg-yellow-600 w-full py-2 sm:py-3 rounded-xl flex items-center justify-center text-white text-sm sm:text-base"
               >
                 <span class="font-medium">Cập nhật</span>
               </router-link>
@@ -372,7 +401,7 @@
                     ? 'bg-red-400 hover:bg-red-500'
                     : 'bg-green-400 hover:bg-green-500'
                 "
-                class="w-full py-2 rounded-xl mt-2 flex items-center justify-center text-white"
+                class="w-full py-2 sm:py-3 rounded-xl mt-2 flex items-center justify-center text-white text-sm sm:text-base"
               >
                 <span class="font-medium">
                   {{ post.del === false ? "Ẩn tin đăng" : "Hiện tin đăng" }}
@@ -440,6 +469,19 @@ const mapUrl = computed(() => {
   if (!post.value?.accomodationDTO?.address) return "";
   const encodedAddress = encodeURIComponent(post.value.accomodationDTO.address);
   return `https://maps.google.com/maps?q=${encodedAddress}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+});
+
+const displayStatus = computed(() => {
+  if (!post.value) return "";
+
+  if (post.value.approved === true && post.value.notApproved === false) {
+    return "Đã duyệt";
+  } else if (post.value.approved === true && post.value.notApproved === true) {
+    return "Chờ duyệt";
+  } else if (post.value.approved === false) {
+    return "Bị khóa";
+  }
+  return "";
 });
 
 // Xử lý avatar người dùng
