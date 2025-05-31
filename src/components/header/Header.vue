@@ -354,6 +354,17 @@
           >
             Liên hệ
           </router-link>
+
+          <!-- Thông báo section for mobile (only when authenticated) -->
+          <div v-if="authStore.isAuthenticated" class="mt-4">
+            <router-link
+              to="/list-notifications"
+              @click="closeMobileMenu"
+              class="flex items-center text-gray-700 hover:text-teal-500 font-medium text-lg"
+            >
+              <span>Thông báo</span>
+            </router-link>
+          </div>
         </div>
 
         <!-- Mobile auth buttons -->
