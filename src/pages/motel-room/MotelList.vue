@@ -19,18 +19,105 @@
       </div>
       <!-- Nội dung chính: chiếm phần còn lại -->
       <div class="flex-1 flex flex-col bg-gray-100">
-        <!-- Thanh tìm kiếm từ khóa -->
-        <div class="mb-1 relative">
-          <input
-            v-model="filters.keywords"
-            type="text"
-            placeholder="Nhập tên tin đăng muốn tìm..."
-            class="w-full p-3 pl-10 bg-green-50 rounded-xl shadow hover:shadow-2xl"
-          />
-          <Search
-            class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
-          />
+        <!-- Thanh tìm kiếm và sắp xếp -->
+        <div class="flex items-center gap-4">
+          <!-- Thanh tìm kiếm từ khóa - bên trái -->
+          <div class="flex-1 relative">
+            <input
+              v-model="filters.keywords"
+              type="text"
+              placeholder="Nhập tên tin đăng muốn tìm..."
+              class="w-full p-3 pl-10 bg-green-50 rounded-xl shadow hover:shadow-2xl"
+            />
+            <Search
+              class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
+            />
+          </div>
+
+          <!-- Nút sắp xếp - bên phải -->
+          <div class="flex-shrink-0 relative">
+            <!-- Dropdown Button -->
+            <button
+              @click="showSortDropdown = !showSortDropdown"
+              class="flex items-center space-x-2 px-4 py-3 bg-teal-100 border border-teal-300 rounded-xl text-teal-700 hover:bg-teal-200 focus:outline-none min-w-[140px]"
+            >
+              <span class="text-sm font-medium">{{ getSortLabel() }}</span>
+              <svg
+                class="w-4 h-4 ml-auto transition-transform duration-200"
+                :class="{ 'rotate-180': showSortDropdown }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div
+              v-if="showSortDropdown"
+              class="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 z-50"
+            >
+              <div class="py-2">
+                <div
+                  class="px-4 py-2 text-sm font-medium text-gray-700 border-b border-gray-100"
+                >
+                  Sắp xếp theo
+                </div>
+
+                <!-- Sort Options -->
+                <div class="py-1">
+                  <label
+                    v-for="option in sortOptions"
+                    :key="option.value"
+                    class="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer hover:text-teal-500"
+                    :class="{
+                      'text-teal-500': sortOption === option.value,
+                    }"
+                  >
+                    <div class="relative">
+                      <input
+                        type="radio"
+                        :value="option.value"
+                        v-model="sortOption"
+                        @change="handleSortChange"
+                        class="hidden"
+                      />
+                      <div
+                        class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center"
+                        :class="{
+                          'bg-teal-500 border-teal-500':
+                            sortOption === option.value,
+                        }"
+                      >
+                        <div
+                          v-if="sortOption === option.value"
+                          class="w-3 h-3 rounded-full bg-white"
+                        ></div>
+                      </div>
+                    </div>
+                    <span class="ml-3 text-sm text-gray-700">{{
+                      option.label
+                    }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- Overlay để đóng dropdown khi click bên ngoài -->
+        <div
+          v-if="showSortDropdown"
+          @click="showSortDropdown = false"
+          class="fixed inset-0 z-40"
+        ></div>
+
         <!-- Hiển thị thông báo lỗi nếu có -->
         <div v-if="errorMsg" class="p-4 text-red-600">
           {{ errorMsg }}
@@ -108,6 +195,30 @@ const pagination = ref({
   total: 0,
 });
 
+//State cho dropdown sort
+const showSortDropdown = ref(false);
+const sortOption = ref("newest_first");
+
+// Danh sách options
+const sortOptions = [
+  { value: "newest_first", label: "Tin mới nhất" },
+  { value: "price_asc", label: "Giá thấp trước" },
+  { value: "price_desc", label: "Giá cao trước" },
+];
+
+// Function lấy label hiện tại
+function getSortLabel() {
+  const option = sortOptions.find((opt) => opt.value === sortOption.value);
+  return option ? option.label : "Tin mới nhất";
+}
+
+// Thêm function xử lý thay đổi sắp xếp
+function handleSortChange() {
+  showSortDropdown.value = false;
+  pagination.value.current = 1;
+  fetchPosts();
+}
+
 // Xử lý cập nhật bộ lọc từ component MotelFilter
 function handleFilterUpdate(newFilters) {
   filters.value = {
@@ -179,6 +290,25 @@ function buildQueryParams() {
       params[mappedField] = true;
     }
   });
+
+  // Xử lý sắp xếp
+  switch (sortOption.value) {
+    case "newest_first":
+      params.sortField = "id";
+      params.sortType = "DESC";
+      break;
+    case "price_asc":
+      params.sortField = "price";
+      params.sortType = "ASC";
+      break;
+    case "price_desc":
+      params.sortField = "price";
+      params.sortType = "DESC";
+      break;
+    default:
+      params.sortField = "id";
+      params.sortType = "DESC";
+  }
 
   return params;
 }

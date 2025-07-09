@@ -14,7 +14,7 @@
       :modelValue="modelValue"
       @update:modelValue="updateValue"
     />
-    <p class="pt-2 text-sm">
+    <p class="pt-2 text-sm text-center">
       Diện tích từ: <strong>{{ modelValue[0] }} m²</strong> đến
       <strong>{{ modelValue[1] }} m²</strong>
     </p>

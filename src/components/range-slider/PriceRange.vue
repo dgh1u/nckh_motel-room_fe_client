@@ -14,7 +14,7 @@
       :modelValue="modelValue"
       @update:modelValue="updateValue"
     />
-    <p class="pt-2 text-sm">
+    <p class="pt-2 text-sm text-center">
       Giá từ: <strong>{{ modelValue[0] }} Triệu</strong> đến
       <strong>{{ modelValue[1] }} Triệu</strong>
     </p>

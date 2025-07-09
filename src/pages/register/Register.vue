@@ -127,9 +127,43 @@ const clearError = (field) => {
     <div class="min-h-screen flex">
       <!-- Cột phải: Nền gradient -->
       <div
-        class="hidden xl:flex w-1/2 bg-gradient-to-br from-teal-300 to-blue-300 items-center justify-center"
+        class="hidden xl:flex w-1/2 bg-gradient-to-br from-teal-400 to-sky-300 items-center justify-center"
       >
-        <!-- Tuỳ ý chèn hình nền -->
+        <div class="text-center text-white px-8">
+          <!-- Tên trường -->
+
+          <h2 class="text-xl font-bold">HỌC VIỆN NÔNG NGHIỆP VIỆT NAM</h2>
+          <h3 class="text-2xl font-semibold">KHOA CÔNG NGHỆ THÔNG TIN</h3>
+
+          <!-- Logo -->
+          <!-- Logo -->
+
+          <div class="flex items-center justify-center gap-8">
+            <img
+              src="@/assets/marquee-items/vnua-logo.png"
+              alt="VNUA Logo"
+              class="w-22 h-22 object-contain"
+            />
+            <img
+              src="@/assets/vnua-services-logo.png"
+              alt="Second Logo"
+              class="w-48 h-48 object-contain"
+            />
+          </div>
+
+          <!-- Tên dịch vụ -->
+          <div class="mb-6">
+            <h4 class="text-3xl font-bold mb-4">VNUA Services</h4>
+            <p class="text-xl">
+              Kênh thông tin dịch vụ khu vực Học viện Nông nghiệp Việt Nam
+            </p>
+          </div>
+
+          <!-- Thông tin sinh viên -->
+          <div class="text-lg">
+            <p>(*) Dương Minh Hiếu - 6667537</p>
+          </div>
+        </div>
       </div>
       <!-- Cột trái: Form đăng ký -->
       <div
@@ -313,9 +347,9 @@ const clearError = (field) => {
 
         <!-- Footer -->
         <div class="text-sm text-gray-500 text-center">
-          &copy; All rights reserved. Made by
+          &copy; Toàn bộ bản quyền thuộc
           <router-link to="/home" class="text-blue-500 text-sm hover:font-bold">
-            HieuDM
+            Duong Minh Hieu
           </router-link>
         </div>
       </div>

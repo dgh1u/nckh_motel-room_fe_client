@@ -12,6 +12,10 @@ export const bankMapping = {
     name: "Vietinbank",
     logo: vietinbankLogo,
   },
+  970415: {
+    name: "Vietinbank",
+    logo: vietinbankLogo,
+  },
   970407: {
     name: "Techcombank",
     logo: techcombankLogo,
